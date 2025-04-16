@@ -15,8 +15,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GlobalStyles } from "../../constants/styles";
 import { logout } from "../../redux/slices/authSlice";
 import { useAppDispatch } from "../../redux/store";
-import WelcomeScreen from "../../screens/WelcomeScreen";
 import DashboardScreen from "../../screens/DashboardScreen";
+import ProfileScreen from "../../screens/ProfileScreen";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -108,7 +108,7 @@ function Home() {
 
         <BottomTabs.Screen
           name="Profile"
-          component={WelcomeScreen}
+          component={ProfileScreen}
           options={{
             title: "Profile",
             tabBarLabel: "Profile",
@@ -161,15 +161,6 @@ export default function AuthenticatedStack() {
         name="Home"
         component={Home}
         options={{ headerShown: false }}
-      />
-
-      <Stack.Screen
-        name="Settings"
-        component={WelcomeScreen}
-        options={{
-          presentation: "modal",
-          animation: "slide_from_bottom",
-        }}
       />
     </Stack.Navigator>
   );
