@@ -1,32 +1,36 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   FlatList,
-  Image,
-  StyleSheet,
-  View,
-  ScrollView,
   RefreshControl,
+  ScrollView,
+  StyleSheet,
   TouchableOpacity,
+  View,
 } from "react-native";
 import {
-  Button,
-  Text,
-  useTheme,
-  Surface,
-  Avatar,
-  Card,
   ActivityIndicator,
+  Avatar,
+  Button,
+  Card,
   Chip,
   Divider,
+  Surface,
+  Text,
+  useTheme,
 } from "react-native-paper";
-import { LinearGradient } from "expo-linear-gradient";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { GlobalStyles } from "../constants/styles";
 
 const menuItems = [
-  { label: "Dự án", icon: "folder-outline", color: "#4CAF50" },
-  { label: "Nghiệm thu", icon: "check-circle-outline", color: "#2196F3" },
+  { label: "Dự án", icon: "folder-outline", color: "#4CAF50", name: "Project" },
+  {
+    label: "Nghiệm thu",
+    icon: "check-circle-outline",
+    color: "#2196F3",
+    name: "AcceptanceRequest",
+  },
   { label: "Quản lý nhật ký", icon: "notebook-outline", color: "#9C27B0" },
   { label: "Quản lý vấn đề", icon: "alert-circle-outline", color: "#F44336" },
   { label: "Quản lý check-in", icon: "login", color: "#FF9800" },
@@ -88,7 +92,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
   const renderMenuItem = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={styles.gridItem}
-      onPress={() => navigation.navigate(item.label)}
+      onPress={() => navigation.navigate(item.name)}
     >
       <View style={styles.menuSurface}>
         <View

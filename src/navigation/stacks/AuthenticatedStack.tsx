@@ -1,22 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
-import {
-  Badge,
-  Button,
-  Dialog,
-  IconButton,
-  Portal,
-  Text,
-} from "react-native-paper";
+import { Badge } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GlobalStyles } from "../../constants/styles";
-import { logout } from "../../redux/slices/authSlice";
-import { useAppDispatch } from "../../redux/store";
-import DashboardScreen from "../../screens/DashboardScreen";
 import ProfileScreen from "../../screens/ProfileScreen";
+import { DashboardStack } from "./DashboardStack";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -45,16 +36,7 @@ function TabBarIcon({
 }
 
 function Home() {
-  const dispatch = useAppDispatch();
-  const [logoutVisible, setLogoutVisible] = useState(false);
   const insets = useSafeAreaInsets();
-
-  const hideDialog = () => setLogoutVisible(false);
-  const showLogoutDialog = () => setLogoutVisible(true);
-  const handleLogout = () => {
-    hideDialog();
-    dispatch(logout());
-  };
 
   return (
     <>
@@ -83,26 +65,18 @@ function Home() {
             fontSize: 12,
             marginBottom: 5,
           },
-          headerRight: ({ tintColor }) => (
-            <IconButton
-              icon="cog-outline"
-              iconColor={tintColor}
-              size={24}
-              onPress={showLogoutDialog}
-              style={styles.headerButton}
-            />
-          ),
         })}
       >
         <BottomTabs.Screen
           name="Dashboard"
-          component={DashboardScreen}
+          component={DashboardStack}
           options={{
-            title: "Dashboard",
-            tabBarLabel: "Dashboard",
+            title: "Trang chủ",
+            tabBarLabel: "Trang chủ",
             tabBarIcon: ({ color, size }) => (
               <TabBarIcon name="home" color={color} size={size} />
             ),
+            headerShown: false,
           }}
         />
 
@@ -110,37 +84,15 @@ function Home() {
           name="Profile"
           component={ProfileScreen}
           options={{
-            title: "Profile",
-            tabBarLabel: "Profile",
+            title: "Thông tin cá nhân",
+            tabBarLabel: "Thông tin cá nhân",
             tabBarIcon: ({ color, size }) => (
               <TabBarIcon name="person" color={color} size={size} />
             ),
+            headerShown: false,
           }}
         />
       </BottomTabs.Navigator>
-
-      <Portal>
-        <Dialog
-          visible={logoutVisible}
-          onDismiss={hideDialog}
-          style={styles.dialog}
-        >
-          <Dialog.Title>Logout</Dialog.Title>
-          <Dialog.Content>
-            <Text>Bạn chắc chắn muốn đăng xuất?</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog}>Hủy</Button>
-            <Button
-              onPress={handleLogout}
-              mode="contained"
-              buttonColor={GlobalStyles.colors.error500}
-            >
-              Đăng xuất
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
     </>
   );
 }
