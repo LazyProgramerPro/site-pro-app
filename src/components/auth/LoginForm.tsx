@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   input: {
-    marginBottom: 6,
+    marginBottom: 16,
     width: "100%",
     backgroundColor: "#FAFAFA",
   },
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     borderRadius: 8,
     width: "100%",
-    backgroundColor: GlobalStyles.colors.primary500,
+    backgroundColor: GlobalStyles.colors.primary700,
     elevation: 2,
   },
   loginText: {
