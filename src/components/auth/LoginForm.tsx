@@ -1,19 +1,20 @@
-import { useState } from "react";
-import { TextInput } from "react-native-paper";
-import { useForm, Controller } from "react-hook-form";
-import LoadingOverlay from "../../../components/ui/LoadingOverlay";
-import { login } from "../../../utils/auth";
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { GlobalStyles } from "../../../constants/styles";
-import Button from "../../../components/ui/Button";
+
+import { Controller, useForm } from "react-hook-form";
+import { Button, TextInput } from "react-native-paper";
+import { GlobalStyles } from "../../constants/styles";
 
 type FormData = {
   email: string;
   password: string;
 };
 
-function LoginScreen() {
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
+interface LoginFormProps {
+  loginHandler: (data: FormData) => void;
+}
+
+export default function LoginForm({ loginHandler }: LoginFormProps) {
   const {
     control,
     handleSubmit,
@@ -24,21 +25,6 @@ function LoginScreen() {
       password: "",
     },
   });
-
-  async function loginHandler(data: FormData) {
-    setIsAuthenticating(true);
-    try {
-      await login(data.email, data.password);
-    } catch (error) {
-      console.log("Login failed:", error);
-    } finally {
-      setIsAuthenticating(false);
-    }
-  }
-
-  if (isAuthenticating) {
-    return <LoadingOverlay message="Logging you in..." />;
-  }
 
   return (
     <View style={styles.loginContent}>
@@ -108,7 +94,6 @@ function LoginScreen() {
     </View>
   );
 }
-export default LoginScreen;
 
 const styles = StyleSheet.create({
   loginContent: {
