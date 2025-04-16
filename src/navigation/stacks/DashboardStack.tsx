@@ -1,10 +1,10 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import DashboardScreen from "../../screens/DashboardScreen";
-import ProjectScreen from "../../screens/ProjectScreen";
 import { IconButton } from "react-native-paper";
 import { GlobalStyles } from "../../constants/styles";
 import AcceptanceRequestScreen from "../../screens/AcceptanceRequestScreen";
+import DashboardScreen from "../../screens/DashboardScreen";
+import ProjectScreen from "../../screens/ProjectScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -46,27 +46,9 @@ export const DashboardStack = () => {
       <Stack.Screen
         name="AcceptanceRequest"
         component={AcceptanceRequestScreen}
-        options={({ navigation }) => ({
-          headerShown: true,
-          title: "Yêu cầu nghiệm thu",
-          headerStyle: {
-            backgroundColor: "#fff",
-          },
-          headerTitleStyle: {
-            fontWeight: "500",
-          },
-          headerShadowVisible: false,
-          headerLeft: (props) => (
-            <IconButton
-              {...props}
-              icon="arrow-left"
-              size={24}
-              iconColor={GlobalStyles.colors.gray700}
-              onPress={() => navigation.goBack()}
-              style={{ margin: 0, marginLeft: -8 }}
-            />
-          ),
-        })}
+        options={{
+          headerShown: false,
+        }}
       />
     </Stack.Navigator>
   );
