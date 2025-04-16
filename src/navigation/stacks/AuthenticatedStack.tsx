@@ -11,6 +11,8 @@ const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
 function Home() {
+  const dispatch = useAppDispatch();
+
   return (
     <BottomTabs.Navigator
       screenOptions={({ navigation }) => ({
@@ -20,12 +22,10 @@ function Home() {
         tabBarActiveTintColor: GlobalStyles.colors.primary100,
         headerRight: ({ tintColor }) => (
           <IconButton
-            icon="add"
-            size={24}
+            icon="exit-to-app"
             iconColor={tintColor}
-            onPress={() => {
-              navigation.navigate("Settings");
-            }}
+            size={24}
+            onPress={() => dispatch(logout())}
           />
         ),
       })}
@@ -57,8 +57,6 @@ function Home() {
 }
 
 export default function AuthenticatedStack() {
-  // const dispatch = useAppDispatch();
-
   return (
     <Stack.Navigator
       screenOptions={{
@@ -71,16 +69,6 @@ export default function AuthenticatedStack() {
         name="Home"
         component={Home}
         options={{ headerShown: false }}
-        // options={{
-        //   headerRight: ({ tintColor }) => (
-        //     <IconButton
-        //       icon="exit"
-        //       iconColor={tintColor}
-        //       size={24}
-        //       onPress={() => dispatch(logout())}
-        //     />
-        //   ),
-        // }}
       />
 
       <Stack.Screen

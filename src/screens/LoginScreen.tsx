@@ -1,8 +1,9 @@
 import { useState } from "react";
-
+import { Alert } from "react-native";
 import LoginForm from "../components/auth/LoginForm";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
-import { login } from "../utils/auth";
+import { authenticate } from "../redux/slices/authSlice";
+import { useAppDispatch } from "../redux/store";
 
 type FormData = {
   email: string;
@@ -11,13 +12,19 @@ type FormData = {
 
 function LoginScreen() {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const dispatch = useAppDispatch();
 
   async function loginHandler(data: FormData) {
     setIsAuthenticating(true);
     try {
-      await login(data.email, data.password);
+      const token = "ThuongDev";
+
+      dispatch(authenticate(token));
     } catch (error) {
-      console.log("Login failed:", error);
+      Alert.alert(
+        "Authentication failed!",
+        "Could not log you in. Please check your credentials or try again later!"
+      );
     } finally {
       setIsAuthenticating(false);
     }
