@@ -60,7 +60,7 @@ const recentProjects = [
   },
 ];
 
-export default function DashboardScreen({ navigation }) {
+export default function DashboardScreen({ navigation }: { navigation: any }) {
   const { colors } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -85,12 +85,12 @@ export default function DashboardScreen({ navigation }) {
     }, 1500);
   }, []);
 
-  const renderMenuItem = ({ item }) => (
+  const renderMenuItem = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={styles.gridItem}
       onPress={() => navigation.navigate(item.label)}
     >
-      <Surface style={styles.menuSurface} elevation={2}>
+      <View style={styles.menuSurface}>
         <View
           style={[styles.iconCircle, { backgroundColor: `${item.color}20` }]}
         >
@@ -101,11 +101,11 @@ export default function DashboardScreen({ navigation }) {
           />
         </View>
         <Text style={styles.menuLabel}>{item.label}</Text>
-      </Surface>
+      </View>
     </TouchableOpacity>
   );
 
-  const renderProjectItem = ({ item }) => (
+  const renderProjectItem = ({ item }: { item: any }) => (
     <Card style={styles.projectCard} mode="elevated">
       <Card.Cover source={{ uri: item.image }} style={styles.projectImage} />
       <Card.Content style={styles.projectContent}>
@@ -235,7 +235,8 @@ export default function DashboardScreen({ navigation }) {
         keyExtractor={(item) => item.label}
         numColumns={3}
         scrollEnabled={false}
-        contentContainerStyle={styles.gridContainer}
+        contentContainerStyle={[styles.gridContainer, { padding: 8 }]}
+        columnWrapperStyle={{ gap: 12 }}
       />
 
       {/* Recent Projects */}
@@ -337,6 +338,7 @@ const styles = StyleSheet.create({
     marginTop: -20,
     borderRadius: 12,
     paddingVertical: 16,
+    backgroundColor: "white",
   },
   statItem: {
     flex: 1,
@@ -376,12 +378,13 @@ const styles = StyleSheet.create({
     color: GlobalStyles.colors.primary500,
   },
   gridContainer: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
+    gap: 8,
   },
   gridItem: {
-    width: itemSize,
+    flex: 1,
     aspectRatio: 1,
-    margin: 8,
+    margin: 0,
   },
   menuSurface: {
     flex: 1,
@@ -390,6 +393,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 8,
     backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   iconCircle: {
     width: 60,

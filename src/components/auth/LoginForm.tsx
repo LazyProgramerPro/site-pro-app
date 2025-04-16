@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Image,
 } from "react-native";
 import {
   Button,
@@ -53,10 +54,8 @@ export default function LoginForm({ loginHandler }: LoginFormProps) {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Surface style={styles.surface}>
-          <MaterialCommunityIcons
-            name="account-lock-outline"
-            size={60}
-            color={GlobalStyles.colors.primary500}
+          <Image
+            source={require("../../../assets/images/logo.png")}
             style={styles.logo}
           />
 
@@ -204,6 +203,9 @@ const styles = StyleSheet.create({
   logo: {
     marginBottom: 16,
     alignSelf: "center",
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
   },
   title: {
     fontWeight: "bold",
