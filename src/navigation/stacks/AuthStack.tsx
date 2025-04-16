@@ -1,5 +1,4 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import React from "react";
 import { GlobalStyles } from "../../constants/styles";
 import LoginScreen from "../../screens/LoginScreen";
 

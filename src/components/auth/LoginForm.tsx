@@ -1,6 +1,4 @@
-import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-
 import { Controller, useForm } from "react-hook-form";
 import { Button, TextInput } from "react-native-paper";
 import { GlobalStyles } from "../../constants/styles";
