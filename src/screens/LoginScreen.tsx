@@ -4,6 +4,7 @@ import LoginForm from "../components/auth/LoginForm";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 import { authenticate } from "../redux/slices/authSlice";
 import { useAppDispatch } from "../redux/store";
+import ScreenWrapper from "../components/ui/ScreenWrapper";
 
 type FormData = {
   email: string;
@@ -34,6 +35,10 @@ function LoginScreen() {
     return <LoadingOverlay message="Logging you in..." />;
   }
 
-  return <LoginForm loginHandler={loginHandler} />;
+  return (
+    <ScreenWrapper>
+      <LoginForm loginHandler={loginHandler} />
+    </ScreenWrapper>
+  );
 }
 export default LoginScreen;

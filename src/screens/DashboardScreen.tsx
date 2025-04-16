@@ -22,6 +22,7 @@ import {
   useTheme,
 } from "react-native-paper";
 import { GlobalStyles } from "../constants/styles";
+import ScreenWrapper from "../components/ui/ScreenWrapper";
 
 const menuItems = [
   { label: "Dự án", icon: "folder-outline", color: "#4CAF50", name: "Project" },
@@ -155,116 +156,120 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator
-          size="large"
-          color={GlobalStyles.colors.primary500}
-        />
-        <Text style={styles.loadingText}>Đang tải thông tin...</Text>
-      </View>
+      <ScreenWrapper>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator
+            size="large"
+            color={GlobalStyles.colors.primary500}
+          />
+          <Text style={styles.loadingText}>Đang tải thông tin...</Text>
+        </View>
+      </ScreenWrapper>
     );
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-      contentContainerStyle={styles.scrollContent}
-    >
-      {/* Header with User Profile */}
-      <LinearGradient
-        colors={[
-          GlobalStyles.colors.primary700,
-          GlobalStyles.colors.primary500,
-        ]}
-        style={styles.headerGradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
+    <ScreenWrapper>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.headerContent}>
-          <View style={styles.userInfoContainer}>
-            <Avatar.Image source={{ uri: user.avatar }} size={60} />
-            <View style={styles.userInfo}>
-              <Text variant="titleMedium" style={styles.userName}>
-                {user.name}
-              </Text>
-              <Text variant="bodySmall" style={styles.userRole}>
-                {user.role}
-              </Text>
-            </View>
-          </View>
-          <TouchableOpacity style={styles.notificationButton}>
-            <MaterialCommunityIcons
-              name="bell-outline"
-              size={28}
-              color="white"
-            />
-            <View style={styles.notificationBadge}>
-              <Text style={styles.notificationBadgeText}>3</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </LinearGradient>
-
-      {/* Stats Overview */}
-      <Surface style={styles.statsContainer} elevation={2}>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>12</Text>
-          <Text style={styles.statLabel}>Dự án</Text>
-        </View>
-        <Divider style={styles.statDivider} />
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>5</Text>
-          <Text style={styles.statLabel}>Đang triển khai</Text>
-        </View>
-        <Divider style={styles.statDivider} />
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>8</Text>
-          <Text style={styles.statLabel}>Cần xử lý</Text>
-        </View>
-      </Surface>
-
-      {/* Quick Access Menu */}
-      <View style={styles.sectionHeader}>
-        <Text variant="titleMedium" style={styles.sectionTitle}>
-          Truy cập nhanh
-        </Text>
-      </View>
-
-      <FlatList
-        data={menuItems}
-        renderItem={renderMenuItem}
-        keyExtractor={(item) => item.label}
-        numColumns={3}
-        scrollEnabled={false}
-        contentContainerStyle={[styles.gridContainer, { padding: 8 }]}
-        columnWrapperStyle={{ gap: 12 }}
-      />
-
-      {/* Recent Projects */}
-      <View style={styles.sectionHeader}>
-        <Text variant="titleMedium" style={styles.sectionTitle}>
-          Dự án gần đây
-        </Text>
-        <Button
-          mode="text"
-          compact
-          onPress={() => {}}
-          style={styles.viewAllButton}
-          labelStyle={styles.viewAllButtonLabel}
+        {/* Header with User Profile */}
+        <LinearGradient
+          colors={[
+            GlobalStyles.colors.primary700,
+            GlobalStyles.colors.primary500,
+          ]}
+          style={styles.headerGradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
         >
-          Xem tất cả
-        </Button>
-      </View>
+          <View style={styles.headerContent}>
+            <View style={styles.userInfoContainer}>
+              <Avatar.Image source={{ uri: user.avatar }} size={60} />
+              <View style={styles.userInfo}>
+                <Text variant="titleMedium" style={styles.userName}>
+                  {user.name}
+                </Text>
+                <Text variant="bodySmall" style={styles.userRole}>
+                  {user.role}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.notificationButton}>
+              <MaterialCommunityIcons
+                name="bell-outline"
+                size={28}
+                color="white"
+              />
+              <View style={styles.notificationBadge}>
+                <Text style={styles.notificationBadgeText}>3</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
 
-      {recentProjects.map((project) => (
-        <TouchableOpacity key={project.id} onPress={() => {}}>
-          {renderProjectItem({ item: project })}
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
+        {/* Stats Overview */}
+        <Surface style={styles.statsContainer} elevation={2}>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>12</Text>
+            <Text style={styles.statLabel}>Dự án</Text>
+          </View>
+          <Divider style={styles.statDivider} />
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>5</Text>
+            <Text style={styles.statLabel}>Đang triển khai</Text>
+          </View>
+          <Divider style={styles.statDivider} />
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>8</Text>
+            <Text style={styles.statLabel}>Cần xử lý</Text>
+          </View>
+        </Surface>
+
+        {/* Quick Access Menu */}
+        <View style={styles.sectionHeader}>
+          <Text variant="titleMedium" style={styles.sectionTitle}>
+            Truy cập nhanh
+          </Text>
+        </View>
+
+        <FlatList
+          data={menuItems}
+          renderItem={renderMenuItem}
+          keyExtractor={(item) => item.label}
+          numColumns={3}
+          scrollEnabled={false}
+          contentContainerStyle={[styles.gridContainer, { padding: 8 }]}
+          columnWrapperStyle={{ gap: 12 }}
+        />
+
+        {/* Recent Projects */}
+        <View style={styles.sectionHeader}>
+          <Text variant="titleMedium" style={styles.sectionTitle}>
+            Dự án gần đây
+          </Text>
+          <Button
+            mode="text"
+            compact
+            onPress={() => {}}
+            style={styles.viewAllButton}
+            labelStyle={styles.viewAllButtonLabel}
+          >
+            Xem tất cả
+          </Button>
+        </View>
+
+        {recentProjects.map((project) => (
+          <TouchableOpacity key={project.id} onPress={() => {}}>
+            {renderProjectItem({ item: project })}
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </ScreenWrapper>
   );
 }
 

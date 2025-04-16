@@ -23,6 +23,7 @@ import {
 import { GlobalStyles } from "../constants/styles";
 import { logout } from "../redux/slices/authSlice";
 import { useAppDispatch } from "../redux/store";
+import ScreenWrapper from "../components/ui/ScreenWrapper";
 
 export default function ProfileScreen({ navigation }: { navigation: any }) {
   const theme = useTheme();
@@ -58,183 +59,185 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header with gradient background */}
-      <LinearGradient
-        colors={[
-          GlobalStyles.colors.primary700,
-          GlobalStyles.colors.primary500,
-        ]}
-        style={styles.headerGradient}
-      >
-        <View style={styles.headerContent}>
-          <Surface style={styles.avatarContainer}>
-            <Avatar.Image
-              size={90}
-              source={{
-                uri: "https://ui-avatars.com/api/?name=Chu+Dautu&background=0D8ABC&color=fff&size=256",
-              }}
-              style={styles.avatar}
+    <ScreenWrapper>
+      <View style={styles.container}>
+        {/* Header with gradient background */}
+        <LinearGradient
+          colors={[
+            GlobalStyles.colors.primary700,
+            GlobalStyles.colors.primary500,
+          ]}
+          style={styles.headerGradient}
+        >
+          <View style={styles.headerContent}>
+            <Surface style={styles.avatarContainer}>
+              <Avatar.Image
+                size={90}
+                source={{
+                  uri: "https://ui-avatars.com/api/?name=Chu+Dautu&background=0D8ABC&color=fff&size=256",
+                }}
+                style={styles.avatar}
+              />
+              <IconButton
+                icon="pencil"
+                size={16}
+                style={styles.editButton}
+                containerColor={GlobalStyles.colors.primary100}
+                iconColor={GlobalStyles.colors.primary800}
+                onPress={() => handleItemPress("EditProfile")}
+              />
+            </Surface>
+            <Text style={styles.username}>Chudautu</Text>
+            <Text style={styles.userRole}>Quản lý dự án</Text>
+          </View>
+        </LinearGradient>
+
+        <View style={styles.content}>
+          <Surface style={styles.menuContainer} elevation={2}>
+            <List.Item
+              title="Hồ sơ cá nhân"
+              description="Thông tin tài khoản của bạn"
+              descriptionStyle={styles.itemDescription}
+              left={(props) => (
+                <List.Icon
+                  {...props}
+                  icon="account-outline"
+                  color={GlobalStyles.colors.primary500}
+                  style={[
+                    styles.listIcon,
+                    activeItem === "UserProfile" && styles.activeIcon,
+                  ]}
+                />
+              )}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => handleItemPress("UserProfile")}
+              style={[
+                styles.menuItem,
+                activeItem === "UserProfile" && styles.activeItem,
+              ]}
+              titleStyle={styles.menuItemTitle}
             />
-            <IconButton
-              icon="pencil"
-              size={16}
-              style={styles.editButton}
-              containerColor={GlobalStyles.colors.primary100}
-              iconColor={GlobalStyles.colors.primary800}
-              onPress={() => handleItemPress("EditProfile")}
+
+            <Divider style={styles.divider} />
+
+            <List.Item
+              title="Cài đặt ứng dụng"
+              description="Cài đặt giao diện và thông báo"
+              descriptionStyle={styles.itemDescription}
+              left={(props) => (
+                <List.Icon
+                  {...props}
+                  icon="cog-outline"
+                  color={GlobalStyles.colors.primary500}
+                  style={[
+                    styles.listIcon,
+                    activeItem === "Settings" && styles.activeIcon,
+                  ]}
+                />
+              )}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => handleItemPress("Settings")}
+              style={[
+                styles.menuItem,
+                activeItem === "Settings" && styles.activeItem,
+              ]}
+              titleStyle={styles.menuItemTitle}
+            />
+
+            <Divider style={styles.divider} />
+
+            <List.Item
+              title="Trợ giúp & Hỗ trợ"
+              description="CSKH: 1900 xxxx"
+              descriptionStyle={styles.itemDescription}
+              left={(props) => (
+                <List.Icon
+                  {...props}
+                  icon="help-circle-outline"
+                  color={GlobalStyles.colors.primary500}
+                  style={[
+                    styles.listIcon,
+                    activeItem === "Help" && styles.activeIcon,
+                  ]}
+                />
+              )}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => handleItemPress("Help")}
+              style={[
+                styles.menuItem,
+                activeItem === "Help" && styles.activeItem,
+              ]}
+              titleStyle={styles.menuItemTitle}
             />
           </Surface>
-          <Text style={styles.username}>Chudautu</Text>
-          <Text style={styles.userRole}>Quản lý dự án</Text>
-        </View>
-      </LinearGradient>
 
-      <View style={styles.content}>
-        <Surface style={styles.menuContainer} elevation={2}>
-          <List.Item
-            title="Hồ sơ cá nhân"
-            description="Thông tin tài khoản của bạn"
-            descriptionStyle={styles.itemDescription}
-            left={(props) => (
-              <List.Icon
-                {...props}
-                icon="account-outline"
-                color={GlobalStyles.colors.primary500}
-                style={[
-                  styles.listIcon,
-                  activeItem === "UserProfile" && styles.activeIcon,
-                ]}
-              />
-            )}
-            right={(props) => <List.Icon {...props} icon="chevron-right" />}
-            onPress={() => handleItemPress("UserProfile")}
+          <View style={styles.versionContainer}>
+            <Text style={styles.versionText}>Phiên bản 1.0.0</Text>
+          </View>
+
+          <Animated.View
             style={[
-              styles.menuItem,
-              activeItem === "UserProfile" && styles.activeItem,
+              styles.logoutButtonContainer,
+              { transform: [{ scale: scaleAnim }] },
             ]}
-            titleStyle={styles.menuItemTitle}
-          />
-
-          <Divider style={styles.divider} />
-
-          <List.Item
-            title="Cài đặt ứng dụng"
-            description="Cài đặt giao diện và thông báo"
-            descriptionStyle={styles.itemDescription}
-            left={(props) => (
-              <List.Icon
-                {...props}
-                icon="cog-outline"
-                color={GlobalStyles.colors.primary500}
-                style={[
-                  styles.listIcon,
-                  activeItem === "Settings" && styles.activeIcon,
-                ]}
-              />
-            )}
-            right={(props) => <List.Icon {...props} icon="chevron-right" />}
-            onPress={() => handleItemPress("Settings")}
-            style={[
-              styles.menuItem,
-              activeItem === "Settings" && styles.activeItem,
-            ]}
-            titleStyle={styles.menuItemTitle}
-          />
-
-          <Divider style={styles.divider} />
-
-          <List.Item
-            title="Trợ giúp & Hỗ trợ"
-            description="CSKH: 1900 xxxx"
-            descriptionStyle={styles.itemDescription}
-            left={(props) => (
-              <List.Icon
-                {...props}
-                icon="help-circle-outline"
-                color={GlobalStyles.colors.primary500}
-                style={[
-                  styles.listIcon,
-                  activeItem === "Help" && styles.activeIcon,
-                ]}
-              />
-            )}
-            right={(props) => <List.Icon {...props} icon="chevron-right" />}
-            onPress={() => handleItemPress("Help")}
-            style={[
-              styles.menuItem,
-              activeItem === "Help" && styles.activeItem,
-            ]}
-            titleStyle={styles.menuItemTitle}
-          />
-        </Surface>
-
-        <View style={styles.versionContainer}>
-          <Text style={styles.versionText}>Phiên bản 1.0.0</Text>
-        </View>
-
-        <Animated.View
-          style={[
-            styles.logoutButtonContainer,
-            { transform: [{ scale: scaleAnim }] },
-          ]}
-        >
-          <TouchableOpacity
-            onPressIn={() => animateScale(0.96)}
-            onPressOut={() => animateScale(1)}
-            onPress={handleLogoutPress}
-            style={styles.logoutTouch}
           >
-            <LinearGradient
-              colors={[
-                GlobalStyles.colors.primary500,
-                GlobalStyles.colors.primary700,
-              ]}
-              style={styles.logoutButton}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
+            <TouchableOpacity
+              onPressIn={() => animateScale(0.96)}
+              onPressOut={() => animateScale(1)}
+              onPress={handleLogoutPress}
+              style={styles.logoutTouch}
             >
-              <MaterialCommunityIcons
-                name="logout"
-                size={20}
-                color="white"
-                style={styles.logoutIcon}
-              />
-              <Text style={styles.logoutText}>Đăng Xuất</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </Animated.View>
-      </View>
+              <LinearGradient
+                colors={[
+                  GlobalStyles.colors.primary500,
+                  GlobalStyles.colors.primary700,
+                ]}
+                style={styles.logoutButton}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              >
+                <MaterialCommunityIcons
+                  name="logout"
+                  size={20}
+                  color="white"
+                  style={styles.logoutIcon}
+                />
+                <Text style={styles.logoutText}>Đăng Xuất</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
 
-      <Portal>
-        <Dialog
-          visible={logoutDialogVisible}
-          onDismiss={() => setLogoutDialogVisible(false)}
-          style={styles.dialog}
-        >
-          <Dialog.Title style={styles.dialogTitle}>
-            Xác nhận đăng xuất
-          </Dialog.Title>
-          <Dialog.Content>
-            <Text variant="bodyMedium">
-              Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setLogoutDialogVisible(false)}>
-              Huỷ bỏ
-            </Button>
-            <Button
-              onPress={handleLogout}
-              mode="contained"
-              buttonColor={GlobalStyles.colors.error500}
-            >
-              Đăng xuất
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
-    </SafeAreaView>
+        <Portal>
+          <Dialog
+            visible={logoutDialogVisible}
+            onDismiss={() => setLogoutDialogVisible(false)}
+            style={styles.dialog}
+          >
+            <Dialog.Title style={styles.dialogTitle}>
+              Xác nhận đăng xuất
+            </Dialog.Title>
+            <Dialog.Content>
+              <Text variant="bodyMedium">
+                Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?
+              </Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => setLogoutDialogVisible(false)}>
+                Huỷ bỏ
+              </Button>
+              <Button
+                onPress={handleLogout}
+                mode="contained"
+                buttonColor={GlobalStyles.colors.error500}
+              >
+                Đăng xuất
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </View>
+    </ScreenWrapper>
   );
 }
 

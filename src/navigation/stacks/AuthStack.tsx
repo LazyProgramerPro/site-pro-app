@@ -53,8 +53,6 @@ export default function AuthStack() {
             },
             animation: Platform.OS === "ios" ? "default" : "slide_from_right",
             presentation: "card",
-            // Ensure headers respect safe area if shown
-            headerSafeAreaInsets: { top: insets.top },
           }}
         >
           <Stack.Screen
