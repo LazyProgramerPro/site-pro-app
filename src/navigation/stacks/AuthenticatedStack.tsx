@@ -73,8 +73,8 @@ function Home() {
             shadowOpacity: 0.1,
             shadowRadius: 3,
           },
-          tabBarActiveTintColor: "white",
-          tabBarInactiveTintColor: GlobalStyles.colors.primary700 || "#80cbc4",
+          tabBarActiveTintColor: GlobalStyles.colors.iconActive,
+          tabBarInactiveTintColor: GlobalStyles.colors.iconInactive,
           tabBarItemStyle: {
             paddingVertical: 5,
           },

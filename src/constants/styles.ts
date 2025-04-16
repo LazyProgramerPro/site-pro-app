@@ -8,5 +8,7 @@ export const GlobalStyles = {
     gray700: "#424242",
     error100: "#fcdcbf",
     error500: "#f37c13",
+    iconActive: "#FFFFFF",
+    iconInactive: "#CFD8DC",
   },
 };

@@ -24,7 +24,7 @@ import { GlobalStyles } from "../constants/styles";
 import { logout } from "../redux/slices/authSlice";
 import { useAppDispatch } from "../redux/store";
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfileScreen({ navigation }: { navigation: any }) {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const [logoutDialogVisible, setLogoutDialogVisible] = useState(false);
@@ -32,7 +32,7 @@ export default function ProfileScreen({ navigation }) {
   const scaleAnim = useState(new Animated.Value(1))[0];
 
   // Animation for button press
-  const animateScale = (value) => {
+  const animateScale = (value: number) => {
     Animated.spring(scaleAnim, {
       toValue: value,
       friction: 4,
@@ -49,7 +49,7 @@ export default function ProfileScreen({ navigation }) {
     dispatch(logout());
   };
 
-  const handleItemPress = (screenName) => {
+  const handleItemPress = (screenName: any) => {
     setActiveItem(screenName);
     setTimeout(() => {
       setActiveItem(null);
@@ -295,6 +295,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginBottom: 24,
     backgroundColor: "white",
+    paddingVertical: 16,
+    paddingHorizontal: 8,
   },
   menuItem: {
     paddingVertical: 12,
@@ -306,10 +308,13 @@ const styles = StyleSheet.create({
   menuItemTitle: {
     fontSize: 16,
     fontWeight: "500",
+    marginLeft: 16,
   },
   itemDescription: {
     fontSize: 12,
     color: GlobalStyles.colors.gray500,
+    marginLeft: 16,
+    marginTop: 4,
   },
   listIcon: {
     marginLeft: 8,
@@ -321,7 +326,8 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    marginLeft: 70,
+    width: "100%",
+    backgroundColor: `${GlobalStyles.colors.gray700}20`,
   },
   versionContainer: {
     alignItems: "center",

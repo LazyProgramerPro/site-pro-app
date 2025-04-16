@@ -451,5 +451,6 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: 12,
+    lineHeight: 16,
   },
 });
