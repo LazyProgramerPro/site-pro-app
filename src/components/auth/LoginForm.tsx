@@ -1,7 +1,8 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import { Text, TextInput, Button } from "react-native-paper";
-import { useForm, Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { StyleSheet, View } from "react-native";
+import { Button, Text, TextInput } from "react-native-paper";
+import { GlobalStyles } from "../../constants/styles";
 
 type FormData = {
   email: string;
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     paddingTop: 64,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: GlobalStyles.colors.primary500,
   },
   title: {
     fontWeight: "bold",
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
   subtext: {
     marginBottom: 24,
     fontSize: 14,
-    color: "#555",
+    color: "white",
   },
   input: {
     marginBottom: 12,
