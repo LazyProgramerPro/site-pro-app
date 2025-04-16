@@ -24,7 +24,7 @@ function Home() {
             size={24}
             iconColor={tintColor}
             onPress={() => {
-              navigation.navigate("ManageExpense");
+              navigation.navigate("Settings");
             }}
           />
         ),
@@ -34,8 +34,8 @@ function Home() {
         name="WelcomeScreen1"
         component={WelcomeScreen}
         options={{
-          title: "Recent Expenses",
-          tabBarLabel: "Recent",
+          title: "Welcome",
+          tabBarLabel: "Welcome",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="hourglass" size={size} color={color} />
           ),
@@ -45,8 +45,8 @@ function Home() {
         name="WelcomeScreen"
         component={WelcomeScreen}
         options={{
-          title: "All Expenses",
-          tabBarLabel: "All Expenses",
+          title: "WelcomeScreen",
+          tabBarLabel: "WelcomeScreen",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar" size={size} color={color} />
           ),
@@ -57,7 +57,7 @@ function Home() {
 }
 
 export default function AuthenticatedStack() {
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
 
   return (
     <Stack.Navigator
@@ -70,15 +70,24 @@ export default function AuthenticatedStack() {
       <Stack.Screen
         name="Home"
         component={Home}
+        options={{ headerShown: false }}
+        // options={{
+        //   headerRight: ({ tintColor }) => (
+        //     <IconButton
+        //       icon="exit"
+        //       iconColor={tintColor}
+        //       size={24}
+        //       onPress={() => dispatch(logout())}
+        //     />
+        //   ),
+        // }}
+      />
+
+      <Stack.Screen
+        name="Settings"
+        component={WelcomeScreen}
         options={{
-          headerRight: ({ tintColor }) => (
-            <IconButton
-              icon="exit"
-              iconColor={tintColor}
-              size={24}
-              onPress={() => dispatch(logout())}
-            />
-          ),
+          presentation: "modal",
         }}
       />
     </Stack.Navigator>
