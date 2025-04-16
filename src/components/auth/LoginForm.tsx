@@ -1,13 +1,13 @@
-import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, Text, View } from "react-native";
-import { Button, TextInput } from "react-native-paper";
-import { GlobalStyles } from "../../constants/styles";
+import React from "react";
+import { View, StyleSheet } from "react-native";
+import { Text, TextInput, Button } from "react-native-paper";
+import { useForm, Controller } from "react-hook-form";
 
 type FormData = {
   email: string;
   password: string;
+  server: string;
 };
-
 interface LoginFormProps {
   loginHandler: (data: FormData) => void;
 }
@@ -17,102 +17,135 @@ export default function LoginForm({ loginHandler }: LoginFormProps) {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
+  } = useForm<FormData>();
+
+  const onSubmit = (data: FormData) => {
+    loginHandler(data);
+  };
 
   return (
-    <View style={styles.loginContent}>
+    <View style={styles.container}>
+      <Text variant="titleLarge" style={styles.title}>
+        Đăng nhập tài khoản SitePro
+      </Text>
+
+      <Text style={styles.subtext}>
+        Vui Lòng đăng nhập tài khoản SitePro của bạn.
+      </Text>
+
+      {/* Email */}
       <Controller
         control={control}
+        name="email"
         rules={{
-          required: "Email is required",
+          required: "Vui lòng nhập email",
           pattern: {
-            value: /^\S+@\S+$/i,
-            message: "Please enter a valid email address",
+            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            message: "Email không hợp lệ",
           },
         }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            label="Email"
+            label="Tên tài khoản"
+            placeholder="Nhập địa chỉ email"
             mode="outlined"
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="email-address"
-            returnKeyType="next"
-            value={value}
-            onChangeText={onChange}
             onBlur={onBlur}
-            style={{ marginBottom: errors.email ? 8 : 28 }}
+            onChangeText={onChange}
+            value={value}
             error={!!errors.email}
+            style={styles.input}
           />
         )}
-        name="email"
       />
       {errors.email && (
         <Text style={styles.errorText}>{errors.email.message}</Text>
       )}
 
+      {/* Password */}
       <Controller
         control={control}
-        rules={{
-          required: "Password is required",
-          minLength: {
-            value: 6,
-            message: "Password must be at least 6 characters",
-          },
-        }}
+        name="password"
+        rules={{ required: "Vui lòng nhập mật khẩu" }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            label="Password"
-            mode="outlined"
+            label="Mật khẩu"
+            placeholder="Đăng nhập tài khoản SitePro"
             secureTextEntry
-            returnKeyType="done"
-            value={value}
-            onChangeText={onChange}
+            mode="outlined"
             onBlur={onBlur}
-            style={{ marginBottom: errors.password ? 8 : 0 }}
+            onChangeText={onChange}
+            value={value}
             error={!!errors.password}
+            style={styles.input}
           />
         )}
-        name="password"
       />
       {errors.password && (
         <Text style={styles.errorText}>{errors.password.message}</Text>
       )}
 
-      <View style={styles.buttons}>
-        <Button onPress={handleSubmit(loginHandler)}>
-          <Text style={{ color: GlobalStyles.colors.primary100 }}>Login</Text>
-        </Button>
-      </View>
+      {/* Server */}
+      <Controller
+        control={control}
+        name="server"
+        rules={{ required: "Vui lòng nhập địa chỉ máy chủ" }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            label="Địa chỉ máy chủ"
+            placeholder="192.168.0.1 hoặc tên miền: company.com"
+            mode="outlined"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            error={!!errors.server}
+            style={styles.input}
+          />
+        )}
+      />
+      {errors.server && (
+        <Text style={styles.errorText}>{errors.server.message}</Text>
+      )}
+
+      {/* Đăng nhập */}
+      <Button
+        mode="contained"
+        onPress={handleSubmit(onSubmit)}
+        style={styles.button}
+        contentStyle={{ paddingVertical: 8 }}
+      >
+        Đăng Nhập
+      </Button>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  loginContent: {
-    marginTop: 64,
-    marginHorizontal: 32,
-    padding: 16,
-    borderRadius: 8,
-    backgroundColor: "white",
-    // elevation: 2,
-    // shadowColor: "black",
-    // shadowOffset: { width: 1, height: 1 },
-    // shadowOpacity: 0.35,
-    // shadowRadius: 4,
+  container: {
+    flex: 1,
+    padding: 24,
+    paddingTop: 64,
+    backgroundColor: "#f9f9f9",
   },
-  buttons: {
-    marginTop: 8,
+  title: {
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  subtext: {
+    marginBottom: 24,
+    fontSize: 14,
+    color: "#555",
+  },
+  input: {
+    marginBottom: 12,
+  },
+  button: {
+    marginTop: 16,
+    borderRadius: 8,
   },
   errorText: {
     color: "red",
+    marginBottom: 8,
+    marginLeft: 4,
     fontSize: 12,
-    marginBottom: 20,
-    marginLeft: 5,
   },
 });
