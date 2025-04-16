@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
+  TouchableOpacity,
   View,
 } from "react-native";
 import {
@@ -30,6 +31,8 @@ interface RequestItem {
   updatedBy: string;
   createdBy: string;
   date?: string;
+  projectId?: string;
+  contractId?: string;
 }
 
 export default function AcceptanceRequestScreen() {
@@ -40,7 +43,22 @@ export default function AcceptanceRequestScreen() {
   const [visibleItemMenu, setVisibleItemMenu] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
+  const [filterProject, setFilterProject] = useState<string | null>(null);
+  const [filterContract, setFilterContract] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  // Sample projects and contracts data
+  const projects = [
+    { id: "P001", name: "Xây dựng tuyến đường 01" },
+    { id: "P002", name: "Đường cao tốc Bắc Nam" },
+    { id: "P003", name: "Dự án cầu vượt" },
+  ];
+
+  const contracts = [
+    { id: "C001", name: "Thi Công xây lắp" },
+    { id: "C002", name: "Cung cấp vật liệu" },
+    { id: "C003", name: "Tư vấn giám sát" },
+  ];
 
   // Simulate loading data
   useEffect(() => {
@@ -57,6 +75,8 @@ export default function AcceptanceRequestScreen() {
       updatedBy: "tuvanthietke",
       createdBy: "nhathauthicong",
       date: "12/04/2025",
+      projectId: "P001",
+      contractId: "C001",
     },
     {
       id: "2",
@@ -66,6 +86,8 @@ export default function AcceptanceRequestScreen() {
       updatedBy: "nhathauthicong",
       createdBy: "nhathauthicong",
       date: "10/04/2025",
+      projectId: "P001",
+      contractId: "C002",
     },
     {
       id: "3",
@@ -75,6 +97,8 @@ export default function AcceptanceRequestScreen() {
       updatedBy: "tuvangiamsat",
       createdBy: "nhathauthicong",
       date: "08/04/2025",
+      projectId: "P002",
+      contractId: "C003",
     },
     {
       id: "4",
@@ -83,14 +107,109 @@ export default function AcceptanceRequestScreen() {
       updatedBy: "tuvanthietke",
       createdBy: "nhathauthicong",
       date: "05/04/2025",
+      projectId: "P002",
+      contractId: "C001",
     },
   ];
 
   const filteredItems = requestItems.filter(
-    (item) => !filterStatus || item.status === filterStatus
+    (item) =>
+      (!filterStatus || item.status === filterStatus) &&
+      (!filterProject || item.projectId === filterProject) &&
+      (!filterContract || item.contractId === filterContract)
   );
 
   const clearSelection = () => setSelectedItem(null);
+
+  const ProjectSelector = () => (
+    <View style={styles.selectorContainer}>
+      <Menu
+        visible={menuVisible && visibleItemMenu === "project"}
+        onDismiss={() => setVisibleItemMenu(null)}
+        anchor={
+          <TouchableOpacity
+            style={styles.dropdownSelector}
+            onPress={() => {
+              setVisibleItemMenu("project");
+              setMenuVisible(true);
+            }}
+          >
+            <Icon name="folder-outline" size={20} color="#757575" />
+            <Text style={styles.selectorText}>
+              {filterProject
+                ? projects.find((p) => p.id === filterProject)?.name ||
+                  "Chọn dự án"
+                : "Chọn dự án"}
+            </Text>
+            <Icon name="chevron-down" size={20} color="#757575" />
+          </TouchableOpacity>
+        }
+      >
+        <Menu.Item
+          onPress={() => {
+            setFilterProject(null);
+            setVisibleItemMenu(null);
+          }}
+          title="Tất cả dự án"
+        />
+        {projects.map((project) => (
+          <Menu.Item
+            key={project.id}
+            onPress={() => {
+              setFilterProject(project.id);
+              setVisibleItemMenu(null);
+            }}
+            title={project.name}
+          />
+        ))}
+      </Menu>
+    </View>
+  );
+
+  const ContractSelector = () => (
+    <View style={styles.selectorContainer}>
+      <Menu
+        visible={menuVisible && visibleItemMenu === "contract"}
+        onDismiss={() => setVisibleItemMenu(null)}
+        anchor={
+          <TouchableOpacity
+            style={styles.dropdownSelector}
+            onPress={() => {
+              setVisibleItemMenu("contract");
+              setMenuVisible(true);
+            }}
+          >
+            <Icon name="file-document-outline" size={20} color="#757575" />
+            <Text style={styles.selectorText}>
+              {filterContract
+                ? contracts.find((c) => c.id === filterContract)?.name ||
+                  "Chọn hợp đồng"
+                : "Chọn hợp đồng"}
+            </Text>
+            <Icon name="chevron-down" size={20} color="#757575" />
+          </TouchableOpacity>
+        }
+      >
+        <Menu.Item
+          onPress={() => {
+            setFilterContract(null);
+            setVisibleItemMenu(null);
+          }}
+          title="Tất cả hợp đồng"
+        />
+        {contracts.map((contract) => (
+          <Menu.Item
+            key={contract.id}
+            onPress={() => {
+              setFilterContract(contract.id);
+              setVisibleItemMenu(null);
+            }}
+            title={contract.name}
+          />
+        ))}
+      </Menu>
+    </View>
+  );
 
   const renderItem = ({ item }: { item: RequestItem }) => (
     <Card
@@ -214,9 +333,13 @@ export default function AcceptanceRequestScreen() {
 
   const renderListHeader = () => (
     <View style={styles.listHeader}>
+      <ProjectSelector />
+      <ContractSelector />
+
       <Text variant="titleMedium" style={styles.listTitle}>
         {filteredItems.length} yêu cầu nghiệm thu
       </Text>
+
       <View style={styles.filterContainer}>
         <Chip
           selected={filterStatus === null}
@@ -358,6 +481,7 @@ const styles = StyleSheet.create({
   },
   listTitle: {
     marginBottom: 12,
+    marginTop: 12,
     fontWeight: "500",
   },
   filterContainer: {
@@ -464,5 +588,21 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     color: "#757575",
+  },
+  selectorContainer: {
+    marginBottom: 8,
+  },
+  dropdownSelector: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: "white",
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+  },
+  selectorText: {
+    flex: 1,
+    marginLeft: 8,
   },
 });
