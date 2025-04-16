@@ -188,18 +188,15 @@ app-name/
 
 # Check list React Native
 
-### Sử dụng module Sumary của khóa học React Native để làm tài liệu học tập
+### Sử dụng module Summary của khóa học React Native để làm tài liệu học tập
 
 - Cài đặt môi trường React Native
 - Cài đặt React Native CLI
 - Cài đặt Android Studio
 - Cài đặt Android Emulator
-
 - Cài đặt NodeJS
 - Expo CLI
-
-- Difference between IOS and Android
-
+- Difference between iOS and Android
 - Navigation
 - Stack vs Native Stack
 - CSS grid
@@ -209,147 +206,145 @@ app-name/
 - Navigator between screens and pass props
 - Navigation props
 - Setting default screen
-- Hook useNavigation
+- Hook `useNavigation`
 - Screen Header and Background color
-- Cấu hình options cho screen ( chung và riêng ) :
-  - headerShown
-  - title
-  - headerTintColor
-  - headerStyle
-  - headerTitleStyle
-  - headerBackTitle
-  - headerBackImageSource
-  - headerRight ( function )
-  - headerLeft ( function )
-- Thẻ ScrollView
-- Thẻ FlatList
-- Handle onPress event
-- Thẻ TouchableOpacity
-- Handle headerRight and headerLeft and add icon button header
-- Drawer Navigation ( options, initialRouteName, screenOptions )
-- Tab Navigation ( options, initialRouteName, screenOptions )
-- Bottom Tab Navigation ( options, initialRouteName, screenOptions )
-- Working with redux toolkit
+- Cấu hình options cho screen (chung và riêng):
+  - `headerShown`
+  - `title`
+  - `headerTintColor`
+  - `headerStyle`
+  - `headerTitleStyle`
+  - `headerBackTitle`
+  - `headerBackImageSource`
+  - `headerRight` (function)
+  - `headerLeft` (function)
+- Thẻ `ScrollView`
+- Thẻ `FlatList`
+- Handle `onPress` event
+- Thẻ `TouchableOpacity`
+- Handle `headerRight` and `headerLeft` and add icon button header
+- Drawer Navigation (options, initialRouteName, screenOptions)
+- Tab Navigation (options, initialRouteName, screenOptions)
+- Bottom Tab Navigation (options, initialRouteName, screenOptions)
+- Working with Redux Toolkit
 
-#### React Native Expo
+---
 
-## Expo
+## React Native Expo
 
-### Config MacOS, Windows
+### Expo
 
-### Vitual Machine
+#### Config MacOS, Windows
 
-### Expo Go
+#### Virtual Machine
 
-### Live Reload
+#### Expo Go
 
-### Debugging
+#### Live Reload
+
+#### Debugging
+
+---
 
 ## React Native
 
 ### Cài đặt
 
-bash
+```bash
 npm install -g expo-cli
+```
 
 ### Tạo dự án và chạy
 
-bash
+```bash
 npx create-expo-app@latest app-name --template blank-typescript
 cd app-name
 npx expo start
+```
 
 ### Explanation các file
 
+---
+
 ### Các thành phần phổ biến
 
-TouchableOpacity
-Pressable
-StatusBar
-Views
-StyleSheet: có thể merge style
-Text
-![alt text](image-33.png)
+- `TouchableOpacity`
+- `Pressable`
+- `StatusBar`
+- `View`
+- `StyleSheet`: có thể merge style
+- `Text`
+
+---
 
 ### Các sự kiện phổ biến
 
-onPress
-onLongPress
-![alt text](image-34.png)
+- `onPress`
+- `onLongPress`
+
+---
 
 ### Core
 
-Khác biệt giữa các style của iOS và Android: thành phần text, nên sử dụng View để bao bọ để CSS cho đúng
-Make content scrollable with ScrollView
-Sử dụng SafeAreaView để tránh các thành phần bị che khuất bởi thanh trạng thái
-Sử dụng FlatList để render danh sách lớn và tối ưu hiệu suất
-Android Ripple Effect: Sử dụng TouchableNativeFeedback để tạo hiệu ứng ripple cho các thành phần nhấn
-Ios ripple effect: Sử dụng TouchableOpacity để tạo hiệu ứng nhấn cho các thành phần
-Styling for Android and iOS: Sử dụng StyleSheet để tạo kiểu cho các thành phần, có thể sử dụng các thuộc tính khác nhau cho từng nền tảng
-Sử dụng Platform để xác định nền tảng đang chạy ứng dụng: Các css như elevation chỉ chạy trên Android, còn iOS thì không
-Handle key board type: Sử dụng KeyboardAvoidingView để điều chỉnh giao diện khi bàn phím xuất hiện
-Sử dụng Keyboard để ẩn bàn phím khi nhấn vào một thành phần khác
-Sử dụng Modal để tạo các hộp thoại hoặc thông báo
-Sử dụng Alert để hiển thị thông báo đơn giản
-Sử dụng ActionSheet để hiển thị danh sách hành động cho người dùng chọn
-...
-...........
-Color gadient  : Expo-linear-gradient
-Adding background image: expo-image-background
-Adding icons: expo-vector-icons
+- Khác biệt giữa các style của iOS và Android: thành phần `Text`, nên sử dụng `View` để bao bọc để CSS cho đúng
+- Make content scrollable with `ScrollView`
+- Sử dụng `SafeAreaView` để tránh các thành phần bị che khuất bởi thanh trạng thái
+- Sử dụng `FlatList` để render danh sách lớn và tối ưu hiệu suất
+- Android Ripple Effect: Sử dụng `TouchableNativeFeedback` để tạo hiệu ứng ripple cho các thành phần nhấn
+- iOS Ripple Effect: Sử dụng `TouchableOpacity` để tạo hiệu ứng nhấn cho các thành phần
+- Styling for Android and iOS: Sử dụng `StyleSheet` để tạo kiểu cho các thành phần, có thể sử dụng các thuộc tính khác nhau cho từng nền tảng
+- Sử dụng `Platform` để xác định nền tảng đang chạy ứng dụng: Các CSS như `elevation` chỉ chạy trên Android, còn iOS thì không
+- Handle keyboard type: Sử dụng `KeyboardAvoidingView` để điều chỉnh giao diện khi bàn phím xuất hiện
+- Sử dụng `Keyboard` để ẩn bàn phím khi nhấn vào một thành phần khác
+- Sử dụng `Modal` để tạo các hộp thoại hoặc thông báo
+- Sử dụng `Alert` để hiển thị thông báo đơn giản
+- Sử dụng `ActionSheet` để hiển thị danh sách hành động cho người dùng chọn
 
-Save Area View: Sử dụng SafeAreaView để đảm bảo nội dung không bị che khuất bởi thanh trạng thái trên iOS. Sử dụng kết hợp với padding để tạo khoảng cách giữa nội dung
+---
 
-Building Cross-Platform & Device User interface
+### UI Enhancements
+
+- Color gradient: `expo-linear-gradient`
+- Adding background image: `expo-image-background`
+- Adding icons: `expo-vector-icons`
+- Save Area View: Sử dụng `SafeAreaView` để đảm bảo nội dung không bị che khuất bởi thanh trạng thái trên iOS. Sử dụng kết hợp với padding để tạo khoảng cách giữa nội dung
+
+---
+
+### Building Cross-Platform & Device User Interface
 
 - Cùng 1 code base nhưng các nền tảng khác nhau vẫn sẽ thực thi mã hơi khác nhau 1 chút
 - Tìm cách điều chỉnh các kích thước trên các thiết bị khác nhau:
-  - Setting Dynamic With Dimensions: Sử dụng maxWidth, maxHeight, minWidth, minHeight để điều chỉnh kích thước cho các thiết bị khác nhau
-  - Sử dụng Dimensions API để lấy kích thước sau đó dùng kich thước đó để điều chỉnh các thành phần khác như TextInput, Button, View, Image
-  - Sử dụng PixelRatio API để điều chỉnh kích thước cho các thiết bị khác nhau
-  - Setting khi người dùng thay đổi góc nhìn: Xoay ngang xoay dọc điện thoại. Setting Dynamic Size Orientation: Sử dụng demension API để lấy kích thước chiều cao và setting lại kích thước cho các thành phần khác như TextInput, Button, View, Image
-  - Keyboard Avoiding View: Sử dụng KeyboardAvoidingView để điều chỉnh giao diện khi bàn phím xuất hiện. Sử dụng kết hợp với padding để tạo khoảng cách giữa nội dung và bàn phím
-  - Sử dụng Keyboard để ẩn bàn phím khi nhấn vào một thành phần khác
+  - Setting Dynamic Width Dimensions: Sử dụng `maxWidth`, `maxHeight`, `minWidth`, `minHeight` để điều chỉnh kích thước cho các thiết bị khác nhau
+  - Sử dụng `Dimensions API` để lấy kích thước sau đó dùng kích thước đó để điều chỉnh các thành phần khác như `TextInput`, `Button`, `View`, `Image`
+  - Sử dụng `PixelRatio API` để điều chỉnh kích thước cho các thiết bị khác nhau
+  - Setting khi người dùng thay đổi góc nhìn: Xoay ngang xoay dọc điện thoại. Setting Dynamic Size Orientation: Sử dụng `Dimensions API` để lấy kích thước chiều cao và setting lại kích thước cho các thành phần khác như `TextInput`, `Button`, `View`, `Image`
+  - `KeyboardAvoidingView`: Sử dụng `KeyboardAvoidingView` để điều chỉnh giao diện khi bàn phím xuất hiện. Sử dụng kết hợp với padding để tạo khoảng cách giữa nội dung và bàn phím
+  - Sử dụng `Keyboard` để ẩn bàn phím khi nhấn vào một thành phần khác
+  - Cách khóa không cho xoay màn hình: Sử dụng `Orientation API` để khóa
+  - Styling `StatusBar`: Sử dụng `StatusBar` để điều chỉnh màu sắc và kiểu dáng của thanh trạng thái trên iOS và Android. Sử dụng kết hợp với `SafeAreaView` để đảm bảo nội dung không bị che khuất bởi thanh trạng thái
 
-  - Cách khóa ko cho xoay màn hình
-  - Sử dụng Orientation API để khóa
-  - Styling StatusBar: Sử dụng StatusBar để điều chỉnh màu sắc và kiểu dáng của thanh trạng thái trên iOS và Android. Sử dụng kết hợp với SafeAreaView để đảm bảo nội dung không bị che khuất bởi thanh trạng thái
+---
 
 ### Component
 
-Tùy chỉnh thành phần
-Chủ đề và phong cách cơ bản tập trung
-Kế thừa prop
-Cài đặt các gói như Haptics
-Bố cục ExpoRouter
-Móc tùy chỉnh
-Tái sử dụng các thành phần và tùy chỉnh chúng
-Phông chữ tùy chỉnh
-Xác định hệ điều hành chạy ứng dụng (IOS, Android)
+- Tùy chỉnh thành phần
+- Chủ đề và phong cách cơ bản tập trung
+- Kế thừa prop
+- Cài đặt các gói như `Haptics`
+- Bố cục `ExpoRouter`
+- Móc tùy chỉnh
+- Tái sử dụng các thành phần và tùy chỉnh chúng
+- Phông chữ tùy chỉnh
+- Xác định hệ điều hành chạy ứng dụng (iOS, Android)
+
+---
 
 ### Debugging
 
+---
+
 ### Expo Router or React Navigation
 
-Expo Router: Tích hợp với Expo, dễ dàng sử dụng, không cần cấu hình nhiều
-React Navigation: Tùy chỉnh nhiều hơn, có thể sử dụng với bất kỳ dự án nào, không chỉ Expo
-
-<!-- Cụ thể chúng ta sẽ thấy:
-
-Nativewind
-
-Ngăn xếpĐiều hướng
-
-Gửi đối số giữa các trang
-
-Nút tùy chỉnh
-
-Cấu trúc thư mục
-
-Chủ đề và phông chữ tùy chỉnh
-
-Màu sắc tùy chỉnh
-
-Nhiều bố cục
-
-Hơn nữa -->
+- **Expo Router**: Tích hợp với Expo, dễ dàng sử dụng, không cần cấu hình nhiều
+- **React Navigation**: Tùy chỉnh nhiều hơn, có thể sử dụng với bất kỳ dự án nào, không chỉ Expo
