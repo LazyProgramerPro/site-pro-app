@@ -22,6 +22,7 @@ import {
   useTheme,
 } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import ScreenWrapper from "../components/ui/ScreenWrapper";
 
 interface RequestItem {
   id: string;
@@ -373,92 +374,94 @@ export default function AcceptanceRequestScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+    <ScreenWrapper>
+      <View style={styles.container}>
+        <StatusBar backgroundColor="#fff" barStyle="dark-content" />
 
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Yêu cầu nghiệm thu" />
-        <Appbar.Action
-          icon="plus"
-          onPress={() => console.log("Add new request")}
-        />
-      </Appbar.Header>
+        <Appbar.Header style={styles.appbar}>
+          <Appbar.BackAction onPress={() => navigation.goBack()} />
+          <Appbar.Content title="Yêu cầu nghiệm thu" />
+          <Appbar.Action
+            icon="plus"
+            onPress={() => console.log("Add new request")}
+          />
+        </Appbar.Header>
 
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={filteredItems}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContainer}
-          ListHeaderComponent={renderListHeader}
-          ListEmptyComponent={renderEmptyList}
-          ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-        />
-      )}
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredItems}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContainer}
+            ListHeaderComponent={renderListHeader}
+            ListEmptyComponent={renderEmptyList}
+            ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+          />
+        )}
 
-      {selectedItem && (
-        <View style={styles.buttonContainer}>
-          <Button
-            icon="eye"
-            mode="contained"
-            style={styles.button}
-            onPress={() => console.log("View")}
-          >
-            Xem chi tiết
-          </Button>
-          <Button
-            icon="send"
-            mode="contained"
-            style={styles.button}
-            onPress={() => console.log("Update and send")}
-          >
-            Cập nhật và gửi yêu cầu
-          </Button>
-          <Button
-            icon="close"
-            mode="outlined"
-            style={styles.cancelButton}
-            onPress={clearSelection}
-          >
-            Huỷ chọn
-          </Button>
-        </View>
-      )}
-
-      <Portal>
-        <Dialog
-          visible={confirmDelete}
-          onDismiss={() => setConfirmDelete(false)}
-        >
-          <Dialog.Title>Xác nhận xoá</Dialog.Title>
-          <Dialog.Content>
-            <Text variant="bodyMedium">
-              Bạn có chắc chắn muốn xoá yêu cầu này không? Hành động này không
-              thể hoàn tác.
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setConfirmDelete(false)}>Huỷ</Button>
+        {selectedItem && (
+          <View style={styles.buttonContainer}>
             <Button
+              icon="eye"
               mode="contained"
-              buttonColor="#f44336"
-              onPress={() => {
-                console.log("Delete confirmed for item", selectedItem?.id);
-                setConfirmDelete(false);
-              }}
+              style={styles.button}
+              onPress={() => console.log("View")}
             >
-              Xoá
+              Xem chi tiết
             </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
-    </SafeAreaView>
+            <Button
+              icon="send"
+              mode="contained"
+              style={styles.button}
+              onPress={() => console.log("Update and send")}
+            >
+              Cập nhật và gửi yêu cầu
+            </Button>
+            <Button
+              icon="close"
+              mode="outlined"
+              style={styles.cancelButton}
+              onPress={clearSelection}
+            >
+              Huỷ chọn
+            </Button>
+          </View>
+        )}
+
+        <Portal>
+          <Dialog
+            visible={confirmDelete}
+            onDismiss={() => setConfirmDelete(false)}
+          >
+            <Dialog.Title>Xác nhận xoá</Dialog.Title>
+            <Dialog.Content>
+              <Text variant="bodyMedium">
+                Bạn có chắc chắn muốn xoá yêu cầu này không? Hành động này không
+                thể hoàn tác.
+              </Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => setConfirmDelete(false)}>Huỷ</Button>
+              <Button
+                mode="contained"
+                buttonColor="#f44336"
+                onPress={() => {
+                  console.log("Delete confirmed for item", selectedItem?.id);
+                  setConfirmDelete(false);
+                }}
+              >
+                Xoá
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </View>
+    </ScreenWrapper>
   );
 }
 
