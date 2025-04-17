@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { StyleSheet, View, LayoutChangeEvent } from "react-native";
+import { StyleSheet, View, LayoutChangeEvent, Platform } from "react-native";
 import { List, Menu, TouchableRipple } from "react-native-paper";
 
 interface DiaryFieldSelectorProps {
@@ -47,7 +47,12 @@ export default function DiaryFieldSelector({
             </TouchableRipple>
           </View>
         }
-        contentStyle={{ width: anchorWidth, marginTop: anchorHeight }}
+        contentStyle={[
+          { width: anchorWidth },
+          Platform.OS === "android"
+            ? { marginTop: anchorHeight + 34 }
+            : { marginTop: anchorHeight },
+        ]}
       >
         {items.map((item) => (
           <Menu.Item
