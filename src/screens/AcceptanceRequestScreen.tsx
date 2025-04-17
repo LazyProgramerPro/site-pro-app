@@ -2,7 +2,6 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   TouchableOpacity,
@@ -10,7 +9,6 @@ import {
 } from "react-native";
 import {
   ActivityIndicator,
-  Appbar,
   Button,
   Card,
   Chip,
@@ -22,8 +20,8 @@ import {
   useTheme,
 } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import ScreenWrapper from "../components/ui/ScreenWrapper";
 import ScreenHeader from "../components/ui/ScreenHeader";
+import ScreenWrapper from "../components/ui/ScreenWrapper";
 
 interface RequestItem {
   id: string;

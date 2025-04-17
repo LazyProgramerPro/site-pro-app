@@ -1,13 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
-import {
-  Animated,
-  SafeAreaView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Animated, StyleSheet, TouchableOpacity, View } from "react-native";
 import {
   Avatar,
   Button,
@@ -20,10 +14,10 @@ import {
   Text,
   useTheme,
 } from "react-native-paper";
+import ScreenWrapper from "../components/ui/ScreenWrapper";
 import { GlobalStyles } from "../constants/styles";
 import { logout } from "../redux/slices/authSlice";
 import { useAppDispatch } from "../redux/store";
-import ScreenWrapper from "../components/ui/ScreenWrapper";
 
 export default function ProfileScreen({ navigation }: { navigation: any }) {
   const theme = useTheme();

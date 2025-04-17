@@ -1,22 +1,15 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  StyleSheet,
-  View,
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Image,
+  StyleSheet,
 } from "react-native";
-import {
-  Button,
-  Text,
-  TextInput,
-  Surface,
-  IconButton,
-} from "react-native-paper";
+import { Button, Surface, Text, TextInput } from "react-native-paper";
 import { GlobalStyles } from "../../constants/styles";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type FormData = {
   email: string;

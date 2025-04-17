@@ -1,13 +1,11 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import { IconButton } from "react-native-paper";
-import { GlobalStyles } from "../../constants/styles";
 import AcceptanceRequestScreen from "../../screens/AcceptanceRequestScreen";
+import CheckInManagementScreen from "../../screens/CheckInManagementScreen";
 import DashboardScreen from "../../screens/DashboardScreen";
 import DiaryManagementScreen from "../../screens/DiaryManagementScreen";
-import ProjectScreen from "../../screens/ProjectScreen";
 import ProblemManagementScreen from "../../screens/ProblemManagementScreen";
-import CheckInManagementScreen from "../../screens/CheckInManagementScreen";
+import ProjectScreen from "../../screens/ProjectScreen";
 import ReportScreen from "../../screens/ReportScreen";
 
 const Stack = createNativeStackNavigator();

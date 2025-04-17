@@ -21,8 +21,8 @@ import {
   Text,
   useTheme,
 } from "react-native-paper";
-import { GlobalStyles } from "../constants/styles";
 import ScreenWrapper from "../components/ui/ScreenWrapper";
+import { GlobalStyles } from "../constants/styles";
 
 const menuItems = [
   { label: "Dự án", icon: "folder-outline", color: "#4CAF50", name: "Project" },

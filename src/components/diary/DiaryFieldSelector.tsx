@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { List, Menu, TouchableRipple, Text } from "react-native-paper";
+import { List, Menu, TouchableRipple } from "react-native-paper";
 
 interface DiaryFieldSelectorProps {
   title: string;

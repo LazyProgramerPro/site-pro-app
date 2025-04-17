@@ -1,17 +1,9 @@
-import { View, StyleSheet } from "react-native";
-import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import ScreenWrapper from "../components/ui/ScreenWrapper";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { Button, IconButton, List, Menu, Surface } from "react-native-paper";
 import ScreenHeader from "../components/ui/ScreenHeader";
-import {
-  List,
-  Text,
-  IconButton,
-  Surface,
-  Menu,
-  Button,
-} from "react-native-paper";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import ScreenWrapper from "../components/ui/ScreenWrapper";
 
 const checkIns = [
   {
