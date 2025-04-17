@@ -23,6 +23,7 @@ import {
 } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ScreenWrapper from "../components/ui/ScreenWrapper";
+import ScreenHeader from "../components/ui/ScreenHeader";
 
 interface RequestItem {
   id: string;
@@ -377,16 +378,7 @@ export default function AcceptanceRequestScreen() {
     <ScreenWrapper>
       <View style={styles.container}>
         <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-
-        <Appbar.Header style={styles.appbar}>
-          <Appbar.BackAction onPress={() => navigation.goBack()} />
-          <Appbar.Content title="Yêu cầu nghiệm thu" />
-          <Appbar.Action
-            icon="plus"
-            onPress={() => console.log("Add new request")}
-          />
-        </Appbar.Header>
-
+        <ScreenHeader title="Yêu cầu nghiệm thu" />
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />

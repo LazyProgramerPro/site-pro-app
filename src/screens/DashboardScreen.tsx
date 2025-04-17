@@ -32,10 +32,25 @@ const menuItems = [
     color: "#2196F3",
     name: "AcceptanceRequest",
   },
-  { label: "Quản lý nhật ký", icon: "notebook-outline", color: "#9C27B0" },
-  { label: "Quản lý vấn đề", icon: "alert-circle-outline", color: "#F44336" },
-  { label: "Quản lý check-in", icon: "login", color: "#FF9800" },
-  { label: "Báo cáo", icon: "chart-bar", color: "#795548" },
+  {
+    label: "Quản lý nhật ký",
+    icon: "notebook-outline",
+    color: "#9C27B0",
+    name: "DiaryManagement",
+  },
+  {
+    label: "Quản lý vấn đề",
+    icon: "alert-circle-outline",
+    color: "#F44336",
+    name: "ProblemManagement",
+  },
+  {
+    label: "Quản lý check-in",
+    icon: "login",
+    color: "#FF9800",
+    name: "CheckInManagement",
+  },
+  { label: "Báo cáo", icon: "chart-bar", color: "#795548", name: "Report" },
 ];
 
 const recentProjects = [

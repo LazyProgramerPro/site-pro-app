@@ -4,7 +4,11 @@ import { IconButton } from "react-native-paper";
 import { GlobalStyles } from "../../constants/styles";
 import AcceptanceRequestScreen from "../../screens/AcceptanceRequestScreen";
 import DashboardScreen from "../../screens/DashboardScreen";
+import DiaryManagementScreen from "../../screens/DiaryManagementScreen";
 import ProjectScreen from "../../screens/ProjectScreen";
+import ProblemManagementScreen from "../../screens/ProblemManagementScreen";
+import CheckInManagementScreen from "../../screens/CheckInManagementScreen";
+import ReportScreen from "../../screens/ReportScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,31 +25,45 @@ export const DashboardStack = () => {
         name="Project"
         component={ProjectScreen}
         options={({ navigation }) => ({
-          headerShown: true,
-          title: "Dự án",
-          headerStyle: {
-            backgroundColor: "#fff",
-          },
-          headerTitleStyle: {
-            fontWeight: "500",
-          },
-          headerShadowVisible: false,
-          headerLeft: (props) => (
-            <IconButton
-              {...props}
-              icon="arrow-left"
-              size={24}
-              iconColor={GlobalStyles.colors.gray700}
-              onPress={() => navigation.goBack()}
-              style={{ margin: 0, marginLeft: -8 }}
-            />
-          ),
+          headerShown: false,
         })}
       />
 
       <Stack.Screen
         name="AcceptanceRequest"
         component={AcceptanceRequestScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="DiaryManagement"
+        component={DiaryManagementScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="ProblemManagement"
+        component={ProblemManagementScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="CheckInManagement"
+        component={CheckInManagementScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="Report"
+        component={ReportScreen}
         options={{
           headerShown: false,
         }}

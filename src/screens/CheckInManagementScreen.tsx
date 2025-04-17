@@ -3,50 +3,61 @@ import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import ScreenWrapper from "../components/ui/ScreenWrapper";
 import ScreenHeader from "../components/ui/ScreenHeader";
-import { List, Text, IconButton, Surface, Menu } from "react-native-paper";
+import {
+  List,
+  Text,
+  IconButton,
+  Surface,
+  Menu,
+  Button,
+} from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const projects = [
+const checkIns = [
   {
     id: 1,
-    name: "Xây dựng tuyến đường 01",
-    description: "Dự án kiểm thử",
+    employeeName: "Nguyễn Văn A",
+    checkInTime: "08:00",
+    checkOutTime: "17:00",
+    date: "2024-04-17",
+    status: "Đã check-in",
+    location: "Công trường A",
   },
 ];
 
-export default function ProjectScreen() {
+export default function CheckInManagementScreen() {
   const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
-  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
+  const [selectedCheckInId, setSelectedCheckInId] = useState<number | null>(
     null
   );
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 
-  const openMenu = (projectId: number, event: any) => {
+  const openMenu = (checkInId: number, event: any) => {
     const { pageX, pageY } = event.nativeEvent;
     setMenuPosition({ x: pageX, y: pageY });
-    setSelectedProjectId(projectId);
+    setSelectedCheckInId(checkInId);
     setMenuVisible(true);
   };
 
   const closeMenu = () => {
     setMenuVisible(false);
-    setSelectedProjectId(null);
+    setSelectedCheckInId(null);
   };
 
   const handleMenuAction = (action: string) => {
     switch (action) {
       case "edit":
         // Handle edit action
-        console.log("Edit project", selectedProjectId);
+        console.log("Edit check-in", selectedCheckInId);
         break;
       case "delete":
         // Handle delete action
-        console.log("Delete project", selectedProjectId);
+        console.log("Delete check-in", selectedCheckInId);
         break;
-      case "share":
-        // Handle share action
-        console.log("Share project", selectedProjectId);
+      case "details":
+        // Handle view details action
+        console.log("View details", selectedCheckInId);
         break;
     }
     closeMenu();
@@ -55,19 +66,19 @@ export default function ProjectScreen() {
   return (
     <ScreenWrapper>
       <View style={styles.container}>
-        <ScreenHeader title="Danh sách dự án" />
-        {/* Project List */}
+        <ScreenHeader title="Quản lý check-in" />
+        {/* Check-in List */}
         <Surface style={styles.listContainer} elevation={1}>
-          {projects.map((project) => (
+          {checkIns.map((checkIn) => (
             <List.Item
-              key={project.id}
-              title={project.name}
-              description={project.description}
-              left={(props) => <List.Icon {...props} icon="folder" />}
+              key={checkIn.id}
+              title={checkIn.employeeName}
+              description={`Ngày: ${checkIn.date}\nCheck-in: ${checkIn.checkInTime} | Check-out: ${checkIn.checkOutTime}\nĐịa điểm: ${checkIn.location}\nTrạng thái: ${checkIn.status}`}
+              left={(props) => <List.Icon {...props} icon="clock-check" />}
               right={(props) => (
                 <IconButton
                   icon="dots-vertical"
-                  onPress={(event) => openMenu(project.id, event)}
+                  onPress={(event) => openMenu(checkIn.id, event)}
                 />
               )}
               style={styles.listItem}
@@ -82,14 +93,14 @@ export default function ProjectScreen() {
           contentStyle={{ backgroundColor: "#FFFFFF" }}
         >
           <Menu.Item
+            onPress={() => handleMenuAction("details")}
+            title="Xem chi tiết"
+            leadingIcon="eye"
+          />
+          <Menu.Item
             onPress={() => handleMenuAction("edit")}
             title="Chỉnh sửa"
             leadingIcon="pencil"
-          />
-          <Menu.Item
-            onPress={() => handleMenuAction("share")}
-            title="Chia sẻ"
-            leadingIcon="share"
           />
           <Menu.Item
             onPress={() => handleMenuAction("delete")}
@@ -98,6 +109,17 @@ export default function ProjectScreen() {
             titleStyle={{ color: "#FF0000" }}
           />
         </Menu>
+
+        <Button
+          mode="contained"
+          style={styles.addButton}
+          onPress={() => {
+            // Handle add new check-in
+            console.log("Add new check-in");
+          }}
+        >
+          Thêm check-in mới
+        </Button>
       </View>
     </ScreenWrapper>
   );
@@ -124,5 +146,9 @@ const styles = StyleSheet.create({
   listItem: {
     borderBottomWidth: 1,
     borderBottomColor: "#e0e0e0",
+  },
+  addButton: {
+    margin: 16,
+    backgroundColor: "#2196F3",
   },
 });

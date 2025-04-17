@@ -6,47 +6,49 @@ import ScreenHeader from "../components/ui/ScreenHeader";
 import { List, Text, IconButton, Surface, Menu } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const projects = [
+const problems = [
   {
     id: 1,
-    name: "Xây dựng tuyến đường 01",
-    description: "Dự án kiểm thử",
+    title: "Vấn đề về thiết bị",
+    description: "Máy xúc không hoạt động",
+    status: "Đang xử lý",
+    priority: "Cao",
   },
 ];
 
-export default function ProjectScreen() {
+export default function ProblemManagementScreen() {
   const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
-  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
+  const [selectedProblemId, setSelectedProblemId] = useState<number | null>(
     null
   );
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 
-  const openMenu = (projectId: number, event: any) => {
+  const openMenu = (problemId: number, event: any) => {
     const { pageX, pageY } = event.nativeEvent;
     setMenuPosition({ x: pageX, y: pageY });
-    setSelectedProjectId(projectId);
+    setSelectedProblemId(problemId);
     setMenuVisible(true);
   };
 
   const closeMenu = () => {
     setMenuVisible(false);
-    setSelectedProjectId(null);
+    setSelectedProblemId(null);
   };
 
   const handleMenuAction = (action: string) => {
     switch (action) {
       case "edit":
         // Handle edit action
-        console.log("Edit project", selectedProjectId);
+        console.log("Edit problem", selectedProblemId);
         break;
       case "delete":
         // Handle delete action
-        console.log("Delete project", selectedProjectId);
+        console.log("Delete problem", selectedProblemId);
         break;
-      case "share":
-        // Handle share action
-        console.log("Share project", selectedProjectId);
+      case "assign":
+        // Handle assign action
+        console.log("Assign problem", selectedProblemId);
         break;
     }
     closeMenu();
@@ -55,19 +57,19 @@ export default function ProjectScreen() {
   return (
     <ScreenWrapper>
       <View style={styles.container}>
-        <ScreenHeader title="Danh sách dự án" />
-        {/* Project List */}
+        <ScreenHeader title="Quản lý vấn đề" />
+        {/* Problem List */}
         <Surface style={styles.listContainer} elevation={1}>
-          {projects.map((project) => (
+          {problems.map((problem) => (
             <List.Item
-              key={project.id}
-              title={project.name}
-              description={project.description}
-              left={(props) => <List.Icon {...props} icon="folder" />}
+              key={problem.id}
+              title={problem.title}
+              description={`${problem.description}\nTrạng thái: ${problem.status} | Ưu tiên: ${problem.priority}`}
+              left={(props) => <List.Icon {...props} icon="alert-circle" />}
               right={(props) => (
                 <IconButton
                   icon="dots-vertical"
-                  onPress={(event) => openMenu(project.id, event)}
+                  onPress={(event) => openMenu(problem.id, event)}
                 />
               )}
               style={styles.listItem}
@@ -87,9 +89,9 @@ export default function ProjectScreen() {
             leadingIcon="pencil"
           />
           <Menu.Item
-            onPress={() => handleMenuAction("share")}
-            title="Chia sẻ"
-            leadingIcon="share"
+            onPress={() => handleMenuAction("assign")}
+            title="Giao việc"
+            leadingIcon="account-plus"
           />
           <Menu.Item
             onPress={() => handleMenuAction("delete")}
