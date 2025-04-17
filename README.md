@@ -88,7 +88,28 @@ npx expo start
   headerBackImageSource: require('./path.png'),
   headerRight: () => <Button />,
   headerLeft: () => <Button />
+  
 }
+```
+
+```ts
+options={({ route, navigator }) => ({
+  title: route.name,
+  headerStyle: { backgroundColor: 'blue' },
+  headerTintColor: 'white',
+})}
+```
+
+```ts
+useEffect(() => {
+
+  navigation.setOptions({
+    headerTitle: 'Tên tiêu đề',
+    headerStyle: { backgroundColor: 'blue' },
+    headerTintColor: 'white',
+  });
+  navigation.setParams({ id: '123' });
+}, [navigation]);
 ```
 
 ---
@@ -218,6 +239,8 @@ app-name/
   - `headerBackImageSource`
   - `headerRight` (function)
   - `headerLeft` (function)
+  - `contentContainerStyle`
+  - `contenStyle`
 - Thẻ `ScrollView`
 - Thẻ `FlatList`
 - Handle `onPress` event
@@ -348,3 +371,50 @@ npx expo start
 
 - **Expo Router**: Tích hợp với Expo, dễ dàng sử dụng, không cần cấu hình nhiều
 - **React Navigation**: Tùy chỉnh nhiều hơn, có thể sử dụng với bất kỳ dự án nào, không chỉ Expo
+
+### Camera Expo
+
+<https://docs.expo.dev/versions/latest/sdk/camera/>
+
+- ImagePicker
+- Camera
+- Config in app.json
+- Camera permission different iOS and Android
+- Camera permission request
+- Sẽ ko test được trên máy ảo iOS
+- Showing Image Preview
+
+### Expo Location
+
+<https://docs.expo.dev/versions/latest/sdk/location/>
+
+- Location permission
+- Get location and adding into map (Google Maps Static API)
+- MapView an Interactive map(Google Maps & Apple Maps)
+- MapView with markers: Adding markers to map
+- MapView with custom markers
+- Using navigation to navigate to location
+- Using location to get current location
+- Using useIsFocused to check if the screen is focused
+- SHOWING MAPS Readonly
+
+### Push Notification
+
+### Publishing
+
+- Icons & Splash Screen
+- Building in Action
+- Phân biệt được các ứng dụng sử dụng Expo và không sử dụng Expo
+- Nếu sử dụng Expo bạn có thể sử dụng dịch vụ Expo Cloud Service để build ứng dụng và có thể từ 1 codebase bạn có thể build cho cả iOS và Android
+- Nếu không sử dụng Expo bạn sẽ phải tự build ứng dụng cho cả iOS và Android
+- Config for Production:
+  - Permission: Phải xin cấp quyền cho các thành phần như camera, location, notification và nó cũng sẽ phụ thuộc vào các package hay nền tảng mà bạn sử dụng
+  - Tên định danh ứng dụng là duy nhất, phiên bản
+  - Biến môi trường
+  - Icons & Splash Screen
+
+- Expo Application Services: <https://expo.dev/eas>
+<https://stackoverflow.com/questions/5443304/how-to-change-an-android-apps-name>
+<https://developer.android.com/build/configure-app-module>
+<https://developer.android.com/guide/topics/manifest/manifest-intro#perms>
+<https://developer.android.com/studio/publish/versioning>
