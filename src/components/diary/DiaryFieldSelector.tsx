@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useState, useRef, useEffect } from "react";
+import { StyleSheet, View, LayoutChangeEvent } from "react-native";
 import { List, Menu, TouchableRipple } from "react-native-paper";
 
 interface DiaryFieldSelectorProps {
@@ -18,9 +18,17 @@ export default function DiaryFieldSelector({
   onSelect,
 }: DiaryFieldSelectorProps) {
   const [visible, setVisible] = useState(false);
+  const [anchorWidth, setAnchorWidth] = useState(0);
+  const [anchorHeight, setAnchorHeight] = useState(0);
+  const anchorRef = useRef<View>(null);
 
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
+
+  const onLayout = (event: LayoutChangeEvent) => {
+    setAnchorWidth(event.nativeEvent.layout.width);
+    setAnchorHeight(event.nativeEvent.layout.height);
+  };
 
   return (
     <View style={styles.container}>
@@ -28,15 +36,18 @@ export default function DiaryFieldSelector({
         visible={visible}
         onDismiss={closeMenu}
         anchor={
-          <TouchableRipple onPress={openMenu}>
-            <List.Item
-              title={selectedItem || title}
-              left={(props) => <List.Icon {...props} icon={icon} />}
-              right={(props) => <List.Icon {...props} icon="chevron-down" />}
-              style={styles.selector}
-            />
-          </TouchableRipple>
+          <View ref={anchorRef} onLayout={onLayout}>
+            <TouchableRipple onPress={openMenu}>
+              <List.Item
+                title={selectedItem || title}
+                left={(props) => <List.Icon {...props} icon={icon} />}
+                right={(props) => <List.Icon {...props} icon="chevron-down" />}
+                style={styles.selector}
+              />
+            </TouchableRipple>
+          </View>
         }
+        contentStyle={{ width: anchorWidth, marginTop: anchorHeight }}
       >
         {items.map((item) => (
           <Menu.Item

@@ -4,6 +4,8 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   View,
+  Platform,
+  Dimensions,
 } from "react-native";
 import {
   IconButton,
@@ -45,38 +47,41 @@ export default function BottomSheetPopup({
   deleteAction,
 }: BottomSheetPopupProps) {
   const theme = useTheme();
-  const slideAnim = useRef(new Animated.Value(300)).current;
+  const { height } = Dimensions.get("window");
+  const slideAnim = useRef(new Animated.Value(height)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (visible) {
       Animated.parallel([
-        Animated.timing(slideAnim, {
+        Animated.spring(slideAnim, {
           toValue: 0,
-          duration: 300,
           useNativeDriver: true,
+          bounciness: 0,
         }),
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 300,
+          duration: 200,
           useNativeDriver: true,
         }),
       ]).start();
     } else {
       Animated.parallel([
         Animated.timing(slideAnim, {
-          toValue: 300,
-          duration: 300,
+          toValue: height,
+          duration: 200,
           useNativeDriver: true,
         }),
         Animated.timing(fadeAnim, {
           toValue: 0,
-          duration: 300,
+          duration: 200,
           useNativeDriver: true,
         }),
       ]).start();
     }
   }, [visible]);
+
+  if (!visible) return null;
 
   return (
     <Portal>
@@ -101,71 +106,76 @@ export default function BottomSheetPopup({
         ]}
       >
         <Surface style={styles.bottomSheetSurface}>
-          <View style={styles.bottomSheetHeader}>
-            <Text variant="titleMedium">{title}</Text>
-            <IconButton icon="close" onPress={onDismiss} />
-          </View>
-          <View style={styles.bottomSheetContent}>
-            <TouchableRipple
-              onPress={() => {
-                onDismiss();
-                viewAction.onPress();
-              }}
-              style={styles.bottomSheetItem}
-            >
-              <View style={styles.bottomSheetItemContent}>
-                <Icon
-                  name={viewAction.icon}
-                  size={24}
-                  color={theme.colors.primary}
-                />
-                <Text variant="bodyLarge" style={styles.bottomSheetItemText}>
-                  {viewAction.label}
-                </Text>
-              </View>
-            </TouchableRipple>
-            <TouchableRipple
-              onPress={() => {
-                onDismiss();
-                editAction.onPress();
-              }}
-              style={styles.bottomSheetItem}
-            >
-              <View style={styles.bottomSheetItemContent}>
-                <Icon
-                  name={editAction.icon}
-                  size={24}
-                  color={theme.colors.primary}
-                />
-                <Text variant="bodyLarge" style={styles.bottomSheetItemText}>
-                  {editAction.label}
-                </Text>
-              </View>
-            </TouchableRipple>
-            <TouchableRipple
-              onPress={() => {
-                onDismiss();
-                deleteAction.onPress();
-              }}
-              style={styles.bottomSheetItem}
-            >
-              <View style={styles.bottomSheetItemContent}>
-                <Icon
-                  name={deleteAction.icon}
-                  size={24}
-                  color={theme.colors.error}
-                />
-                <Text
-                  variant="bodyLarge"
-                  style={[
-                    styles.bottomSheetItemText,
-                    { color: theme.colors.error },
-                  ]}
-                >
-                  {deleteAction.label}
-                </Text>
-              </View>
-            </TouchableRipple>
+          <View style={styles.bottomSheetContentWrapper}>
+            <View style={styles.bottomSheetHeader}>
+              <Text variant="titleMedium">{title}</Text>
+              <IconButton icon="close" onPress={onDismiss} />
+            </View>
+            <View style={styles.bottomSheetContent}>
+              <TouchableRipple
+                onPress={() => {
+                  onDismiss();
+                  viewAction.onPress();
+                }}
+                style={styles.bottomSheetItem}
+                rippleColor={theme.colors.primary + "20"}
+              >
+                <View style={styles.bottomSheetItemContent}>
+                  <Icon
+                    name={viewAction.icon}
+                    size={24}
+                    color={theme.colors.primary}
+                  />
+                  <Text variant="bodyLarge" style={styles.bottomSheetItemText}>
+                    {viewAction.label}
+                  </Text>
+                </View>
+              </TouchableRipple>
+              <TouchableRipple
+                onPress={() => {
+                  onDismiss();
+                  editAction.onPress();
+                }}
+                style={styles.bottomSheetItem}
+                rippleColor={theme.colors.primary + "20"}
+              >
+                <View style={styles.bottomSheetItemContent}>
+                  <Icon
+                    name={editAction.icon}
+                    size={24}
+                    color={theme.colors.primary}
+                  />
+                  <Text variant="bodyLarge" style={styles.bottomSheetItemText}>
+                    {editAction.label}
+                  </Text>
+                </View>
+              </TouchableRipple>
+              <TouchableRipple
+                onPress={() => {
+                  onDismiss();
+                  deleteAction.onPress();
+                }}
+                style={styles.bottomSheetItem}
+                rippleColor={theme.colors.error + "20"}
+              >
+                <View style={styles.bottomSheetItemContent}>
+                  <Icon
+                    name={deleteAction.icon}
+                    size={24}
+                    color={theme.colors.error}
+                  />
+                  <Text
+                    variant="bodyLarge"
+                    style={[
+                      styles.bottomSheetItemText,
+                      { color: theme.colors.error },
+                    ]}
+                  >
+                    {deleteAction.label}
+                  </Text>
+                </View>
+              </TouchableRipple>
+            </View>
           </View>
         </Surface>
       </Animated.View>
@@ -181,6 +191,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+    zIndex: Platform.OS === "android" ? 1 : 0,
   },
   overlayTouchable: {
     flex: 1,
@@ -190,17 +201,26 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 1,
+    zIndex: Platform.OS === "android" ? 2 : 1,
+  },
+  bottomSheetContentWrapper: {
+    overflow: "hidden",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
   },
   bottomSheetSurface: {
     backgroundColor: "white",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
   },
   bottomSheetHeader: {
     flexDirection: "row",
