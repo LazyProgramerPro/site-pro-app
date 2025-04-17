@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Text, useTheme } from "react-native-paper";
 import DiaryEmptyList from "../components/diary/DiaryEmptyList";
 import DiaryEntryItem, { DiaryEntry } from "../components/diary/DiaryEntryItem";
 import DiaryListHeader from "../components/diary/DiaryListHeader";
@@ -17,6 +18,8 @@ import { RootState, useAppDispatch, useAppSelector } from "../redux/store";
 export default function DiaryManagementScreen() {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
+  const theme = useTheme();
+
   const {
     projects,
     constructions,
@@ -25,8 +28,17 @@ export default function DiaryManagementScreen() {
     selectedConstruction,
     filterStatus,
   } = useAppSelector((state: RootState) => state.diary);
+
+  const [loading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState<DiaryEntry | null>(null);
   const [visibleItemMenu, setVisibleItemMenu] = useState<string | null>(null);
+
+  // Simulate loading data
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredEntries = entries.filter(
     (entry: DiaryEntry) => !filterStatus || entry.status === filterStatus
@@ -91,29 +103,39 @@ export default function DiaryManagementScreen() {
     <ScreenWrapper>
       <View style={styles.container}>
         <ScreenHeader title="Danh sách nhật ký" onAddPress={() => {}} />
-        <FlatList
-          data={selectedProject && selectedConstruction ? filteredEntries : []}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContainer}
-          ListHeaderComponent={() => (
-            <DiaryListHeader
-              selectedProject={selectedProject}
-              selectedConstruction={selectedConstruction}
-              projects={projects}
-              constructions={constructions}
-              onProjectSelect={handleProjectSelect}
-              onConstructionSelect={handleConstructionSelect}
-              filterStatus={filterStatus}
-              onFilterStatusChange={(status) =>
-                dispatch(setFilterStatus(status))
-              }
-              entryCount={filteredEntries.length}
-            />
-          )}
-          ListEmptyComponent={renderEmptyList}
-          ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-        />
+
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={
+              selectedProject && selectedConstruction ? filteredEntries : []
+            }
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContainer}
+            ListHeaderComponent={() => (
+              <DiaryListHeader
+                selectedProject={selectedProject}
+                selectedConstruction={selectedConstruction}
+                projects={projects}
+                constructions={constructions}
+                onProjectSelect={handleProjectSelect}
+                onConstructionSelect={handleConstructionSelect}
+                filterStatus={filterStatus}
+                onFilterStatusChange={(status) =>
+                  dispatch(setFilterStatus(status))
+                }
+                entryCount={filteredEntries.length}
+              />
+            )}
+            ListEmptyComponent={renderEmptyList}
+            ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+          />
+        )}
       </View>
     </ScreenWrapper>
   );
@@ -128,5 +150,14 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 100,
     flexGrow: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 16,
+    color: "#757575",
   },
 });
