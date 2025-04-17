@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Chip, Surface, Text } from "react-native-paper";
 import { DIARY_ICONS, DIARY_TEXTS } from "../../constants/diary";
 import DiaryFieldSelector from "./DiaryFieldSelector";

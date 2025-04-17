@@ -1,21 +1,18 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
-import { View, StyleSheet, FlatList } from "react-native";
-import { IconButton, Surface, Text } from "react-native-paper";
-import ScreenWrapper from "../components/ui/ScreenWrapper";
-import ScreenHeader from "../components/ui/ScreenHeader";
-import DiaryEntryItem, { DiaryEntry } from "../components/diary/DiaryEntryItem";
+import { FlatList, StyleSheet, View } from "react-native";
 import DiaryEmptyList from "../components/diary/DiaryEmptyList";
+import DiaryEntryItem, { DiaryEntry } from "../components/diary/DiaryEntryItem";
 import DiaryListHeader from "../components/diary/DiaryListHeader";
-import { DIARY_TEXTS, DIARY_ICONS } from "../constants/diary";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useAppDispatch, useAppSelector, RootState } from "../redux/store";
+import ScreenHeader from "../components/ui/ScreenHeader";
+import ScreenWrapper from "../components/ui/ScreenWrapper";
 import {
-  setSelectedProject,
-  setSelectedConstruction,
-  setFilterStatus,
   deleteEntry,
+  setFilterStatus,
+  setSelectedConstruction,
+  setSelectedProject,
 } from "../redux/slices/diarySlice";
+import { RootState, useAppDispatch, useAppSelector } from "../redux/store";
 
 export default function DiaryManagementScreen() {
   const navigation = useNavigation();

@@ -1,16 +1,16 @@
 import React, { useEffect, useRef } from "react";
 import {
-  View,
-  StyleSheet,
   Animated,
+  StyleSheet,
   TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import {
+  IconButton,
   Portal,
   Surface,
-  TouchableRipple,
   Text,
-  IconButton,
+  TouchableRipple,
   useTheme,
 } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
