@@ -6,11 +6,13 @@ import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
 import { ICONS_NAME } from "../../constants/icon";
 import { STATUS_COLORS } from "../../constants/styles";
 
-interface DiaryEmptyListProps {
+interface AcceptanceRequestEmptyListProps {
   message?: string;
 }
 
-export default function DiaryEmptyList({ message }: DiaryEmptyListProps) {
+export default function AcceptanceRequestEmptyList({
+  message,
+}: AcceptanceRequestEmptyListProps) {
   return (
     <View style={styles.emptyContainer}>
       <Icon
