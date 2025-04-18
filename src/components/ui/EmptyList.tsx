@@ -2,17 +2,14 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
 import { ICONS_NAME } from "../../constants/icon";
 import { STATUS_COLORS } from "../../constants/styles";
 
-interface AcceptanceRequestEmptyListProps {
+interface EmptyListProps {
   message?: string;
 }
 
-export default function AcceptanceRequestEmptyList({
-  message,
-}: AcceptanceRequestEmptyListProps) {
+export default function EmptyList({ message }: EmptyListProps) {
   return (
     <View style={styles.emptyContainer}>
       <Icon
@@ -21,10 +18,10 @@ export default function AcceptanceRequestEmptyList({
         color={STATUS_COLORS.ICON.EMPTY}
       />
       <Text variant="titleMedium" style={styles.emptyText}>
-        {message || ACCEPTANCE_REQUEST_TEXTS.EMPTY_LIST.TITLE}
+        {message || "Không thấy dữ liệu bạn yêu cầu"}
       </Text>
       <Text variant="bodyMedium" style={styles.emptySubText}>
-        {ACCEPTANCE_REQUEST_TEXTS.EMPTY_LIST.SUBTITLE}
+        Thử bộ lọc khác
       </Text>
     </View>
   );

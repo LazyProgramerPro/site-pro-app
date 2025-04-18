@@ -3,46 +3,69 @@ import { StyleSheet, View } from "react-native";
 import { Card, Chip, IconButton, Text, useTheme } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
+import { useSelector } from "react-redux";
 import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
 import { ICONS_NAME } from "../../constants/icon";
 import { STATUS_COLORS } from "../../constants/styles";
-import { AcceptanceRequest } from "../../redux/slices/acceptanceRequestSlice";
+import {
+  AcceptanceRequest,
+  cancelEditingAcceptanceRequest,
+  deleteAcceptanceRequest,
+  startEditingAcceptanceRequest,
+} from "../../redux/slices/acceptanceRequestSlice";
+import { RootState, useAppDispatch } from "../../redux/store";
 import BottomSheetPopup from "../ui/BottomSheetPopup";
 
 interface AcceptanceRequestItemProps {
   item: AcceptanceRequest;
-  selectedItem: AcceptanceRequest | null;
-  onSelect: (item: AcceptanceRequest) => void;
-  visibleItemMenu: number | null;
-  onMenuPress: (itemId: number) => void;
-  onMenuDismiss: () => void;
-  onViewPress: (item: AcceptanceRequest) => void;
-  onEditPress: (item: AcceptanceRequest) => void;
-  onDeletePress: (item: AcceptanceRequest) => void;
 }
 
 export default function AcceptanceRequestItem({
   item,
-  selectedItem,
-  onSelect,
-  visibleItemMenu,
-  onMenuPress,
-  onMenuDismiss,
-  onViewPress,
-  onEditPress,
-  onDeletePress,
 }: AcceptanceRequestItemProps) {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+  const { editingAcceptanceRequest, selectedProject, selectedConstruction } =
+    useSelector((state: RootState) => state.acceptanceRequest);
+
+  const handleAddAcceptanceRequest = () => {
+    if (selectedProject && selectedConstruction) {
+      console.log("Add new Acceptance request for:", {
+        selectedProject,
+        selectedConstruction,
+      });
+    }
+  };
+
+  const handleViewPressAcceptanceRequest = (item: AcceptanceRequest) => {
+    console.log("View item:", item);
+  };
+
+  const handleEditPressAcceptanceRequest = (item: AcceptanceRequest) => {
+    console.log("Edit item:", item);
+  };
+
+  const handleDeletePressAcceptanceRequest = (item: AcceptanceRequest) => {
+    dispatch(deleteAcceptanceRequest(item.id));
+  };
+
+  const handleOpenMenu = (acceptanceRequestId: number) => {
+    dispatch(startEditingAcceptanceRequest(acceptanceRequestId));
+  };
+
+  const handleCloseMenu = () => {
+    dispatch(cancelEditingAcceptanceRequest());
+  };
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case ACCEPTANCE_REQUEST_TEXTS.STATUS.COMPLETED:
+      case ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.APPROVED:
         return {
           icon: ICONS_NAME.CHECK_CIRCLE,
           backgroundColor: STATUS_COLORS.STATUS.COMPLETED.BACKGROUND,
           textColor: STATUS_COLORS.STATUS.COMPLETED.TEXT,
         };
-      case ACCEPTANCE_REQUEST_TEXTS.STATUS.IN_PROGRESS:
+      case ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.IN_PROGRESS:
         return {
           icon: ICONS_NAME.CLOCK,
           backgroundColor: STATUS_COLORS.STATUS.IN_PROGRESS.BACKGROUND,
@@ -64,9 +87,8 @@ export default function AcceptanceRequestItem({
       <Card
         style={[
           styles.card,
-          item.id === selectedItem?.id && styles.selectedCard,
+          item.id === editingAcceptanceRequest?.id && styles.selectedCard,
         ]}
-        onPress={() => onSelect(item)}
       >
         <Card.Content>
           <View style={styles.itemHeader}>
@@ -75,21 +97,25 @@ export default function AcceptanceRequestItem({
                 name={ICONS_NAME.NOTEBOOK}
                 size={20}
                 color={
-                  item.id === selectedItem?.id
+                  item.id === editingAcceptanceRequest?.id
                     ? STATUS_COLORS.ICON.SELECTED
                     : STATUS_COLORS.ICON.DEFAULT
                 }
               />
               <Text
                 variant="titleMedium"
-                style={item.id === selectedItem?.id ? styles.selectedText : {}}
+                style={
+                  item.id === editingAcceptanceRequest?.id
+                    ? styles.selectedText
+                    : {}
+                }
               >
                 {item.id}
               </Text>
             </View>
             <IconButton
               icon={ICONS_NAME.DOTS_VERTICAL}
-              onPress={() => onMenuPress(item.id)}
+              onPress={() => handleOpenMenu(item.id)}
             />
           </View>
 
@@ -112,7 +138,7 @@ export default function AcceptanceRequestItem({
                 color={STATUS_COLORS.ICON.DEFAULT}
                 style={styles.infoIcon}
               />
-              <Text variant="bodySmall">datate</Text>
+              <Text variant="bodySmall">{item.approvalDate}</Text>
             </View>
 
             <View style={styles.infoRow}>
@@ -124,7 +150,7 @@ export default function AcceptanceRequestItem({
               />
               <Text variant="bodySmall">
                 {ACCEPTANCE_REQUEST_TEXTS.INFO.UPDATED_BY}{" "}
-                <Text style={styles.userText}>updatedBy</Text>
+                <Text style={styles.userText}>{item.approvedBy}</Text>
               </Text>
             </View>
 
@@ -137,7 +163,7 @@ export default function AcceptanceRequestItem({
               />
               <Text variant="bodySmall">
                 {ACCEPTANCE_REQUEST_TEXTS.INFO.CREATED_BY}{" "}
-                <Text style={styles.userText}>createdBy</Text>
+                <Text style={styles.userText}>{item.code}</Text>
               </Text>
             </View>
           </View>
@@ -145,23 +171,23 @@ export default function AcceptanceRequestItem({
       </Card>
 
       <BottomSheetPopup
-        visible={visibleItemMenu === item.id}
-        onDismiss={onMenuDismiss}
+        visible={item.id === editingAcceptanceRequest?.id}
+        onDismiss={handleCloseMenu}
         title="Tùy chọn"
         viewAction={{
           icon: ICONS_NAME.EYE,
           label: ACCEPTANCE_REQUEST_TEXTS.ACTIONS.VIEW,
-          onPress: () => onViewPress(item),
+          onPress: () => handleViewPressAcceptanceRequest(item),
         }}
         editAction={{
           icon: ICONS_NAME.PENCIL,
           label: ACCEPTANCE_REQUEST_TEXTS.ACTIONS.EDIT,
-          onPress: () => onEditPress(item),
+          onPress: () => handleEditPressAcceptanceRequest(item),
         }}
         deleteAction={{
           icon: ICONS_NAME.DELETE,
           label: ACCEPTANCE_REQUEST_TEXTS.ACTIONS.DELETE,
-          onPress: () => onDeletePress(item),
+          onPress: () => handleDeletePressAcceptanceRequest(item),
         }}
       />
     </>

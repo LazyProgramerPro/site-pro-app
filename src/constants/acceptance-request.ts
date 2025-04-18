@@ -14,11 +14,19 @@ export const ACCEPTANCE_REQUEST_TEXTS = {
     TITLE: "Không tìm thấy yêu cầu nghiệm thu nào",
     SUBTITLE: "Thử lọc khác",
   },
-  STATUS: {
+  STATUS_LABEL: {
     ALL: "Tất cả",
-    COMPLETED: "Đã hoàn thành",
+    REJECTED: "Bị từ chối",
+    APPROVED: "Đã duyệt",
+    PENDING: "Chờ duyệt",
     IN_PROGRESS: "Đang thực hiện",
-    NOT_STARTED: "Chưa bắt đầu",
+  },
+  STATUS_VALUE: {
+    ALL: null,
+    REJECTED: "REJECTED",
+    APPROVED: "APPROVED",
+    PENDING: "PENDING",
+    IN_PROGRESS: "IN_PROGRESS",
   },
   ACTIONS: {
     VIEW: "Xem chi tiết",

@@ -1,26 +1,22 @@
 import React, { useRef, useState } from "react";
 import { LayoutChangeEvent, Platform, StyleSheet, View } from "react-native";
 import { List, Menu, TouchableRipple } from "react-native-paper";
-import {
-  Construction,
-  Project,
-} from "../../redux/slices/acceptanceRequestSlice";
 
-interface AcceptanceRequestFieldSelectorProps {
+interface FieldSelectorProps {
   title: string;
   icon: string;
-  items: Project[] | Construction[];
+  items: any[];
   selectedItem?: string;
-  onSelect: (item: Project | Construction) => void;
+  onSelect: (item: any) => void;
 }
 
-export default function AcceptanceRequestFieldSelector({
+export default function FieldSelector({
   title,
   icon,
   items,
   selectedItem,
   onSelect,
-}: AcceptanceRequestFieldSelectorProps) {
+}: FieldSelectorProps) {
   const [visible, setVisible] = useState(false);
   const [anchorWidth, setAnchorWidth] = useState(0);
   const [anchorHeight, setAnchorHeight] = useState(0);

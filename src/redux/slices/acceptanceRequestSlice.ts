@@ -29,8 +29,8 @@ export interface AcceptanceRequest {
   id: number;
   code: string;
   name: string;
-  projectId: string;
-  constructionId: string;
+  projectId: number;
+  constructionId: number;
   contractAppendix: string;
   createdAt: string;
   status: string;
@@ -56,7 +56,12 @@ interface AcceptanceRequestState {
   constructions: Construction[];
   selectedProject: Project | null;
   selectedConstruction: Construction | null;
-  filterStatus: string | null;
+  query: {
+    filterStatus?: string | null;
+    // searchTerm?: string | null;
+    // skip?: number | null;
+    // limit?: number | null;
+  };
 }
 
 const projectsFakeData = [
@@ -73,13 +78,15 @@ const constructionsFakeData = [
 
 // Add this constant with fake data
 
+// Add this constant with fake data
+
 const fakeAcceptanceRequestList: AcceptanceRequest[] = [
   {
     id: 1,
     code: "AR-2025-001",
     name: "Nghiệm thu hạng mục đường nội bộ",
-    projectId: "P001",
-    constructionId: "C001",
+    projectId: 1,
+    constructionId: 1,
     contractAppendix: "Phụ lục 2A",
     createdAt: "2025-01-15T09:30:00Z",
     status: "APPROVED",
@@ -104,8 +111,8 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     id: 2,
     code: "AR-2025-002",
     name: "Nghiệm thu hệ thống thoát nước",
-    projectId: "P001",
-    constructionId: "C001",
+    projectId: 1,
+    constructionId: 1,
     contractAppendix: "Phụ lục 3B",
     createdAt: "2025-01-20T11:15:00Z",
     status: "PENDING",
@@ -126,8 +133,8 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     id: 3,
     code: "AR-2025-003",
     name: "Nghiệm thu hạng mục cầu vượt B1",
-    projectId: "P003",
-    constructionId: "C003",
+    projectId: 3,
+    constructionId: 3,
     contractAppendix: "Phụ lục 1A",
     createdAt: "2025-01-05T08:45:00Z",
     status: "APPROVED",
@@ -147,8 +154,8 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     id: 4,
     code: "AR-2025-004",
     name: "Nghiệm thu đoạn cao tốc Km15-Km30",
-    projectId: "P002",
-    constructionId: "C002",
+    projectId: 2,
+    constructionId: 2,
     contractAppendix: "Phụ lục 5C",
     createdAt: "2025-02-10T10:00:00Z",
     status: "IN_PROGRESS",
@@ -168,8 +175,8 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     id: 5,
     code: "AR-2025-005",
     name: "Nghiệm thu hệ thống chiếu sáng",
-    projectId: "P001",
-    constructionId: "C001",
+    projectId: 1,
+    constructionId: 1,
     contractAppendix: "Phụ lục 4D",
     createdAt: "2025-02-15T14:20:00Z",
     status: "REJECTED",
@@ -186,7 +193,7 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     supportingDocuments: ["lighting_test_005.pdf", "deficiency_list_005.pdf"],
     teamMembers: ["Nguyễn Văn An", "Vũ Thị Hương"],
   },
-  // Continue updating the rest of the objects similarly...
+  // Add the remaining items with updated projectId and constructionId as numbers
 ];
 
 // Initial state with proper typing
@@ -199,27 +206,64 @@ const initialState: AcceptanceRequestState = {
   constructions: constructionsFakeData, // TODO: Replace with actual data fetching
   selectedProject: null,
   selectedConstruction: null,
-  filterStatus: null,
+  query: {
+    filterStatus: null,
+    // searchTerm: null,
+    // skip: null,
+    // limit: null,
+  },
 };
 
-// Type the search term parameter
+// Define the async thunk for fetching Projects fake data without API and set timeout
+export const getProjects = createAsyncThunk<Project[]>(
+  "acceptanceRequest/getProjects",
+  async (_, thunkAPI) => {
+    console.log("getProjects called");
+    // Simulate a delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return projectsFakeData;
+  }
+);
+// Define the async thunk for fetching Constructions by projectId fake data without API and set timeout
+export const getConstructions = createAsyncThunk<
+  Construction[],
+  number | undefined
+>("acceptanceRequest/getConstructions", async (projectId, thunkAPI) => {
+  console.log("getConstructions called with projectId:", projectId);
+  // Simulate a delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  if (!projectId) {
+    return [];
+  }
+  const filteredConstructions = constructionsFakeData.filter(
+    (construction) => construction.projectId === projectId
+  ); // TODO: Replace with actual API call
+  return filteredConstructions;
+});
+
+// Define the async thunk for fetching Acceptance Requests fake data without API and set timeout
 export const getAcceptanceRequestList = createAsyncThunk<
   AcceptanceRequest[],
-  string | undefined
+  { projectId?: number; constructionId?: number; status?: string | null }
 >(
   "acceptanceRequest/getAcceptanceRequestList",
-  async (searchTerm, thunkAPI) => {
-    console.log("getAcceptanceRequestList with searchTerm:", searchTerm);
-
-    if (!searchTerm) {
-      return fakeAcceptanceRequestList;
-    }
-
-    const filteredRequests = fakeAcceptanceRequestList.filter((request) =>
-      request.name.toLowerCase().includes(searchTerm.toLowerCase())
+  async ({ projectId, constructionId, status }, thunkAPI) => {
+    console.log(
+      "getAcceptanceRequestList called with projectId, constructionId, status:",
+      projectId,
+      constructionId,
+      status
     );
-
-    return filteredRequests;
+    // Simulate a delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // TODO: Replace with actual API call and makesure projectId, constructionId exists
+    const filteredAcceptanceRequests = fakeAcceptanceRequestList.filter(
+      (request) =>
+        (!projectId || request.projectId === projectId) &&
+        (!constructionId || request.constructionId === constructionId) &&
+        (!status || request.status === status)
+    );
+    return filteredAcceptanceRequests;
   }
 );
 
@@ -315,7 +359,7 @@ const acceptanceRequestSlice = createSlice({
     },
     setSelectedProject: (state, action: PayloadAction<Project | null>) => {
       state.selectedProject = action.payload;
-      state.selectedConstruction = null;
+      // state.selectedConstruction = null;
     },
     setSelectedConstruction: (
       state,
@@ -324,11 +368,23 @@ const acceptanceRequestSlice = createSlice({
       state.selectedConstruction = action.payload;
     },
     setFilterStatus: (state, action: PayloadAction<string | null>) => {
-      state.filterStatus = action.payload;
+      state.query.filterStatus = action.payload;
     },
   },
   extraReducers(builder) {
     builder
+      .addCase(
+        getProjects.fulfilled,
+        (state, action: PayloadAction<Project[]>) => {
+          state.projects = action.payload;
+        }
+      )
+      .addCase(
+        getConstructions.fulfilled,
+        (state, action: PayloadAction<Construction[]>) => {
+          state.constructions = action.payload;
+        }
+      )
       .addCase(
         getAcceptanceRequestList.fulfilled,
         (state, action: PayloadAction<AcceptanceRequest[]>) => {
