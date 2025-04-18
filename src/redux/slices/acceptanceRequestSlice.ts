@@ -56,7 +56,12 @@ interface AcceptanceRequestState {
   constructions: Construction[];
   selectedProject: Project | null;
   selectedConstruction: Construction | null;
-  filterStatus: string | null;
+  query: {
+    filterStatus?: string | null;
+    searchTerm?: string | null;
+    skip?: number | null;
+    limit?: number | null;
+  };
 }
 
 const projectsFakeData = [
@@ -199,8 +204,40 @@ const initialState: AcceptanceRequestState = {
   constructions: constructionsFakeData, // TODO: Replace with actual data fetching
   selectedProject: null,
   selectedConstruction: null,
-  filterStatus: null,
+  query: {
+    filterStatus: null,
+    searchTerm: null,
+    skip: null,
+    limit: null,
+  },
 };
+
+// Define the async thunk for fetching Projects fake data without API and set timeout
+export const getProjects = createAsyncThunk<Project[]>(
+  "acceptanceRequest/getProjects",
+  async (_, thunkAPI) => {
+    console.log("getProjects called");
+    // Simulate a delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return projectsFakeData;
+  }
+);
+// Define the async thunk for fetching Constructions by projectId fake data without API and set timeout
+export const getConstructions = createAsyncThunk<
+  Construction[],
+  number | undefined
+>("acceptanceRequest/getConstructions", async (projectId, thunkAPI) => {
+  console.log("getConstructions called with projectId:", projectId);
+  // Simulate a delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  if (!projectId) {
+    return [];
+  }
+  const filteredConstructions = constructionsFakeData.filter(
+    (construction) => construction.projectId === projectId
+  ); // TODO: Replace with actual API call
+  return filteredConstructions;
+});
 
 // Type the search term parameter
 export const getAcceptanceRequestList = createAsyncThunk<
@@ -315,7 +352,7 @@ const acceptanceRequestSlice = createSlice({
     },
     setSelectedProject: (state, action: PayloadAction<Project | null>) => {
       state.selectedProject = action.payload;
-      state.selectedConstruction = null;
+      // state.selectedConstruction = null;
     },
     setSelectedConstruction: (
       state,
@@ -324,11 +361,23 @@ const acceptanceRequestSlice = createSlice({
       state.selectedConstruction = action.payload;
     },
     setFilterStatus: (state, action: PayloadAction<string | null>) => {
-      state.filterStatus = action.payload;
+      state.query.filterStatus = action.payload;
     },
   },
   extraReducers(builder) {
     builder
+      .addCase(
+        getProjects.fulfilled,
+        (state, action: PayloadAction<Project[]>) => {
+          state.projects = action.payload;
+        }
+      )
+      .addCase(
+        getConstructions.fulfilled,
+        (state, action: PayloadAction<Construction[]>) => {
+          state.constructions = action.payload;
+        }
+      )
       .addCase(
         getAcceptanceRequestList.fulfilled,
         (state, action: PayloadAction<AcceptanceRequest[]>) => {

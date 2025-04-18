@@ -1,38 +1,51 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Chip, Surface, Text } from "react-native-paper";
-
 import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
 import { ICONS_NAME } from "../../constants/icon";
 import {
+  AcceptanceRequest,
   Construction,
+  getConstructions,
   Project,
+  setFilterStatus,
+  setSelectedConstruction,
+  setSelectedProject,
 } from "../../redux/slices/acceptanceRequestSlice";
+import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
 import AcceptanceRequestFieldSelector from "./AcceptanceRequestFieldSelector";
 
-interface AcceptanceRequestListHeaderProps {
-  selectedProject: Project | null;
-  selectedConstruction: Construction | null;
-  projects: Project[];
-  constructions: Construction[];
-  onProjectSelect: (project: Project) => void;
-  onConstructionSelect: (construction: Construction) => void;
-  filterStatus: string | null;
-  onFilterStatusChange: (status: string | null) => void;
-  entryCount: number;
-}
+export default function AcceptanceRequestListHeader() {
+  const dispatch = useAppDispatch();
 
-export default function AcceptanceRequestListHeader({
-  selectedProject,
-  selectedConstruction,
-  projects,
-  constructions,
-  onProjectSelect,
-  onConstructionSelect,
-  filterStatus,
-  onFilterStatusChange,
-  entryCount,
-}: AcceptanceRequestListHeaderProps) {
+  const {
+    projects,
+    constructions,
+    selectedProject,
+    selectedConstruction,
+    acceptanceRequestList,
+    query: { filterStatus },
+  } = useAppSelector((state: RootState) => state.acceptanceRequest);
+
+  const handleSelectedProject = (project: Project) => {
+    dispatch(setSelectedProject(project));
+    dispatch(setSelectedConstruction(null)); // Reset construction when project changes
+    dispatch(getConstructions(project.id)); // Fetch constructions for the selected project
+  };
+
+  const handleConstructionSelect = (construction: Construction) => {
+    dispatch(setSelectedConstruction(construction));
+  };
+
+  const handleFilterStatusChange = (status: string | null) => {
+    dispatch(setFilterStatus(status));
+  };
+
+  const filteredEntries = acceptanceRequestList.filter(
+    (acceptanceRequest: AcceptanceRequest) =>
+      !filterStatus || acceptanceRequest.status === filterStatus
+  );
+
   return (
     <View style={styles.listHeader}>
       <Surface style={styles.selectors} elevation={1}>
@@ -41,7 +54,7 @@ export default function AcceptanceRequestListHeader({
           icon={ICONS_NAME.PROJECT}
           items={projects}
           selectedItem={selectedProject?.name || undefined}
-          onSelect={onProjectSelect}
+          onSelect={handleSelectedProject}
         />
 
         {selectedProject && (
@@ -49,16 +62,14 @@ export default function AcceptanceRequestListHeader({
             <AcceptanceRequestFieldSelector
               title={ACCEPTANCE_REQUEST_TEXTS.SELECT_CONSTRUCTION}
               icon={ICONS_NAME.CONSTRUCTION}
-              items={constructions.filter(
-                (construction) => construction.projectId === selectedProject?.id
-              )}
+              items={constructions}
               selectedItem={selectedConstruction?.name || undefined}
               onSelect={(item) => {
                 // Check if the item is a Construction
                 // and call the onConstructionSelect function
 
                 if ("projectId" in item) {
-                  onConstructionSelect(item as Construction);
+                  handleConstructionSelect(item as Construction);
                 }
               }}
             />
@@ -68,7 +79,8 @@ export default function AcceptanceRequestListHeader({
 
       {selectedProject && selectedConstruction && (
         <Text variant="titleMedium" style={styles.listTitle}>
-          {entryCount} {ACCEPTANCE_REQUEST_TEXTS.NAME.toLocaleLowerCase()}
+          {filteredEntries.length}{" "}
+          {ACCEPTANCE_REQUEST_TEXTS.NAME.toLocaleLowerCase()}
         </Text>
       )}
 
@@ -76,7 +88,7 @@ export default function AcceptanceRequestListHeader({
         <View style={styles.filterContainer}>
           <Chip
             selected={filterStatus === null}
-            onPress={() => onFilterStatusChange(null)}
+            onPress={() => handleFilterStatusChange(null)}
             style={styles.filterChip}
           >
             {ACCEPTANCE_REQUEST_TEXTS.STATUS.ALL}
@@ -86,7 +98,9 @@ export default function AcceptanceRequestListHeader({
               filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS.COMPLETED
             }
             onPress={() =>
-              onFilterStatusChange(ACCEPTANCE_REQUEST_TEXTS.STATUS.COMPLETED)
+              handleFilterStatusChange(
+                ACCEPTANCE_REQUEST_TEXTS.STATUS.COMPLETED
+              )
             }
             style={styles.filterChip}
             icon={ICONS_NAME.CHECK_CIRCLE}
@@ -98,7 +112,9 @@ export default function AcceptanceRequestListHeader({
               filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS.IN_PROGRESS
             }
             onPress={() =>
-              onFilterStatusChange(ACCEPTANCE_REQUEST_TEXTS.STATUS.IN_PROGRESS)
+              handleFilterStatusChange(
+                ACCEPTANCE_REQUEST_TEXTS.STATUS.IN_PROGRESS
+              )
             }
             style={styles.filterChip}
             icon={ICONS_NAME.CLOCK}
@@ -110,7 +126,9 @@ export default function AcceptanceRequestListHeader({
               filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS.NOT_STARTED
             }
             onPress={() =>
-              onFilterStatusChange(ACCEPTANCE_REQUEST_TEXTS.STATUS.NOT_STARTED)
+              handleFilterStatusChange(
+                ACCEPTANCE_REQUEST_TEXTS.STATUS.NOT_STARTED
+              )
             }
             style={styles.filterChip}
             icon={ICONS_NAME.ALERT_CIRCLE}

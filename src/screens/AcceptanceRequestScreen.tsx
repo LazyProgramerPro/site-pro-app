@@ -26,81 +26,73 @@ export default function AcceptanceRequestScreen() {
   const theme = useTheme();
 
   const {
-    projects,
-    constructions,
-    loading: isLoadingFromRedux,
+    // projects,
+    // constructions,
+    loading,
     editingAcceptanceRequest,
     acceptanceRequestList,
     selectedProject,
     selectedConstruction,
-    filterStatus,
+    query: { filterStatus },
   } = useAppSelector((state: RootState) => state.acceptanceRequest);
 
-  const [loading, setLoading] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<AcceptanceRequest | null>(
-    null
-  );
-  const [visibleItemMenu, setVisibleItemMenu] = useState<number | null>(null);
+  // const [selectedItem, setSelectedItem] = useState<AcceptanceRequest | null>(
+  //   null
+  // );
+  // const [visibleItemMenu, setVisibleItemMenu] = useState<number | null>(null);
 
-  // Simulate loading data
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 800);
-    return () => clearTimeout(timer);
-  }, []);
+  // useEffect(() => {
+  //   const promise = dispatch(getAcceptanceRequestList());
+  //   return () => {
+  //     promise.abort();
+  //   };
+  // }, [dispatch]);
 
-  useEffect(() => {
-    const promise = dispatch(getAcceptanceRequestList());
-    return () => {
-      promise.abort();
-    };
-  }, [dispatch]);
+  // const filteredEntries = acceptanceRequestList.filter(
+  //   (acceptanceRequest: AcceptanceRequest) =>
+  //     !filterStatus || acceptanceRequest.status === filterStatus
+  // );
 
-  const filteredEntries = acceptanceRequestList.filter(
-    (acceptanceRequest: AcceptanceRequest) =>
-      !filterStatus || acceptanceRequest.status === filterStatus
-  );
+  // const handleProjectSelect = (project: Project) => {
+  //   dispatch(setSelectedProject(project));
+  // };
 
-  const handleProjectSelect = (project: Project) => {
-    dispatch(setSelectedProject(project));
-  };
+  // const handleConstructionSelect = (construction: Construction) => {
+  //   dispatch(setSelectedConstruction(construction));
+  // };
 
-  const handleConstructionSelect = (construction: Construction) => {
-    dispatch(setSelectedConstruction(construction));
-  };
+  // const handleAddAcceptanceRequest = () => {
+  //   if (selectedProject && selectedConstruction) {
+  //     console.log("Add new Acceptance request for:", {
+  //       selectedProject,
+  //       selectedConstruction,
+  //     });
+  //   }
+  // };
 
-  const handleAddAcceptanceRequest = () => {
-    if (selectedProject && selectedConstruction) {
-      console.log("Add new Acceptance request for:", {
-        selectedProject,
-        selectedConstruction,
-      });
-    }
-  };
+  // const handleViewPressAcceptanceRequest = (item: AcceptanceRequest) => {
+  //   console.log("View item:", item);
+  // };
 
-  const handleViewPressAcceptanceRequest = (item: AcceptanceRequest) => {
-    console.log("View item:", item);
-  };
+  // const handleEditPressAcceptanceRequest = (item: AcceptanceRequest) => {
+  //   console.log("Edit item:", item);
+  // };
 
-  const handleEditPressAcceptanceRequest = (item: AcceptanceRequest) => {
-    console.log("Edit item:", item);
-  };
-
-  const handleDeletePressAcceptanceRequest = (item: AcceptanceRequest) => {
-    dispatch(deleteAcceptanceRequest(Number(item.id)));
-  };
+  // const handleDeletePressAcceptanceRequest = (item: AcceptanceRequest) => {
+  //   dispatch(deleteAcceptanceRequest(item.id));
+  // };
 
   const renderItem = ({ item }: { item: AcceptanceRequest }) => (
     <AcceptanceRequestItem
       item={item}
-      selectedItem={selectedItem}
-      onSelect={setSelectedItem}
-      visibleItemMenu={visibleItemMenu}
-      onMenuPress={setVisibleItemMenu}
-      onMenuDismiss={() => setVisibleItemMenu(null)}
-      onViewPress={handleViewPressAcceptanceRequest}
-      onEditPress={handleEditPressAcceptanceRequest}
-      onDeletePress={handleDeletePressAcceptanceRequest}
+      // selectedItem={selectedItem}
+      // onSelect={setSelectedItem}
+      // visibleItemMenu={visibleItemMenu}
+      // onMenuPress={setVisibleItemMenu}
+      // onMenuDismiss={() => setVisibleItemMenu(null)}
+      // onViewPress={handleViewPressAcceptanceRequest}
+      // onEditPress={handleEditPressAcceptanceRequest}
+      // onDeletePress={handleDeletePressAcceptanceRequest}
     />
   );
 
@@ -134,24 +126,26 @@ export default function AcceptanceRequestScreen() {
         ) : (
           <FlatList
             data={
-              selectedProject && selectedConstruction ? filteredEntries : []
+              selectedProject && selectedConstruction
+                ? acceptanceRequestList
+                : []
             }
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.listContainer}
             ListHeaderComponent={() => (
               <AcceptanceRequestListHeader
-                selectedProject={selectedProject}
-                selectedConstruction={selectedConstruction}
-                projects={projects}
-                constructions={constructions}
-                onProjectSelect={handleProjectSelect}
-                onConstructionSelect={handleConstructionSelect}
-                filterStatus={filterStatus}
-                onFilterStatusChange={(status) =>
-                  dispatch(setFilterStatus(status))
-                }
-                entryCount={filteredEntries.length}
+              // selectedProject={selectedProject}
+              // selectedConstruction={selectedConstruction}
+              // projects={projects}
+              // constructions={constructions}
+              // onProjectSelect={handleProjectSelect}
+              // onConstructionSelect={handleConstructionSelect}
+              // filterStatus={filterStatus}
+              // onFilterStatusChange={(status) =>
+              //   dispatch(setFilterStatus(status))
+              // }
+              // entryCount={filteredEntries.length}
               />
             )}
             ListEmptyComponent={renderEmptyList}
