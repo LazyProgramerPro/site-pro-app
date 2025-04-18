@@ -110,7 +110,7 @@ export default function AcceptanceRequestItem({
                     : {}
                 }
               >
-                {item.id}
+                {item.name}
               </Text>
             </View>
             <IconButton

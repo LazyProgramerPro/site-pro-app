@@ -1,4 +1,5 @@
 export const ACCEPTANCE_REQUEST_TEXTS = {
+  ADD_REQUEST: "Thêm yêu cầu nghiệm thu",
   NAME: "Yêu cầu nghiệm thu",
   SCREEN_TITLE: "Danh sách yêu cầu nghiệm thu",
   PLEASE_SELECT_PROJECT: "Vui lòng chọn dự án để xem yêu cầu nghiệm thu",

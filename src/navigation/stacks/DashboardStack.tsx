@@ -1,6 +1,10 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {
+  createNativeStackNavigator,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
 import React from "react";
-import AcceptanceRequestScreen from "../../screens/AcceptanceRequestScreen";
+import AcceptanceRequestScreen from "../../screens/acceptance-request/AcceptanceRequestScreen";
+import AddAcceptanceRequestScreen from "../../screens/acceptance-request/AddAcceptanceRequestScreen";
 import CheckInManagementScreen from "../../screens/CheckInManagementScreen";
 import DashboardScreen from "../../screens/DashboardScreen";
 import DiaryManagementScreen from "../../screens/DiaryManagementScreen";
@@ -22,14 +26,22 @@ export const DashboardStack = () => {
       <Stack.Screen
         name="Project"
         component={ProjectScreen}
-        options={({ navigation }) => ({
+        options={{
           headerShown: false,
-        })}
+        }}
       />
 
       <Stack.Screen
         name="AcceptanceRequest"
         component={AcceptanceRequestScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="AddAcceptanceRequest"
+        component={AddAcceptanceRequestScreen}
         options={{
           headerShown: false,
         }}
@@ -69,3 +81,26 @@ export const DashboardStack = () => {
     </Stack.Navigator>
   );
 };
+
+export type DashboardStackParamList = {
+  Dashboard: undefined;
+  Project: undefined;
+  AcceptanceRequest: undefined;
+  AddAcceptanceRequest: AddAcceptanceRequestRouteParams;
+  DiaryManagement: undefined;
+  ProblemManagement: undefined;
+  CheckInManagement: undefined;
+  Report: undefined;
+};
+
+// Define the type for route parameters
+export type AddAcceptanceRequestRouteParams = {
+  location: { latitude: number; longitude: number };
+  projectId: number | null;
+  constructionId: number | null;
+};
+
+export type AddAcceptanceRequestScreenProps = NativeStackScreenProps<
+  DashboardStackParamList,
+  "AddAcceptanceRequest"
+>;
