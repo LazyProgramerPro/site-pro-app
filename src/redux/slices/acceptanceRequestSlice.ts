@@ -29,8 +29,8 @@ export interface AcceptanceRequest {
   id: number;
   code: string;
   name: string;
-  projectId: string;
-  constructionId: string;
+  projectId: number;
+  constructionId: number;
   contractAppendix: string;
   createdAt: string;
   status: string;
@@ -58,9 +58,9 @@ interface AcceptanceRequestState {
   selectedConstruction: Construction | null;
   query: {
     filterStatus?: string | null;
-    searchTerm?: string | null;
-    skip?: number | null;
-    limit?: number | null;
+    // searchTerm?: string | null;
+    // skip?: number | null;
+    // limit?: number | null;
   };
 }
 
@@ -78,13 +78,15 @@ const constructionsFakeData = [
 
 // Add this constant with fake data
 
+// Add this constant with fake data
+
 const fakeAcceptanceRequestList: AcceptanceRequest[] = [
   {
     id: 1,
     code: "AR-2025-001",
     name: "Nghiệm thu hạng mục đường nội bộ",
-    projectId: "P001",
-    constructionId: "C001",
+    projectId: 1,
+    constructionId: 1,
     contractAppendix: "Phụ lục 2A",
     createdAt: "2025-01-15T09:30:00Z",
     status: "APPROVED",
@@ -109,8 +111,8 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     id: 2,
     code: "AR-2025-002",
     name: "Nghiệm thu hệ thống thoát nước",
-    projectId: "P001",
-    constructionId: "C001",
+    projectId: 1,
+    constructionId: 1,
     contractAppendix: "Phụ lục 3B",
     createdAt: "2025-01-20T11:15:00Z",
     status: "PENDING",
@@ -131,8 +133,8 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     id: 3,
     code: "AR-2025-003",
     name: "Nghiệm thu hạng mục cầu vượt B1",
-    projectId: "P003",
-    constructionId: "C003",
+    projectId: 3,
+    constructionId: 3,
     contractAppendix: "Phụ lục 1A",
     createdAt: "2025-01-05T08:45:00Z",
     status: "APPROVED",
@@ -152,8 +154,8 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     id: 4,
     code: "AR-2025-004",
     name: "Nghiệm thu đoạn cao tốc Km15-Km30",
-    projectId: "P002",
-    constructionId: "C002",
+    projectId: 2,
+    constructionId: 2,
     contractAppendix: "Phụ lục 5C",
     createdAt: "2025-02-10T10:00:00Z",
     status: "IN_PROGRESS",
@@ -173,8 +175,8 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     id: 5,
     code: "AR-2025-005",
     name: "Nghiệm thu hệ thống chiếu sáng",
-    projectId: "P001",
-    constructionId: "C001",
+    projectId: 1,
+    constructionId: 1,
     contractAppendix: "Phụ lục 4D",
     createdAt: "2025-02-15T14:20:00Z",
     status: "REJECTED",
@@ -191,7 +193,7 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     supportingDocuments: ["lighting_test_005.pdf", "deficiency_list_005.pdf"],
     teamMembers: ["Nguyễn Văn An", "Vũ Thị Hương"],
   },
-  // Continue updating the rest of the objects similarly...
+  // Add the remaining items with updated projectId and constructionId as numbers
 ];
 
 // Initial state with proper typing
@@ -206,9 +208,9 @@ const initialState: AcceptanceRequestState = {
   selectedConstruction: null,
   query: {
     filterStatus: null,
-    searchTerm: null,
-    skip: null,
-    limit: null,
+    // searchTerm: null,
+    // skip: null,
+    // limit: null,
   },
 };
 
@@ -239,24 +241,29 @@ export const getConstructions = createAsyncThunk<
   return filteredConstructions;
 });
 
-// Type the search term parameter
+// Define the async thunk for fetching Acceptance Requests fake data without API and set timeout
 export const getAcceptanceRequestList = createAsyncThunk<
   AcceptanceRequest[],
-  string | undefined
+  { projectId?: number; constructionId?: number; status?: string | null }
 >(
   "acceptanceRequest/getAcceptanceRequestList",
-  async (searchTerm, thunkAPI) => {
-    console.log("getAcceptanceRequestList with searchTerm:", searchTerm);
-
-    if (!searchTerm) {
-      return fakeAcceptanceRequestList;
-    }
-
-    const filteredRequests = fakeAcceptanceRequestList.filter((request) =>
-      request.name.toLowerCase().includes(searchTerm.toLowerCase())
+  async ({ projectId, constructionId, status }, thunkAPI) => {
+    console.log(
+      "getAcceptanceRequestList called with projectId, constructionId, status:",
+      projectId,
+      constructionId,
+      status
     );
-
-    return filteredRequests;
+    // Simulate a delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // TODO: Replace with actual API call and makesure projectId, constructionId exists
+    const filteredAcceptanceRequests = fakeAcceptanceRequestList.filter(
+      (request) =>
+        (!projectId || request.projectId === projectId) &&
+        (!constructionId || request.constructionId === constructionId) &&
+        (!status || request.status === status)
+    );
+    return filteredAcceptanceRequests;
   }
 );
 

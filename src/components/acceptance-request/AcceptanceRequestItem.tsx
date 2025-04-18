@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { Card, Chip, IconButton, Text, useTheme } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
+import { useSelector } from "react-redux";
 import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
 import { ICONS_NAME } from "../../constants/icon";
 import { STATUS_COLORS } from "../../constants/styles";
@@ -12,33 +13,16 @@ import {
   deleteAcceptanceRequest,
   startEditingAcceptanceRequest,
 } from "../../redux/slices/acceptanceRequestSlice";
-import BottomSheetPopup from "../ui/BottomSheetPopup";
-import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../../redux/store";
+import BottomSheetPopup from "../ui/BottomSheetPopup";
 
 interface AcceptanceRequestItemProps {
   item: AcceptanceRequest;
-  // selectedItem: AcceptanceRequest | null;
-  // onSelect: (item: AcceptanceRequest) => void;
-  // visibleItemMenu: number | null;
-  // onMenuPress: (itemId: number) => void;
-  // onMenuDismiss: () => void;
-  // onViewPress: (item: AcceptanceRequest) => void;
-  // onEditPress: (item: AcceptanceRequest) => void;
-  // onDeletePress: (item: AcceptanceRequest) => void;
 }
 
 export default function AcceptanceRequestItem({
   item,
-}: // selectedItem,
-// onSelect,
-// visibleItemMenu,
-// onMenuPress,
-// onMenuDismiss,
-// onViewPress,
-// onEditPress,
-// onDeletePress,
-AcceptanceRequestItemProps) {
+}: AcceptanceRequestItemProps) {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const { editingAcceptanceRequest, selectedProject, selectedConstruction } =
@@ -75,13 +59,13 @@ AcceptanceRequestItemProps) {
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case ACCEPTANCE_REQUEST_TEXTS.STATUS.COMPLETED:
+      case ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.APPROVED:
         return {
           icon: ICONS_NAME.CHECK_CIRCLE,
           backgroundColor: STATUS_COLORS.STATUS.COMPLETED.BACKGROUND,
           textColor: STATUS_COLORS.STATUS.COMPLETED.TEXT,
         };
-      case ACCEPTANCE_REQUEST_TEXTS.STATUS.IN_PROGRESS:
+      case ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.IN_PROGRESS:
         return {
           icon: ICONS_NAME.CLOCK,
           backgroundColor: STATUS_COLORS.STATUS.IN_PROGRESS.BACKGROUND,
@@ -105,7 +89,6 @@ AcceptanceRequestItemProps) {
           styles.card,
           item.id === editingAcceptanceRequest?.id && styles.selectedCard,
         ]}
-        // onPress={() => onSelect(item)}
       >
         <Card.Content>
           <View style={styles.itemHeader}>
@@ -155,7 +138,7 @@ AcceptanceRequestItemProps) {
                 color={STATUS_COLORS.ICON.DEFAULT}
                 style={styles.infoIcon}
               />
-              <Text variant="bodySmall">datate</Text>
+              <Text variant="bodySmall">{item.approvalDate}</Text>
             </View>
 
             <View style={styles.infoRow}>
@@ -167,7 +150,7 @@ AcceptanceRequestItemProps) {
               />
               <Text variant="bodySmall">
                 {ACCEPTANCE_REQUEST_TEXTS.INFO.UPDATED_BY}{" "}
-                <Text style={styles.userText}>updatedBy</Text>
+                <Text style={styles.userText}>{item.approvedBy}</Text>
               </Text>
             </View>
 
@@ -180,7 +163,7 @@ AcceptanceRequestItemProps) {
               />
               <Text variant="bodySmall">
                 {ACCEPTANCE_REQUEST_TEXTS.INFO.CREATED_BY}{" "}
-                <Text style={styles.userText}>createdBy</Text>
+                <Text style={styles.userText}>{item.code}</Text>
               </Text>
             </View>
           </View>

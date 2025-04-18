@@ -9,6 +9,7 @@ export const ICONS_NAME = {
   EYE: "eye",
   PENCIL: "pencil",
   DELETE: "delete",
+  CANCEL: "cancel",
   DOTS_VERTICAL: "dots-vertical",
   PLUS: "plus",
   CHECK_CIRCLE: "check-circle",
