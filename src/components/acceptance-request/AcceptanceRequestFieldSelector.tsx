@@ -11,7 +11,7 @@ interface AcceptanceRequestFieldSelectorProps {
   icon: string;
   items: Project[] | Construction[];
   selectedItem?: string;
-  onSelect: (item: string) => void;
+  onSelect: (item: Project | Construction) => void;
 }
 
 export default function AcceptanceRequestFieldSelector({
@@ -62,7 +62,7 @@ export default function AcceptanceRequestFieldSelector({
           <Menu.Item
             key={item.id}
             onPress={() => {
-              onSelect(item.name);
+              onSelect(item);
               closeMenu();
             }}
             title={item.name}

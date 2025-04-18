@@ -10,8 +10,10 @@ import ScreenWrapper from "../components/ui/ScreenWrapper";
 import { ACCEPTANCE_REQUEST_TEXTS } from "../constants/acceptance-request";
 import {
   AcceptanceRequest,
+  Construction,
   deleteAcceptanceRequest,
   getAcceptanceRequestList,
+  Project,
   setFilterStatus,
   setSelectedConstruction,
   setSelectedProject,
@@ -38,7 +40,7 @@ export default function AcceptanceRequestScreen() {
   const [selectedItem, setSelectedItem] = useState<AcceptanceRequest | null>(
     null
   );
-  const [visibleItemMenu, setVisibleItemMenu] = useState<string | null>(null);
+  const [visibleItemMenu, setVisibleItemMenu] = useState<number | null>(null);
 
   // Simulate loading data
   useEffect(() => {
@@ -59,11 +61,11 @@ export default function AcceptanceRequestScreen() {
       !filterStatus || acceptanceRequest.status === filterStatus
   );
 
-  const handleProjectSelect = (project: string) => {
+  const handleProjectSelect = (project: Project) => {
     dispatch(setSelectedProject(project));
   };
 
-  const handleConstructionSelect = (construction: string) => {
+  const handleConstructionSelect = (construction: Construction) => {
     dispatch(setSelectedConstruction(construction));
   };
 
@@ -135,7 +137,7 @@ export default function AcceptanceRequestScreen() {
               selectedProject && selectedConstruction ? filteredEntries : []
             }
             renderItem={renderItem}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.listContainer}
             ListHeaderComponent={() => (
               <AcceptanceRequestListHeader

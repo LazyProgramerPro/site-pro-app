@@ -15,18 +15,18 @@ type RejectedAction = ReturnType<GenericAsyncThunk["rejected"]>;
 type FulfilledAction = ReturnType<GenericAsyncThunk["fulfilled"]>;
 
 export interface Project {
-  id: string;
+  id: number;
   name: string;
 }
 
 export interface Construction {
-  id: string;
+  id: number;
   name: string;
-  projectId: string;
+  projectId: number;
 }
 
 export interface AcceptanceRequest {
-  id: string;
+  id: number;
   code: string;
   name: string;
   projectId: string;
@@ -54,28 +54,28 @@ interface AcceptanceRequestState {
   currentRequestId: string | undefined;
   projects: Project[];
   constructions: Construction[];
-  selectedProject: string | null;
-  selectedConstruction: string | null;
+  selectedProject: Project | null;
+  selectedConstruction: Construction | null;
   filterStatus: string | null;
 }
 
 const projectsFakeData = [
-  { id: "P001", name: "Xây dựng tuyến đường 01" },
-  { id: "P002", name: "Đường cao tốc Bắc Nam" },
-  { id: "P003", name: "Dự án cầu vượt" },
+  { id: 1, name: "Xây dựng tuyến đường 01" },
+  { id: 2, name: "Đường cao tốc Bắc Nam" },
+  { id: 3, name: "Dự án cầu vượt" },
 ];
 
 const constructionsFakeData = [
-  { id: "C001", name: "Công trình A", projectId: "P001" },
-  { id: "C002", name: "Công trình B", projectId: "P002" },
-  { id: "C003", name: "Công trình C", projectId: "P003" },
+  { id: 1, name: "Công trình A", projectId: 1 },
+  { id: 2, name: "Công trình B", projectId: 2 },
+  { id: 3, name: "Công trình C", projectId: 3 },
 ];
 
 // Add this constant with fake data
 
 const fakeAcceptanceRequestList: AcceptanceRequest[] = [
   {
-    id: "1",
+    id: 1,
     code: "AR-2025-001",
     name: "Nghiệm thu hạng mục đường nội bộ",
     projectId: "P001",
@@ -101,7 +101,7 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     teamMembers: ["Nguyễn Văn An", "Lê Thị Minh", "Phan Quốc Bảo"],
   },
   {
-    id: "2",
+    id: 2,
     code: "AR-2025-002",
     name: "Nghiệm thu hệ thống thoát nước",
     projectId: "P001",
@@ -123,7 +123,7 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     teamMembers: ["Lê Thị Minh", "Trần Văn Đức"],
   },
   {
-    id: "3",
+    id: 3,
     code: "AR-2025-003",
     name: "Nghiệm thu hạng mục cầu vượt B1",
     projectId: "P003",
@@ -144,7 +144,7 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     teamMembers: ["Trần Văn Đức", "Hoàng Minh Tuấn", "Vũ Thị Hương"],
   },
   {
-    id: "4",
+    id: 4,
     code: "AR-2025-004",
     name: "Nghiệm thu đoạn cao tốc Km15-Km30",
     projectId: "P002",
@@ -165,7 +165,7 @@ const fakeAcceptanceRequestList: AcceptanceRequest[] = [
     teamMembers: ["Phạm Quốc Huy", "Lê Văn Nam", "Nguyễn Thị Thúy"],
   },
   {
-    id: "5",
+    id: 5,
     code: "AR-2025-005",
     name: "Nghiệm thu hệ thống chiếu sáng",
     projectId: "P001",
@@ -306,18 +306,21 @@ const acceptanceRequestSlice = createSlice({
       const requestId = action.payload;
       const foundRequest =
         state.acceptanceRequestList.find(
-          (request) => request.id === requestId.toString()
+          (request) => request.id === requestId
         ) || null;
       state.editingAcceptanceRequest = foundRequest;
     },
     cancelEditingAcceptanceRequest: (state) => {
       state.editingAcceptanceRequest = null;
     },
-    setSelectedProject: (state, action: PayloadAction<string | null>) => {
+    setSelectedProject: (state, action: PayloadAction<Project | null>) => {
       state.selectedProject = action.payload;
       state.selectedConstruction = null;
     },
-    setSelectedConstruction: (state, action: PayloadAction<string | null>) => {
+    setSelectedConstruction: (
+      state,
+      action: PayloadAction<Construction | null>
+    ) => {
       state.selectedConstruction = action.payload;
     },
     setFilterStatus: (state, action: PayloadAction<string | null>) => {
@@ -354,7 +357,7 @@ const acceptanceRequestSlice = createSlice({
       .addCase(deleteAcceptanceRequest.fulfilled, (state, action) => {
         const requestId = action.meta.arg;
         const deleteRequestIndex = state.acceptanceRequestList.findIndex(
-          (request) => request.id === requestId.toString()
+          (request) => request.id === requestId
         );
         if (deleteRequestIndex !== -1) {
           state.acceptanceRequestList.splice(deleteRequestIndex, 1);

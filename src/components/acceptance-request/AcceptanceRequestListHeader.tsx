@@ -11,12 +11,12 @@ import {
 import AcceptanceRequestFieldSelector from "./AcceptanceRequestFieldSelector";
 
 interface AcceptanceRequestListHeaderProps {
-  selectedProject: string | null;
-  selectedConstruction: string | null;
+  selectedProject: Project | null;
+  selectedConstruction: Construction | null;
   projects: Project[];
   constructions: Construction[];
-  onProjectSelect: (project: string) => void;
-  onConstructionSelect: (construction: string) => void;
+  onProjectSelect: (project: Project) => void;
+  onConstructionSelect: (construction: Construction) => void;
   filterStatus: string | null;
   onFilterStatusChange: (status: string | null) => void;
   entryCount: number;
@@ -40,7 +40,7 @@ export default function AcceptanceRequestListHeader({
           title={ACCEPTANCE_REQUEST_TEXTS.SELECT_PROJECT}
           icon={ICONS_NAME.PROJECT}
           items={projects}
-          selectedItem={selectedProject || undefined}
+          selectedItem={selectedProject?.name || undefined}
           onSelect={onProjectSelect}
         />
 
@@ -49,9 +49,18 @@ export default function AcceptanceRequestListHeader({
             <AcceptanceRequestFieldSelector
               title={ACCEPTANCE_REQUEST_TEXTS.SELECT_CONSTRUCTION}
               icon={ICONS_NAME.CONSTRUCTION}
-              items={constructions}
-              selectedItem={selectedConstruction || undefined}
-              onSelect={onConstructionSelect}
+              items={constructions.filter(
+                (construction) => construction.projectId === selectedProject?.id
+              )}
+              selectedItem={selectedConstruction?.name || undefined}
+              onSelect={(item) => {
+                // Check if the item is a Construction
+                // and call the onConstructionSelect function
+
+                if ("projectId" in item) {
+                  onConstructionSelect(item as Construction);
+                }
+              }}
             />
           </View>
         )}
@@ -59,7 +68,7 @@ export default function AcceptanceRequestListHeader({
 
       {selectedProject && selectedConstruction && (
         <Text variant="titleMedium" style={styles.listTitle}>
-          {entryCount} yêu cầu nghiệm thu
+          {entryCount} {ACCEPTANCE_REQUEST_TEXTS.NAME.toLocaleLowerCase()}
         </Text>
       )}
 

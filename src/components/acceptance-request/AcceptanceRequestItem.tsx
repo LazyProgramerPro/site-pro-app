@@ -13,8 +13,8 @@ interface AcceptanceRequestItemProps {
   item: AcceptanceRequest;
   selectedItem: AcceptanceRequest | null;
   onSelect: (item: AcceptanceRequest) => void;
-  visibleItemMenu: string | null;
-  onMenuPress: (itemId: string) => void;
+  visibleItemMenu: number | null;
+  onMenuPress: (itemId: number) => void;
   onMenuDismiss: () => void;
   onViewPress: (item: AcceptanceRequest) => void;
   onEditPress: (item: AcceptanceRequest) => void;
