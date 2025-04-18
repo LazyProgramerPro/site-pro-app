@@ -1,0 +1,17 @@
+export const ICONS_NAME = {
+  PROJECT: "folder",
+  CONSTRUCTION: "office-building",
+  CONTRACT: "file-document-outline",
+  NOTEBOOK: "notebook-outline",
+  CALENDAR: "calendar",
+  ACCOUNT_EDIT: "account-edit",
+  ACCOUNT: "account",
+  EYE: "eye",
+  PENCIL: "pencil",
+  DELETE: "delete",
+  DOTS_VERTICAL: "dots-vertical",
+  PLUS: "plus",
+  CHECK_CIRCLE: "check-circle",
+  CLOCK: "clock",
+  ALERT_CIRCLE: "alert-circle",
+} as const;

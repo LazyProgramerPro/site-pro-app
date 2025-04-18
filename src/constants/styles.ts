@@ -12,3 +12,29 @@ export const GlobalStyles = {
     iconInactive: "#CFD8DC",
   },
 };
+
+export const STATUS_COLORS = {
+  STATUS: {
+    COMPLETED: {
+      BACKGROUND: "#e8f5e9",
+      TEXT: "#2e7d32",
+    },
+    IN_PROGRESS: {
+      BACKGROUND: "#fff3e0",
+      TEXT: "#f57c00",
+    },
+    NOT_STARTED: {
+      BACKGROUND: "#ffebee",
+      TEXT: "#d32f2f",
+    },
+  },
+  ICON: {
+    DEFAULT: "#757575",
+    SELECTED: "#2196F3",
+    EMPTY: "#bdbdbd",
+  },
+  TEXT: {
+    PRIMARY: "#757575",
+    SECONDARY: "#9e9e9e",
+  },
+} as const;
