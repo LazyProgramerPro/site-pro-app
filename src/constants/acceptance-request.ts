@@ -33,6 +33,9 @@ export const ACCEPTANCE_REQUEST_TEXTS = {
     VIEW: "Xem chi tiết",
     EDIT: "Chỉnh sửa",
     DELETE: "Xoá",
+    ADD: "Thêm",
+    CANCEL: "Huỷ",
+    APPROVE: "Duyệt",
   },
   INFO: {
     UPDATED_BY: "Cập nhật:",

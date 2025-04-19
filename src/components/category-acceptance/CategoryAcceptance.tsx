@@ -26,15 +26,6 @@ export default function CategoryAcceptance() {
     { label: "Nghiệm thu hoàn thành công trình", value: "3" },
   ];
 
-  const renderChecklistItem = ({ item }) => (
-    <View style={styles.checklistItem}>
-      <Text style={styles.checklistCode} numberOfLines={1} ellipsizeMode="tail">
-        {item.id}
-      </Text>
-      <Text style={styles.checklistDescription}>{item.description}</Text>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
       {/* Acceptance Category Dropdown */}

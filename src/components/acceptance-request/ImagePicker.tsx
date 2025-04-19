@@ -1,7 +1,9 @@
-import { Ionicons } from "@expo/vector-icons"; // Make sure to install @expo/vector-icons
+import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
+  Animated,
   Image,
   ScrollView,
   StyleSheet,
@@ -12,30 +14,55 @@ import {
 
 const ImagePickerComponent: React.FC = () => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const fadeAnim = React.useRef(new Animated.Value(1)).current;
+
+  const MAX_IMAGES = 10;
 
   const pickImages = async () => {
-    // Request permission to access media library
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    try {
+      setIsLoading(true);
 
-    if (!permissionResult.granted) {
-      alert("Permission to access media library is required!");
-      return;
-    }
+      // Request permission to access media library
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    // Open image picker with multiple selection enabled
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
-      quality: 1,
-      allowsMultipleSelection: true,
-      selectionLimit: 10, // Set a reasonable limit (or 0 for unlimited)
-    });
+      if (!permissionResult.granted) {
+        alert("Permission to access media library is required!");
+        return;
+      }
 
-    if (!result.canceled && result.assets) {
-      // Get URIs from all selected assets and add them to existing images
-      const newImageUris = result.assets.map((asset) => asset.uri);
-      setSelectedImages((prevImages) => [...prevImages, ...newImageUris]);
+      // Open image picker with multiple selection enabled
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: false,
+        quality: 0.8, // Slightly reduced for better performance
+        allowsMultipleSelection: true,
+        selectionLimit: MAX_IMAGES - selectedImages.length,
+      });
+
+      if (!result.canceled && result.assets) {
+        // Get URIs from all selected assets and add them to existing images
+        const newImageUris = result.assets.map((asset) => asset.uri);
+
+        // Animate the transition when adding new images
+        Animated.sequence([
+          Animated.timing(fadeAnim, {
+            toValue: 0.6,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+        ]).start();
+
+        setSelectedImages((prevImages) => [...prevImages, ...newImageUris]);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -44,129 +71,229 @@ const ImagePickerComponent: React.FC = () => {
   };
 
   const clearImages = () => {
-    setSelectedImages([]);
+    // Animate the fade out when clearing images
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setSelectedImages([]);
+      // Fade back in after clearing
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>Hình ảnh</Text>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.cameraButton} onPress={pickImages}>
-          <Ionicons name="camera" size={24} color="white" />
-        </TouchableOpacity>
-
-        {selectedImages.length > 0 && (
-          <TouchableOpacity style={styles.clearButton} onPress={clearImages}>
-            <Text style={styles.clearButtonText}>Xóa tất cả</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {selectedImages.length > 0 && (
-        <ScrollView
-          contentContainerStyle={styles.imageScrollContainer}
-          style={styles.imageScroll}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-        >
-          <View style={styles.imageGrid}>
-            {selectedImages.map((uri, index) => (
-              <View key={index} style={styles.imageContainer}>
-                <Image source={{ uri }} style={styles.image} />
-                <TouchableOpacity
-                  style={styles.removeButton}
-                  onPress={() => removeImage(index)}
-                >
-                  <Text style={styles.removeButtonText}>✕</Text>
-                </TouchableOpacity>
+      {selectedImages.length === 0 ? (
+        <View style={styles.emptyStateContainer}>
+          <Ionicons name="images-outline" size={60} color="#e0e0e0" />
+          <Text style={styles.emptyStateText}>Chưa có hình ảnh nào</Text>
+          <Text style={styles.emptyStateSubText}>
+            Chọn tối đa {MAX_IMAGES} hình ảnh để đính kèm
+          </Text>
+        </View>
+      ) : (
+        <Animated.View style={[styles.imageScroll, { opacity: fadeAnim }]}>
+          <ScrollView
+            horizontal={false}
+            showsVerticalScrollIndicator={true}
+            contentContainerStyle={styles.scrollContent}
+          >
+            <View style={styles.headerContainer}>
+              <Text style={styles.sectionTitle}>
+                Hình ảnh ({selectedImages.length}/{MAX_IMAGES})
+              </Text>
+              <View style={styles.headerActions}>
+                {selectedImages.length > 0 && (
+                  <TouchableOpacity
+                    style={styles.clearButton}
+                    onPress={clearImages}
+                    disabled={isLoading}
+                  >
+                    <Ionicons name="trash-outline" size={16} color="#d32f2f" />
+                    <Text style={styles.clearButtonText}>Xóa tất cả</Text>
+                  </TouchableOpacity>
+                )}
               </View>
-            ))}
-          </View>
-        </ScrollView>
+            </View>
+            <View style={styles.imageGrid}>
+              {selectedImages.map((uri, index) => (
+                <View key={index} style={styles.imageContainer}>
+                  <Image source={{ uri }} style={styles.image} />
+                  <TouchableOpacity
+                    style={styles.removeButton}
+                    onPress={() => removeImage(index)}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons name="close-circle" size={24} color="white" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+        </Animated.View>
       )}
+
+      {/* Button moved to bottom */}
+      <TouchableOpacity
+        style={[
+          styles.cameraButton,
+          selectedImages.length >= MAX_IMAGES && styles.disabledButton,
+        ]}
+        onPress={pickImages}
+        disabled={selectedImages.length >= MAX_IMAGES || isLoading}
+      >
+        {isLoading ? (
+          <ActivityIndicator color="white" size="small" />
+        ) : (
+          <>
+            <Ionicons name="cloud-upload-outline" size={24} color="white" />
+            <Text style={styles.buttonText}>Chọn ảnh</Text>
+          </>
+        )}
+      </TouchableOpacity>
     </View>
   );
 };
+
+// Get screen width to calculate image width dynamically
+// const { width } = Dimensions.get("window");
+// // Calculate item width for 3 items per row with margins
+// // const itemWidth = (width - 32 - 16) / 3; // screen width - container padding - margins -  gap
+// const itemWidth = (width - 32 - 2 * 2.5 * 3) / 3; // screen width - container padding - total margins
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
     backgroundColor: "#ffffff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "500",
-    marginBottom: 12,
-    color: "#333333",
-  },
-  buttonContainer: {
+  headerContainer: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
   },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#333333",
+  },
+  imageCount: {
+    fontSize: 14,
+    color: "#757575",
+    fontWeight: "500",
+  },
   cameraButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    flexDirection: "row",
+    paddingVertical: 14,
+    borderRadius: 8,
     backgroundColor: "#1a73e8",
     justifyContent: "center",
     alignItems: "center",
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
+    gap: 8,
+    marginTop: 16,
+    width: "100%",
+  },
+  disabledButton: {
+    backgroundColor: "#a0c3ff",
+    elevation: 0,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "500",
+    fontSize: 16,
   },
   clearButton: {
-    marginLeft: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: "#f5f5f5",
-    borderRadius: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
   clearButtonText: {
     color: "#d32f2f",
     fontSize: 14,
     fontWeight: "500",
   },
+  emptyStateContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 40,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    borderStyle: "dashed",
+    minHeight: 200,
+    flex: 1,
+  },
+  emptyStateText: {
+    marginTop: 16,
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#757575",
+  },
+  emptyStateSubText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: "#9e9e9e",
+    textAlign: "center",
+  },
   imageScroll: {
     width: "100%",
+    flex: 1,
   },
-  imageScrollContainer: {
-    paddingBottom: 16,
+  scrollContent: {
+    paddingBottom: 12,
   },
   imageGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
+    justifyContent: "flex-start",
   },
   imageContainer: {
-    margin: 4,
-    position: "relative",
-  },
-  image: {
     width: 100,
     height: 100,
+    margin: 2.5,
+    position: "relative",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
     borderRadius: 8,
   },
   removeButton: {
     position: "absolute",
-    top: -6,
-    right: -6,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    top: 4,
+    right: 4,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: "#ffffff",
-  },
-  removeButtonText: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "bold",
   },
 });
 

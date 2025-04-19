@@ -9,6 +9,7 @@ interface ScreenHeaderProps {
   title: string;
   onAddPress?: () => void;
   onOpenMenuPress?: () => void;
+  onBackPress?: () => void; // Added this property
 }
 
 export default function ScreenHeader({
