@@ -3,12 +3,14 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import acceptanceRequestReducer from "./slices/acceptanceRequestSlice";
 import authReducer from "./slices/authSlice";
 import diaryReducer from "./slices/diarySlice";
+import { acceptanceRequestSpecialFormReducer } from "./slices/formAcceptanceRequestSlice";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
     diary: diaryReducer,
     acceptanceRequest: acceptanceRequestReducer,
+    acceptanceRequestSpecialForm: acceptanceRequestSpecialFormReducer,
   },
 });
 

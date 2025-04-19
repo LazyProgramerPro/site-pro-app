@@ -2,14 +2,11 @@ import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-interface DocumentFile {
-  id: string;
-  name: string;
-  uri: string;
-  mimeType?: string;
-  size?: number;
-}
+import {
+  DocumentFile,
+  changeDocuments,
+} from "../../redux/slices/formAcceptanceRequestSlice";
+import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
 
 interface DocumentPickerProps {
   onDocumentsSelected?: (documents: DocumentFile[]) => void;
@@ -39,7 +36,14 @@ const formatFileSize = (bytes: number = 0) => {
 const DocumentPickerComponent: React.FC<DocumentPickerProps> = ({
   onDocumentsSelected,
 }) => {
+  const dispatch = useAppDispatch();
   const [documents, setDocuments] = useState<DocumentFile[]>([]);
+
+  const { files } = useAppSelector(
+    (state: RootState) => state.acceptanceRequestSpecialForm.data || []
+  );
+
+  console.log("files", files);
 
   const handleSelectDocuments = async () => {
     try {
@@ -61,6 +65,9 @@ const DocumentPickerComponent: React.FC<DocumentPickerProps> = ({
         const updatedDocs = [...documents, ...newDocs];
         setDocuments(updatedDocs);
 
+        // Dispatch to Redux store
+        dispatch(changeDocuments(updatedDocs));
+
         if (onDocumentsSelected) {
           onDocumentsSelected(updatedDocs);
         }
@@ -72,15 +79,23 @@ const DocumentPickerComponent: React.FC<DocumentPickerProps> = ({
   };
 
   const removeDocument = (id: string) => {
-    setDocuments((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
+    const updatedDocs = documents.filter((doc) => doc.id !== id);
+    setDocuments(updatedDocs);
+
+    // Dispatch to Redux store
+    dispatch(changeDocuments(updatedDocs));
 
     if (onDocumentsSelected) {
-      onDocumentsSelected(documents.filter((doc) => doc.id !== id));
+      onDocumentsSelected(updatedDocs);
     }
   };
 
   const clearAllDocuments = () => {
     setDocuments([]);
+
+    // Dispatch to Redux store
+    dispatch(changeDocuments([]));
+
     if (onDocumentsSelected) {
       onDocumentsSelected([]);
     }

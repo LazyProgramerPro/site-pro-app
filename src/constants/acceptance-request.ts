@@ -36,6 +36,7 @@ export const ACCEPTANCE_REQUEST_TEXTS = {
     ADD: "Thêm",
     CANCEL: "Huỷ",
     APPROVE: "Duyệt",
+    SAVE_ACCEPTANCE_REQUEST: "Lưu thông tin yêu cầu nghiệm thu",
   },
   INFO: {
     UPDATED_BY: "Cập nhật:",

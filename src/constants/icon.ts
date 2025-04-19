@@ -16,4 +16,5 @@ export const ICONS_NAME = {
   CLOCK: "clock",
   ALERT_CIRCLE: "alert-circle",
   ADD: "plus",
+  SAVE: "content-save",
 } as const;

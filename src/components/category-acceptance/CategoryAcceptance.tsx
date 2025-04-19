@@ -3,12 +3,21 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { TextInput } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { changeCategoryAcceptance } from "../../redux/slices/formAcceptanceRequestSlice";
+import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
 
 export default function CategoryAcceptance() {
+  const dispatch = useAppDispatch();
   const [acceptanceCategory, setAcceptanceCategory] = useState(null);
   const [constructionWork, setConstructionWork] = useState("");
   const [measurementValue, setMeasurementValue] = useState("");
   const [measurementUnit, setMeasurementUnit] = useState("km");
+
+  const { categoryAcceptance } = useAppSelector(
+    (state: RootState) => state.acceptanceRequestSpecialForm.data
+  );
+
+  console.log("categoryAcceptance", categoryAcceptance);
 
   // Example checklists for category 2 and 3
   const checklists = [
@@ -26,10 +35,31 @@ export default function CategoryAcceptance() {
     { label: "Nghiệm thu hoàn thành công trình", value: "3" },
   ];
 
+  const handleCategoryChange = (item: any) => {
+    setAcceptanceCategory(item.value);
+    dispatch(
+      changeCategoryAcceptance({ key: "acceptanceCategory", value: item.value })
+    );
+  };
+
+  const handleConstructionWorkChange = (value: string) => {
+    setConstructionWork(value);
+    dispatch(changeCategoryAcceptance({ key: "constructionWork", value }));
+  };
+
+  const handleMeasurementValueChange = (value: string) => {
+    setMeasurementValue(value);
+    dispatch(changeCategoryAcceptance({ key: "measurementValue", value }));
+  };
+
+  const handleMeasurementUnitChange = (value: string) => {
+    setMeasurementUnit(value);
+    dispatch(changeCategoryAcceptance({ key: "measurementUnit", value }));
+  };
+
   return (
     <View style={styles.container}>
       {/* Acceptance Category Dropdown */}
-
       <View style={styles.inputWrapper}>
         <Dropdown
           style={styles.dropdown}
@@ -41,9 +71,7 @@ export default function CategoryAcceptance() {
           valueField="value"
           placeholder="Chọn loại nghiệm thu"
           value={acceptanceCategory}
-          onChange={(item) => {
-            setAcceptanceCategory(item.value);
-          }}
+          onChange={handleCategoryChange}
         />
       </View>
       {acceptanceCategory === "1" ? (
@@ -54,7 +82,7 @@ export default function CategoryAcceptance() {
             <TextInput
               style={styles.textInput}
               value={constructionWork}
-              onChangeText={setConstructionWork}
+              onChangeText={handleConstructionWorkChange}
               placeholder="Thi Công xây lắp"
               mode="outlined"
               outlineColor="#ddd"
@@ -70,7 +98,7 @@ export default function CategoryAcceptance() {
               <TextInput
                 style={styles.valueInput}
                 value={measurementValue}
-                onChangeText={setMeasurementValue}
+                onChangeText={handleMeasurementValueChange}
                 placeholder="10"
                 keyboardType="numeric"
                 mode="outlined"
@@ -84,7 +112,7 @@ export default function CategoryAcceptance() {
               <TextInput
                 style={styles.unitInput}
                 value={measurementUnit}
-                onChangeText={setMeasurementUnit}
+                onChangeText={handleMeasurementUnitChange}
                 placeholder="km"
                 mode="outlined"
                 outlineColor="#ddd"

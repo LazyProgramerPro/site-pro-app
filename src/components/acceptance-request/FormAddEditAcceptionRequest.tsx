@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
@@ -7,6 +7,7 @@ import { DatePickerInput } from "react-native-paper-dates";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
 import { ICONS_NAME } from "../../constants/icon";
+import { RootState, useAppSelector } from "../../redux/store";
 import BottomSheetPopup from "../ui/BottomSheetPopup";
 
 type FormData = {
@@ -24,19 +25,23 @@ interface FormAddEditProps {
   initialValues?: Partial<FormData>;
   openMenu: boolean;
   closeMenuHandler: () => void;
+  onSubmitSuccess?: (data: FormData) => void;
 }
 
 export default function FormAddEditAcceptionRequest({
   openMenu,
   closeMenuHandler,
   initialValues = {},
+  onSubmitSuccess,
 }: FormAddEditProps) {
   const theme = useTheme();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<FormData>({
     defaultValues: {
       requestName: "",
@@ -50,6 +55,10 @@ export default function FormAddEditAcceptionRequest({
       ...initialValues,
     },
   });
+
+  const { categoryAcceptance, files, images } = useAppSelector(
+    (state: RootState) => state.acceptanceRequestSpecialForm.data
+  );
 
   const nearbyLocations = [
     { label: "Địa điểm 1", value: "1" },
@@ -65,6 +74,46 @@ export default function FormAddEditAcceptionRequest({
 
   const handleCloseMenu = () => {
     closeMenuHandler();
+  };
+
+  const handleAddAcceptanceRequest = async (data: FormData) => {
+    // Validate the form data before submission
+
+    //TODO: Merge data form + data from redux store
+    const mergedData = {
+      ...data,
+      categoryAcceptance,
+      files,
+      images,
+    };
+    console.log("Merged data:", mergedData);
+
+    try {
+      setIsSubmitting(true);
+
+      // Log the actual form data
+      console.log("Form submitted with values:", data);
+
+      // Simulate API call with a small delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // After successful submission
+
+      // Call success callback if provided
+      if (onSubmitSuccess) {
+        onSubmitSuccess(data);
+      }
+
+      // Close the menu after successful submission
+      handleCloseMenu();
+
+      // Optionally reset the form
+      // reset();
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -87,6 +136,7 @@ export default function FormAddEditAcceptionRequest({
                 style={styles.input}
                 outlineStyle={styles.inputOutline}
                 contentStyle={styles.inputContent}
+                disabled={isSubmitting}
               />
               {errors.requestName && (
                 <HelperText
@@ -116,6 +166,7 @@ export default function FormAddEditAcceptionRequest({
               left={<TextInput.Icon icon="note-text-outline" />}
               style={styles.textarea}
               outlineStyle={styles.inputOutline}
+              disabled={isSubmitting}
             />
           )}
         />
@@ -135,9 +186,9 @@ export default function FormAddEditAcceptionRequest({
               mode="outlined"
               placeholder="Chọn ngày giờ"
               presentationStyle="pageSheet"
-              left={<TextInput.Icon icon="calendar" />}
               outlineStyle={styles.inputOutline}
               contentStyle={styles.inputContent}
+              disabled={isSubmitting}
             />
           )}
         />
@@ -156,6 +207,7 @@ export default function FormAddEditAcceptionRequest({
               style={styles.input}
               outlineStyle={styles.inputOutline}
               contentStyle={styles.inputContent}
+              disabled={isSubmitting}
             />
           )}
         />
@@ -184,6 +236,7 @@ export default function FormAddEditAcceptionRequest({
                     style={styles.dropdownIcon}
                   />
                 )}
+                disable={isSubmitting}
               />
             )}
           />
@@ -203,6 +256,7 @@ export default function FormAddEditAcceptionRequest({
               style={styles.input}
               outlineStyle={styles.inputOutline}
               contentStyle={styles.inputContent}
+              disabled={isSubmitting}
             />
           )}
         />
@@ -221,6 +275,7 @@ export default function FormAddEditAcceptionRequest({
               style={styles.input}
               outlineStyle={styles.inputOutline}
               contentStyle={styles.inputContent}
+              disabled={isSubmitting}
             />
           )}
         />
@@ -249,19 +304,22 @@ export default function FormAddEditAcceptionRequest({
                     style={styles.dropdownIcon}
                   />
                 )}
+                disable={isSubmitting}
               />
             )}
           />
         </View>
       </View>
+
+      {/* Bottom Sheet Menu */}
       <BottomSheetPopup
         visible={openMenu}
         onDismiss={handleCloseMenu}
         title="Tùy chọn"
         addAction={{
-          icon: ICONS_NAME.ADD,
-          label: ACCEPTANCE_REQUEST_TEXTS.ACTIONS.ADD,
-          onPress: () => handleCloseMenu(),
+          icon: ICONS_NAME.SAVE,
+          label: ACCEPTANCE_REQUEST_TEXTS.ACTIONS.SAVE_ACCEPTANCE_REQUEST,
+          onPress: () => handleSubmit(handleAddAcceptanceRequest)(),
         }}
         cancelAction={{
           icon: ICONS_NAME.CANCEL,

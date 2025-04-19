@@ -11,11 +11,22 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { changeImages } from "../../redux/slices/formAcceptanceRequestSlice";
+import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
 
 const ImagePickerComponent: React.FC = () => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const fadeAnim = React.useRef(new Animated.Value(1)).current;
+  const dispatch = useAppDispatch();
+
+  const { images } = useAppSelector(
+    (state: RootState) => state.acceptanceRequestSpecialForm.data || []
+  );
+
+  console.log("selectedImages", selectedImages);
+
+  console.log("images", images);
 
   const MAX_IMAGES = 10;
 
@@ -23,7 +34,6 @@ const ImagePickerComponent: React.FC = () => {
     try {
       setIsLoading(true);
 
-      // Request permission to access media library
       const permissionResult =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -32,20 +42,17 @@ const ImagePickerComponent: React.FC = () => {
         return;
       }
 
-      // Open image picker with multiple selection enabled
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: false,
-        quality: 0.8, // Slightly reduced for better performance
+        quality: 0.8,
         allowsMultipleSelection: true,
         selectionLimit: MAX_IMAGES - selectedImages.length,
       });
 
       if (!result.canceled && result.assets) {
-        // Get URIs from all selected assets and add them to existing images
         const newImageUris = result.assets.map((asset) => asset.uri);
 
-        // Animate the transition when adding new images
         Animated.sequence([
           Animated.timing(fadeAnim, {
             toValue: 0.6,
@@ -59,7 +66,12 @@ const ImagePickerComponent: React.FC = () => {
           }),
         ]).start();
 
-        setSelectedImages((prevImages) => [...prevImages, ...newImageUris]);
+        const updatedImages = [...selectedImages, ...newImageUris];
+        console.log("updatedImages", updatedImages);
+        setSelectedImages(updatedImages);
+
+        // Dispatch the updated images to Redux
+        dispatch(changeImages(updatedImages));
       }
     } finally {
       setIsLoading(false);
@@ -67,18 +79,21 @@ const ImagePickerComponent: React.FC = () => {
   };
 
   const removeImage = (index: number) => {
-    setSelectedImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    const updatedImages = selectedImages.filter((_, i) => i !== index);
+    setSelectedImages(updatedImages);
+
+    // Dispatch the updated images to Redux
+    dispatch(changeImages(updatedImages));
   };
 
   const clearImages = () => {
-    // Animate the fade out when clearing images
     Animated.timing(fadeAnim, {
       toValue: 0,
       duration: 300,
       useNativeDriver: true,
     }).start(() => {
       setSelectedImages([]);
-      // Fade back in after clearing
+      dispatch(changeImages([])); // Clear images in Redux
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 300,
@@ -139,7 +154,6 @@ const ImagePickerComponent: React.FC = () => {
         </Animated.View>
       )}
 
-      {/* Button moved to bottom */}
       <TouchableOpacity
         style={[
           styles.cameraButton,

@@ -108,6 +108,8 @@ export default function AcceptanceRequestScreen() {
     />
   );
 
+  // TODO: REMOVE ALL STATE WHEN SCREEN UNMOUNTED
+
   return (
     <ScreenWrapper>
       <View style={styles.container}>
