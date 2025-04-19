@@ -1,14 +1,24 @@
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
-import { TextInput } from "react-native-paper";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import { IconButton, TextInput } from "react-native-paper";
+import { DashboardStackParamList } from "../../navigation/stacks/DashboardStack";
 import { changeCategoryAcceptance } from "../../redux/slices/formAcceptanceRequestSlice";
 import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
+interface ChecklistItem {
+  id: string;
+  description: string;
+}
 
 export default function CategoryAcceptance() {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<DashboardStackParamList>>();
+
   const dispatch = useAppDispatch();
-  const [acceptanceCategory, setAcceptanceCategory] = useState(null);
+
+  const [acceptanceCategory, setAcceptanceCategory] = useState("");
   const [constructionWork, setConstructionWork] = useState("");
   const [measurementValue, setMeasurementValue] = useState("");
   const [measurementUnit, setMeasurementUnit] = useState("km");
@@ -17,13 +27,10 @@ export default function CategoryAcceptance() {
     (state: RootState) => state.acceptanceRequestSpecialForm.data
   );
 
-  console.log("categoryAcceptance", categoryAcceptance);
-
   // Example checklists for category 2 and 3
-  const checklists = [
-    { id: "CHECKLIST-17322475...", description: "Gạch" },
-    { id: "CHECKLIST-1733456...", description: "Mmmmm" },
-  ];
+  // const { checklists = [] } = categoryAcceptance; // TODO: something wrong with checklists
+
+  const checklists: ChecklistItem[] = [];
 
   // Example acceptance categories
   const acceptanceCategories = [
@@ -38,23 +45,41 @@ export default function CategoryAcceptance() {
   const handleCategoryChange = (item: any) => {
     setAcceptanceCategory(item.value);
     dispatch(
-      changeCategoryAcceptance({ key: "acceptanceCategory", value: item.value })
+      changeCategoryAcceptance({
+        value: item.value,
+        checklists: [],
+      })
     );
   };
 
   const handleConstructionWorkChange = (value: string) => {
     setConstructionWork(value);
-    dispatch(changeCategoryAcceptance({ key: "constructionWork", value }));
+    dispatch(
+      changeCategoryAcceptance({
+        value,
+        checklists: [],
+      })
+    );
   };
 
   const handleMeasurementValueChange = (value: string) => {
     setMeasurementValue(value);
-    dispatch(changeCategoryAcceptance({ key: "measurementValue", value }));
+    dispatch(
+      changeCategoryAcceptance({
+        value,
+        checklists: [],
+      })
+    );
   };
 
   const handleMeasurementUnitChange = (value: string) => {
     setMeasurementUnit(value);
-    dispatch(changeCategoryAcceptance({ key: "measurementUnit", value }));
+    dispatch(
+      changeCategoryAcceptance({
+        value,
+        checklists: [],
+      })
+    );
   };
 
   return (
@@ -127,7 +152,18 @@ export default function CategoryAcceptance() {
           <View style={styles.headerContainer}>
             <Text style={styles.headerTitle}>Chọn danh mục nghiệm thu</Text>
             <TouchableOpacity style={styles.addButtonHeader}>
-              <Icon name="add" size={24} color="#2196F3" />
+              <IconButton
+                icon="plus"
+                size={24}
+                iconColor="#2196F3"
+                onPress={() => {
+                  // Handle add button press here
+                  console.log("Add button pressed");
+                  navigation.navigate("CategoryAcceptance", {
+                    categoryId: acceptanceCategory,
+                  });
+                }}
+              />
             </TouchableOpacity>
           </View>
 
@@ -140,20 +176,25 @@ export default function CategoryAcceptance() {
           </View>
 
           {/* Checklist Items */}
-          {checklists.map((item, index) => (
-            <View key={index} style={styles.checklistItem}>
-              <Text
-                style={styles.checklistCode}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {item.id}
-              </Text>
-              <Text style={styles.checklistDescription}>
-                {item.description}
-              </Text>
-            </View>
-          ))}
+          {checklists.map(
+            (
+              item: any,
+              index: number // TODO: check list item
+            ) => (
+              <View key={index} style={styles.checklistItem}>
+                <Text
+                  style={styles.checklistCode}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {item.id}
+                </Text>
+                <Text style={styles.checklistDescription}>
+                  {item.description}
+                </Text>
+              </View>
+            )
+          )}
         </>
       )}
     </View>

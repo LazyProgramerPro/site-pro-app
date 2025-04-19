@@ -17,4 +17,5 @@ export const ICONS_NAME = {
   ALERT_CIRCLE: "alert-circle",
   ADD: "plus",
   SAVE: "content-save",
+  VIEW: "eye-outline",
 } as const;

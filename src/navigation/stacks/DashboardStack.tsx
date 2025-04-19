@@ -5,6 +5,8 @@ import {
 import React from "react";
 import AcceptanceRequestScreen from "../../screens/acceptance-request/AcceptanceRequestScreen";
 import AddAcceptanceRequestScreen from "../../screens/acceptance-request/AddAcceptanceRequestScreen";
+import AddCategoryAcceptanceScreen from "../../screens/acceptance-request/AddCategoryAcceptanceScreen";
+import CategoryAcceptanceScreen from "../../screens/acceptance-request/CategoryAcceptanceScreen";
 import CheckInManagementScreen from "../../screens/CheckInManagementScreen";
 import DashboardScreen from "../../screens/DashboardScreen";
 import DiaryManagementScreen from "../../screens/DiaryManagementScreen";
@@ -42,6 +44,22 @@ export const DashboardStack = () => {
       <Stack.Screen
         name="AddAcceptanceRequest"
         component={AddAcceptanceRequestScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="CategoryAcceptance"
+        component={CategoryAcceptanceScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="AddCategoryAcceptance"
+        component={AddCategoryAcceptanceScreen}
         options={{
           headerShown: false,
         }}
@@ -91,6 +109,7 @@ export type DashboardStackParamList = {
   ProblemManagement: undefined;
   CheckInManagement: undefined;
   Report: undefined;
+  CategoryAcceptance: CategoryAcceptanceRouteParams;
 };
 
 // Define the type for route parameters
@@ -98,6 +117,12 @@ export type AddAcceptanceRequestRouteParams = {
   location: { latitude: number; longitude: number };
   projectId: number | null;
   constructionId: number | null;
+};
+
+export type CategoryAcceptanceRouteParams = {
+  categoryId?: string;
+  constructionId?: string;
+  projectId?: string;
 };
 
 export type AddAcceptanceRequestScreenProps = NativeStackScreenProps<
