@@ -8,9 +8,15 @@ import { GlobalStyles } from "../../constants/styles";
 interface ScreenHeaderProps {
   title: string;
   onAddPress?: () => void;
+  onOpenMenuPress?: () => void;
+  onBackPress?: () => void; // Added this property
 }
 
-export default function ScreenHeader({ title, onAddPress }: ScreenHeaderProps) {
+export default function ScreenHeader({
+  title,
+  onAddPress,
+  onOpenMenuPress,
+}: ScreenHeaderProps) {
   const navigation = useNavigation();
 
   return (
@@ -21,7 +27,7 @@ export default function ScreenHeader({ title, onAddPress }: ScreenHeaderProps) {
           navigation.goBack();
         }}
       />
-      <Text variant="titleLarge" style={styles.title}>
+      <Text variant="titleMedium" style={styles.title}>
         {title}
       </Text>
       {onAddPress && (
@@ -34,6 +40,18 @@ export default function ScreenHeader({ title, onAddPress }: ScreenHeaderProps) {
             />
           )}
           onPress={onAddPress}
+        />
+      )}
+      {onOpenMenuPress && (
+        <IconButton
+          icon={() => (
+            <MaterialCommunityIcons
+              name="dots-vertical"
+              size={24}
+              color={GlobalStyles.colors.primary700}
+            />
+          )}
+          onPress={onOpenMenuPress}
         />
       )}
     </View>
@@ -58,5 +76,7 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     marginLeft: 8,
+    fontSize: 18,
+    fontWeight: "600",
   },
 });
