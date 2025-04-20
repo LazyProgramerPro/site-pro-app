@@ -48,17 +48,7 @@ export default function DiaryManagementScreen() {
   };
 
   const renderItem = ({ item }: { item: DiaryEntry }) => (
-    <DiaryEntryItem
-      item={item}
-      selectedItem={selectedItem}
-      onSelect={setSelectedItem}
-      visibleItemMenu={visibleItemMenu}
-      onMenuPress={setVisibleItemMenu}
-      onMenuDismiss={() => setVisibleItemMenu(null)}
-      onViewPress={handleViewPress}
-      onEditPress={handleEditPress}
-      onDeletePress={handleDeletePress}
-    />
+    <DiaryEntryItem item={item} />
   );
 
   const renderEmptyList = () => <></>;

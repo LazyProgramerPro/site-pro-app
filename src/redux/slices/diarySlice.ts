@@ -53,6 +53,7 @@ interface DiaryState {
   loading: boolean;
   error: string | null;
   currentRequestId: string | undefined;
+  editingDiary: DiaryEntry | null;
   query: {
     filterStatus?: string | null;
     searchTerm?: string | null;
@@ -76,6 +77,7 @@ const initialState: DiaryState = {
   loading: false,
   error: null,
   currentRequestId: undefined,
+  editingDiary: null,
   query: {
     filterStatus: null,
     // searchTerm: null,
@@ -158,6 +160,17 @@ const diarySlice = createSlice({
     setFilterStatus: (state, action: PayloadAction<string | null>) => {
       state.query.filterStatus = action.payload;
     },
+    startEditingDiaryRequest: (state, action: PayloadAction<number>) => {
+      const diaryEntry = state.entries.find(
+        (entry) => entry.id === action.payload
+      );
+      if (diaryEntry) {
+        state.editingDiary = diaryEntry;
+      }
+    },
+    cancelEditingDiary: (state) => {
+      state.editingDiary = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -213,7 +226,12 @@ const diarySlice = createSlice({
   },
 });
 
-export const { setSelectedProject, setSelectedConstruction, setFilterStatus } =
-  diarySlice.actions;
+export const {
+  setSelectedProject,
+  setSelectedConstruction,
+  setFilterStatus,
+  startEditingDiaryRequest,
+  cancelEditingDiary,
+} = diarySlice.actions;
 
 export default diarySlice.reducer;

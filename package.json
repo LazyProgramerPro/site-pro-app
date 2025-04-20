@@ -4,9 +4,9 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "android": "yarn install && expo start --android",
+    "ios": "yarn install && expo start --ios",
+    "web": "yarn install && expo start --web"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -34,6 +34,7 @@
     "react-native-paper-dates": "^0.22.40",
     "react-native-paper-dropdown": "^2.3.1",
     "react-native-safe-area-context": "^5.4.0",
+    "react-native-screens": "^4.10.0",
     "react-native-vector-icons": "^10.2.0",
     "react-redux": "^9.2.0",
     "zod": "^3.24.3"

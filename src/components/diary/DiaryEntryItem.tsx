@@ -6,32 +6,30 @@ import { DIARY_TEXTS } from "../../constants/diary";
 import BottomSheetPopup from "../ui/BottomSheetPopup";
 import { STATUS_COLORS } from "../../constants/styles";
 import { ICONS_NAME } from "../../constants/icon";
-import type { DiaryEntry } from "../../redux/slices/diarySlice";
+import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
+import {
+  cancelEditingDiary,
+  deleteDiaryEntry,
+  startEditingDiaryRequest,
+} from "../../redux/slices/diarySlice";
+
+export interface DiaryEntry {
+  id: number;
+  title: string;
+  date: string;
+  status: string;
+  updatedBy: string;
+  createdBy: string;
+}
 
 interface DiaryEntryItemProps {
   item: DiaryEntry;
-  selectedItem: DiaryEntry | null;
-  onSelect: (item: DiaryEntry) => void;
-  visibleItemMenu: number | null;
-  onMenuPress: (itemId: number) => void;
-  onMenuDismiss: () => void;
-  onViewPress: (item: DiaryEntry) => void;
-  onEditPress: (item: DiaryEntry) => void;
-  onDeletePress: (item: DiaryEntry) => void;
 }
 
-export default function DiaryEntryItem({
-  item,
-  selectedItem,
-  onSelect,
-  visibleItemMenu,
-  onMenuPress,
-  onMenuDismiss,
-  onViewPress,
-  onEditPress,
-  onDeletePress,
-}: DiaryEntryItemProps) {
-  const theme = useTheme();
+export default function DiaryEntryItem({ item }: DiaryEntryItemProps) {
+  const dispatch = useAppDispatch();
+  const { selectedProject, selectedConstruction, editingDiary } =
+    useAppSelector((state: RootState) => state.diary);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -58,8 +56,27 @@ export default function DiaryEntryItem({
 
   const statusStyle = getStatusStyle(item.status);
 
-  const handleMenuPress = () => {
-    onMenuPress(item.id);
+  const handleOpenMenu = (itemId: number) => {
+    dispatch(startEditingDiaryRequest(itemId));
+  };
+  const handleCloseMenu = () => {
+    dispatch(cancelEditingDiary());
+  };
+
+  const handleViewPressDiary = (diary: DiaryEntry) => {
+    // TODO: Implement view diary functionality
+    handleCloseMenu();
+  };
+
+  const handleEditPressDiary = (diary: DiaryEntry) => {
+    // TODO: Implement edit diary functionality
+    handleCloseMenu();
+  };
+
+  const handleDeletePressDiary = (diary: DiaryEntry) => {
+    // TODO: Implement delete diary functionality
+    handleCloseMenu();
+    dispatch(deleteDiaryEntry(diary.id));
   };
 
   return (
@@ -67,9 +84,8 @@ export default function DiaryEntryItem({
       <Card
         style={[
           styles.card,
-          item.id === selectedItem?.id && styles.selectedCard,
+          item.id === editingDiary?.id && styles.selectedCard,
         ]}
-        onPress={() => onSelect(item)}
       >
         <Card.Content>
           <View style={styles.itemHeader}>
@@ -78,21 +94,21 @@ export default function DiaryEntryItem({
                 name={ICONS_NAME.NOTEBOOK}
                 size={20}
                 color={
-                  item.id === selectedItem?.id
+                  item.id === editingDiary?.id
                     ? STATUS_COLORS.ICON.SELECTED
                     : STATUS_COLORS.ICON.DEFAULT
                 }
               />
               <Text
                 variant="titleMedium"
-                style={item.id === selectedItem?.id ? styles.selectedText : {}}
+                style={item.id === editingDiary?.id ? styles.selectedText : {}}
               >
                 {item.title}
               </Text>
             </View>
             <IconButton
               icon={ICONS_NAME.DOTS_VERTICAL}
-              onPress={handleMenuPress}
+              onPress={() => handleOpenMenu(item.id)}
             />
           </View>
 
@@ -147,28 +163,26 @@ export default function DiaryEntryItem({
         </Card.Content>
       </Card>
 
-      {visibleItemMenu === item.id && (
-        <BottomSheetPopup
-          visible={true}
-          onDismiss={onMenuDismiss}
-          title="Tùy chọn"
-          viewAction={{
-            icon: ICONS_NAME.EYE,
-            label: DIARY_TEXTS.ACTIONS.VIEW,
-            onPress: () => onViewPress(item),
-          }}
-          editAction={{
-            icon: ICONS_NAME.PENCIL,
-            label: DIARY_TEXTS.ACTIONS.EDIT,
-            onPress: () => onEditPress(item),
-          }}
-          deleteAction={{
-            icon: ICONS_NAME.DELETE,
-            label: DIARY_TEXTS.ACTIONS.DELETE,
-            onPress: () => onDeletePress(item),
-          }}
-        />
-      )}
+      <BottomSheetPopup
+        visible={editingDiary?.id === item.id}
+        onDismiss={handleCloseMenu}
+        title="Tùy chọn"
+        viewAction={{
+          icon: ICONS_NAME.EYE,
+          label: DIARY_TEXTS.ACTIONS.VIEW,
+          onPress: () => handleViewPressDiary(item),
+        }}
+        editAction={{
+          icon: ICONS_NAME.PENCIL,
+          label: DIARY_TEXTS.ACTIONS.EDIT,
+          onPress: () => handleEditPressDiary(item),
+        }}
+        deleteAction={{
+          icon: ICONS_NAME.DELETE,
+          label: DIARY_TEXTS.ACTIONS.DELETE,
+          onPress: () => handleDeletePressDiary(item),
+        }}
+      />
     </>
   );
 }
