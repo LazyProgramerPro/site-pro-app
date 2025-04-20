@@ -30,8 +30,8 @@ export const ACCEPTANCE_REQUEST_TEXTS = {
     IN_PROGRESS: "IN_PROGRESS",
   },
   ACTIONS: {
-    VIEW: "Xem chi tiết",
-    EDIT: "Chỉnh sửa",
+    VIEW: "Xem",
+    EDIT: "Cập nhật và gửi yêu cầu nghiệm thu",
     DELETE: "Xoá",
     ADD: "Thêm",
     CANCEL: "Huỷ",

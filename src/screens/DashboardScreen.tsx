@@ -1,28 +1,14 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
-import {
-  Dimensions,
-  FlatList,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import {
-  ActivityIndicator,
-  Avatar,
-  Button,
-  Card,
-  Chip,
-  Divider,
-  Surface,
-  Text,
-  useTheme,
-} from "react-native-paper";
+import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Text } from "react-native-paper";
 import ScreenWrapper from "../components/ui/ScreenWrapper";
 import { GlobalStyles } from "../constants/styles";
+
+// Import our new components
+import HeaderProfile from "../components/dashboard/HeaderProfile";
+import QuickAccessMenu from "../components/dashboard/QuickAccessMenu";
+import RecentProjects from "../components/dashboard/RecentProjects";
+import StatsOverview from "../components/dashboard/StatsOverview";
 
 const menuItems = [
   { label: "Dự án", icon: "folder-outline", color: "#4CAF50", name: "Project" },
@@ -81,14 +67,19 @@ const recentProjects = [
 ];
 
 export default function DashboardScreen({ navigation }: { navigation: any }) {
-  const { colors } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({
-    name: "Lộc Đỗ Trường",
+    name: "Thuong Dev",
     avatar:
-      "https://ui-avatars.com/api/?name=Lộc+Đỗ&background=0D8ABC&color=fff&size=128",
+      "https://ui-avatars.com/api/?name=Thường&background=0D8ABC&color=fff&size=128",
     role: "Quản lý dự án",
+  });
+
+  const [stats, setStats] = useState({
+    projects: 12,
+    active: 5,
+    pending: 8,
   });
 
   useEffect(() => {
@@ -105,69 +96,21 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
     }, 1500);
   }, []);
 
-  const renderMenuItem = ({ item }: { item: any }) => (
-    <TouchableOpacity
-      style={styles.gridItem}
-      onPress={() => navigation.navigate(item.name)}
-    >
-      <View style={styles.menuSurface}>
-        <View
-          style={[styles.iconCircle, { backgroundColor: `${item.color}20` }]}
-        >
-          <MaterialCommunityIcons
-            name={item.icon}
-            size={32}
-            color={item.color}
-          />
-        </View>
-        <Text style={styles.menuLabel}>{item.label}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const handleMenuItemPress = (screenName: string) => {
+    navigation.navigate(screenName);
+  };
 
-  const renderProjectItem = ({ item }: { item: any }) => (
-    <Card style={styles.projectCard} mode="elevated">
-      <Card.Cover source={{ uri: item.image }} style={styles.projectImage} />
-      <Card.Content style={styles.projectContent}>
-        <Text variant="titleMedium" numberOfLines={1}>
-          {item.name}
-        </Text>
+  const handleProjectPress = (projectId: string) => {
+    navigation.navigate("ProjectDetails", { projectId });
+  };
 
-        <View style={styles.projectDetails}>
-          <View style={styles.progressContainer}>
-            <Text variant="bodySmall" style={styles.progressText}>
-              Tiến độ: {item.progress}%
-            </Text>
-            <View style={styles.progressBar}>
-              <View
-                style={[
-                  styles.progressFill,
-                  {
-                    width: `${item.progress}%`,
-                    backgroundColor:
-                      item.progress > 80
-                        ? "#4CAF50"
-                        : item.progress > 40
-                        ? "#FF9800"
-                        : "#F44336",
-                  },
-                ]}
-              />
-            </View>
-          </View>
-          <Chip
-            icon="calendar"
-            compact
-            mode="outlined"
-            style={styles.dateChip}
-            textStyle={styles.chipText}
-          >
-            {item.dueDate}
-          </Chip>
-        </View>
-      </Card.Content>
-    </Card>
-  );
+  const handleViewAllProjects = () => {
+    navigation.navigate("Project");
+  };
+
+  const handleNotificationPress = () => {
+    navigation.navigate("Notifications");
+  };
 
   if (loading) {
     return (
@@ -192,104 +135,33 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
         }
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Header with User Profile */}
-        <LinearGradient
-          colors={[
-            GlobalStyles.colors.primary700,
-            GlobalStyles.colors.primary500,
-          ]}
-          style={styles.headerGradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-        >
-          <View style={styles.headerContent}>
-            <View style={styles.userInfoContainer}>
-              <Avatar.Image source={{ uri: user.avatar }} size={60} />
-              <View style={styles.userInfo}>
-                <Text variant="titleMedium" style={styles.userName}>
-                  {user.name}
-                </Text>
-                <Text variant="bodySmall" style={styles.userRole}>
-                  {user.role}
-                </Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.notificationButton}>
-              <MaterialCommunityIcons
-                name="bell-outline"
-                size={28}
-                color="white"
-              />
-              <View style={styles.notificationBadge}>
-                <Text style={styles.notificationBadgeText}>3</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </LinearGradient>
+        <HeaderProfile
+          user={user}
+          onNotificationPress={handleNotificationPress}
+        />
 
-        {/* Stats Overview */}
-        <Surface style={styles.statsContainer} elevation={2}>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>12</Text>
-            <Text style={styles.statLabel}>Dự án</Text>
-          </View>
-          <Divider style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>5</Text>
-            <Text style={styles.statLabel}>Đang triển khai</Text>
-          </View>
-          <Divider style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>8</Text>
-            <Text style={styles.statLabel}>Cần xử lý</Text>
-          </View>
-        </Surface>
+        <StatsOverview stats={stats} />
 
-        {/* Quick Access Menu */}
         <View style={styles.sectionHeader}>
           <Text variant="titleMedium" style={styles.sectionTitle}>
             Truy cập nhanh
           </Text>
         </View>
 
-        <FlatList
-          data={menuItems}
-          renderItem={renderMenuItem}
-          keyExtractor={(item) => item.label}
-          numColumns={3}
-          scrollEnabled={false}
-          contentContainerStyle={[styles.gridContainer, { padding: 8 }]}
-          columnWrapperStyle={{ gap: 12 }}
+        <QuickAccessMenu
+          menuItems={menuItems}
+          onMenuItemPress={handleMenuItemPress}
         />
 
-        {/* Recent Projects */}
-        <View style={styles.sectionHeader}>
-          <Text variant="titleMedium" style={styles.sectionTitle}>
-            Dự án gần đây
-          </Text>
-          <Button
-            mode="text"
-            compact
-            onPress={() => {}}
-            style={styles.viewAllButton}
-            labelStyle={styles.viewAllButtonLabel}
-          >
-            Xem tất cả
-          </Button>
-        </View>
-
-        {recentProjects.map((project) => (
-          <TouchableOpacity key={project.id} onPress={() => {}}>
-            {renderProjectItem({ item: project })}
-          </TouchableOpacity>
-        ))}
+        <RecentProjects
+          projects={recentProjects}
+          onProjectPress={handleProjectPress}
+          onViewAllPress={handleViewAllProjects}
+        />
       </ScrollView>
     </ScreenWrapper>
   );
 }
-
-const { width } = Dimensions.get("window");
-const itemSize = width / 3 - 16;
 
 const styles = StyleSheet.create({
   container: {
@@ -309,80 +181,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     color: GlobalStyles.colors.primary500,
   },
-  headerGradient: {
-    paddingTop: 16,
-    paddingBottom: 26,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-  },
-  headerContent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-  },
-  userInfoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  userInfo: {
-    marginLeft: 16,
-  },
-  userName: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  userRole: {
-    color: "rgba(255, 255, 255, 0.8)",
-    marginTop: 2,
-  },
-  notificationButton: {
-    position: "relative",
-    padding: 8,
-  },
-  notificationBadge: {
-    position: "absolute",
-    top: 4,
-    right: 4,
-    backgroundColor: "#FF5252",
-    borderRadius: 10,
-    minWidth: 20,
-    height: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  notificationBadgeText: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-  statsContainer: {
-    flexDirection: "row",
-    marginHorizontal: 16,
-    marginTop: -20,
-    borderRadius: 12,
-    paddingVertical: 16,
-    backgroundColor: "white",
-  },
-  statItem: {
-    flex: 1,
-    alignItems: "center",
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: GlobalStyles.colors.primary700,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: GlobalStyles.colors.gray700,
-    marginTop: 4,
-  },
-  statDivider: {
-    height: "70%",
-    width: 1,
-    alignSelf: "center",
-  },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -393,88 +191,5 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontWeight: "bold",
-  },
-  viewAllButton: {
-    marginRight: -8,
-  },
-  viewAllButtonLabel: {
-    fontSize: 14,
-    color: GlobalStyles.colors.primary500,
-  },
-  gridContainer: {
-    paddingHorizontal: 12,
-    gap: 8,
-  },
-  gridItem: {
-    flex: 1,
-    aspectRatio: 1,
-    margin: 0,
-  },
-  menuSurface: {
-    flex: 1,
-    borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 8,
-    backgroundColor: "white",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  iconCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  menuLabel: {
-    fontSize: 13,
-    textAlign: "center",
-    fontWeight: "500",
-  },
-  projectCard: {
-    marginHorizontal: 16,
-    marginBottom: 16,
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  projectImage: {
-    height: 120,
-  },
-  projectContent: {
-    paddingVertical: 12,
-  },
-  projectDetails: {
-    marginTop: 12,
-  },
-  progressContainer: {
-    marginBottom: 10,
-  },
-  progressText: {
-    marginBottom: 4,
-  },
-  progressBar: {
-    height: 6,
-    backgroundColor: "#E0E0E0",
-    borderRadius: 3,
-  },
-  progressFill: {
-    height: "100%",
-    borderRadius: 3,
-  },
-  dateChip: {
-    alignSelf: "flex-start",
-    height: 28,
-  },
-  chipText: {
-    fontSize: 12,
-    lineHeight: 16,
   },
 });

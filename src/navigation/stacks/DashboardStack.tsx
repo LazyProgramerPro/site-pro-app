@@ -117,6 +117,7 @@ export type AddAcceptanceRequestRouteParams = {
   location: { latitude: number; longitude: number };
   projectId: number | null;
   constructionId: number | null;
+  editingAcceptanceRequest?: any; // Adjust this type based on your editing acceptance request structure
 };
 
 export type CategoryAcceptanceRouteParams = {

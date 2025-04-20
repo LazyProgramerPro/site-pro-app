@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Chip, Surface, Text } from "react-native-paper";
+import { Chip, Surface, Text, useTheme } from "react-native-paper";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Adjust based on your icon library
 import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
 import { ICONS_NAME } from "../../constants/icon";
 import {
@@ -14,9 +15,13 @@ import {
 } from "../../redux/slices/acceptanceRequestSlice";
 import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
 import FieldSelector from "../ui/FieldSelector";
+interface RenderIconProps {
+  size: number;
+}
 
 export default function AcceptanceRequestListHeader() {
   const dispatch = useAppDispatch();
+  const theme = useTheme();
 
   const {
     projects,
@@ -53,6 +58,13 @@ export default function AcceptanceRequestListHeader() {
         constructionId: selectedConstruction?.id,
         status: status,
       })
+    );
+  };
+
+  const renderIcon = (iconName: string, status: string | null) => {
+    const isSelected = filterStatus === status;
+    return ({ size }: RenderIconProps) => (
+      <Icon name={iconName} size={size} color={isSelected ? "white" : "#666"} />
     );
   };
 
@@ -98,7 +110,15 @@ export default function AcceptanceRequestListHeader() {
                 ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.ALL
               )
             }
-            style={styles.filterChip}
+            style={[
+              styles.filterChip,
+              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.ALL &&
+                styles.selectedChip,
+            ]}
+            textStyle={
+              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.ALL &&
+              styles.selectedChipText
+            }
           >
             {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.ALL}
           </Chip>
@@ -112,7 +132,19 @@ export default function AcceptanceRequestListHeader() {
                 ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED
               )
             }
-            style={styles.filterChip}
+            style={[
+              styles.filterChip,
+              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED &&
+                styles.selectedChip,
+            ]}
+            textStyle={
+              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED &&
+              styles.selectedChipText
+            }
+            icon={renderIcon(
+              ICONS_NAME.CHECK_CIRCLE,
+              ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED
+            )}
           >
             {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.APPROVED}
           </Chip>
@@ -126,11 +158,25 @@ export default function AcceptanceRequestListHeader() {
                 ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS
               )
             }
-            style={styles.filterChip}
-            icon={ICONS_NAME.CLOCK}
+            style={[
+              styles.filterChip,
+              filterStatus ===
+                ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS &&
+                styles.selectedChip,
+            ]}
+            textStyle={
+              filterStatus ===
+                ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS &&
+              styles.selectedChipText
+            }
+            icon={renderIcon(
+              ICONS_NAME.CLOCK,
+              ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS
+            )}
           >
             {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.IN_PROGRESS}
           </Chip>
+
           <Chip
             selected={
               filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING
@@ -140,11 +186,23 @@ export default function AcceptanceRequestListHeader() {
                 ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING
               )
             }
-            style={styles.filterChip}
-            icon={ICONS_NAME.ALERT_CIRCLE}
+            style={[
+              styles.filterChip,
+              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING &&
+                styles.selectedChip,
+            ]}
+            textStyle={
+              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING &&
+              styles.selectedChipText
+            }
+            icon={renderIcon(
+              ICONS_NAME.ALERT_CIRCLE,
+              ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING
+            )}
           >
             {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.PENDING}
           </Chip>
+
           <Chip
             selected={
               filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED
@@ -154,8 +212,19 @@ export default function AcceptanceRequestListHeader() {
                 ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED
               )
             }
-            style={styles.filterChip}
-            icon={ICONS_NAME.CANCEL}
+            style={[
+              styles.filterChip,
+              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED &&
+                styles.selectedChip,
+            ]}
+            textStyle={
+              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED &&
+              styles.selectedChipText
+            }
+            icon={renderIcon(
+              ICONS_NAME.CANCEL,
+              ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED
+            )}
           >
             {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.REJECTED}
           </Chip>
@@ -181,6 +250,18 @@ const styles = StyleSheet.create({
   },
   filterChip: {
     marginRight: 8,
+    borderWidth: 1,
+    borderColor: "transparent",
+  },
+  selectedChip: {
+    backgroundColor: "#3498db",
+    borderColor: "#2980b9",
+    borderWidth: 1,
+    elevation: 2,
+  },
+  selectedChipText: {
+    color: "white",
+    fontWeight: "bold",
   },
   selectors: {
     marginBottom: 16,

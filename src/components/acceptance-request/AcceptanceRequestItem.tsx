@@ -3,10 +3,13 @@ import { StyleSheet, View } from "react-native";
 import { Card, Chip, IconButton, Text, useTheme } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useSelector } from "react-redux";
 import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
 import { ICONS_NAME } from "../../constants/icon";
 import { STATUS_COLORS } from "../../constants/styles";
+import { DashboardStackParamList } from "../../navigation/stacks/DashboardStack";
 import {
   AcceptanceRequest,
   cancelEditingAcceptanceRequest,
@@ -28,6 +31,9 @@ export default function AcceptanceRequestItem({
   const { editingAcceptanceRequest, selectedProject, selectedConstruction } =
     useSelector((state: RootState) => state.acceptanceRequest);
 
+  const navigation =
+    useNavigation<NativeStackNavigationProp<DashboardStackParamList>>();
+
   const handleAddAcceptanceRequest = () => {
     if (selectedProject && selectedConstruction) {
       console.log("Add new Acceptance request for:", {
@@ -43,8 +49,13 @@ export default function AcceptanceRequestItem({
 
   const handleEditPressAcceptanceRequest = (item: AcceptanceRequest) => {
     console.log("Edit item:", item);
+    navigation.navigate("AddAcceptanceRequest", {
+      location: { latitude: 10.762622, longitude: 106.660172 },
+      projectId: selectedProject?.id || 1,
+      constructionId: selectedConstruction?.id || 1,
+      editingAcceptanceRequest,
+    });
   };
-
   const handleDeletePressAcceptanceRequest = (item: AcceptanceRequest) => {
     dispatch(deleteAcceptanceRequest(item.id));
   };
@@ -207,7 +218,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 0,
   },
   itemHeaderLeft: {
     flexDirection: "row",

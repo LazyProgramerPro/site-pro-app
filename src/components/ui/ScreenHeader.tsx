@@ -22,7 +22,13 @@ export default function ScreenHeader({
   return (
     <View style={styles.header}>
       <IconButton
-        icon={() => <MaterialCommunityIcons name="chevron-left" size={24} />}
+        icon={() => (
+          <MaterialCommunityIcons
+            name="chevron-left"
+            size={24}
+            color={GlobalStyles.colors.primary700}
+          />
+        )}
         onPress={() => {
           navigation.goBack();
         }}
