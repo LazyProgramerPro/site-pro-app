@@ -1,51 +1,88 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Chip, Surface, Text } from "react-native-paper";
-import { DIARY_ICONS, DIARY_TEXTS } from "../../constants/diary";
-import DiaryFieldSelector from "./DiaryFieldSelector";
+import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
+import { DIARY_TEXTS } from "../../constants/diary";
+import { ICONS_NAME } from "../../constants/icon";
+import {
+  setFilterStatus,
+  setSelectedConstruction,
+  setSelectedProject,
+  getDiaryList,
+} from "../../redux/slices/diarySlice";
+import {
+  Construction,
+  Project,
+  getConstructions,
+} from "../../redux/slices/projectSlice";
+import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
+import FieldSelector from "../ui/FieldSelector";
+export default function DiaryListHeader() {
+  const dispatch = useAppDispatch();
+  const {
+    projects,
+    constructions,
+    selectedProject,
+    selectedConstruction,
+    entries,
+    query: { filterStatus },
+  } = useAppSelector((state: RootState) => state.diary);
 
-interface DiaryListHeaderProps {
-  selectedProject: string | null;
-  selectedConstruction: string | null;
-  projects: string[];
-  constructions: { [key: string]: string[] };
-  onProjectSelect: (project: string) => void;
-  onConstructionSelect: (construction: string) => void;
-  filterStatus: string | null;
-  onFilterStatusChange: (status: string | null) => void;
-  entryCount: number;
-}
+  console.log("filterStatus", filterStatus);
 
-export default function DiaryListHeader({
-  selectedProject,
-  selectedConstruction,
-  projects,
-  constructions,
-  onProjectSelect,
-  onConstructionSelect,
-  filterStatus,
-  onFilterStatusChange,
-  entryCount,
-}: DiaryListHeaderProps) {
+  const handleSelectedProject = (project: Project) => {
+    dispatch(setSelectedProject(project));
+    dispatch(setSelectedConstruction(null)); // Reset construction when project changes
+    dispatch(getConstructions(project.id)); // Fetch constructions for the selected project
+  };
+
+  const fetchDiaryList = ({
+    construction,
+    status,
+  }: {
+    construction?: Construction;
+    status?: string | null;
+  }) => {
+    dispatch(
+      getDiaryList({
+        projectId: selectedProject?.id,
+        constructionId: construction?.id
+          ? construction?.id
+          : selectedConstruction?.id,
+        status: status ? status : undefined,
+      })
+    );
+  };
+
+  const handleConstructionSelect = (construction: Construction) => {
+    dispatch(setSelectedConstruction(construction));
+    fetchDiaryList({ construction });
+  };
+
+  const onFilterStatusChange = (status: string | null) => {
+    dispatch(setFilterStatus(status));
+    fetchDiaryList({ status });
+  };
+
   return (
     <View style={styles.listHeader}>
       <Surface style={styles.selectors} elevation={1}>
-        <DiaryFieldSelector
-          title={DIARY_TEXTS.SELECT_PROJECT}
-          icon={DIARY_ICONS.PROJECT}
+        <FieldSelector
+          title={ACCEPTANCE_REQUEST_TEXTS.SELECT_PROJECT}
+          icon={ICONS_NAME.PROJECT}
           items={projects}
-          selectedItem={selectedProject || undefined}
-          onSelect={onProjectSelect}
+          selectedItem={selectedProject?.name || undefined}
+          onSelect={handleSelectedProject}
         />
 
         {selectedProject && (
           <View style={styles.selectorMargin}>
-            <DiaryFieldSelector
-              title={DIARY_TEXTS.SELECT_CONSTRUCTION}
-              icon={DIARY_ICONS.CONSTRUCTION}
-              items={constructions[selectedProject]}
-              selectedItem={selectedConstruction || undefined}
-              onSelect={onConstructionSelect}
+            <FieldSelector
+              title={ACCEPTANCE_REQUEST_TEXTS.SELECT_CONSTRUCTION}
+              icon={ICONS_NAME.CONSTRUCTION}
+              items={constructions}
+              selectedItem={selectedConstruction?.name || undefined}
+              onSelect={handleConstructionSelect}
             />
           </View>
         )}
@@ -53,7 +90,7 @@ export default function DiaryListHeader({
 
       {selectedProject && selectedConstruction && (
         <Text variant="titleMedium" style={styles.listTitle}>
-          {entryCount} nhật ký
+          {entries.length} nhật ký
         </Text>
       )}
 
@@ -70,7 +107,7 @@ export default function DiaryListHeader({
             selected={filterStatus === DIARY_TEXTS.STATUS.COMPLETED}
             onPress={() => onFilterStatusChange(DIARY_TEXTS.STATUS.COMPLETED)}
             style={styles.filterChip}
-            icon={DIARY_ICONS.CHECK_CIRCLE}
+            icon={ICONS_NAME.CHECK_CIRCLE}
           >
             {DIARY_TEXTS.STATUS.COMPLETED}
           </Chip>
@@ -78,7 +115,7 @@ export default function DiaryListHeader({
             selected={filterStatus === DIARY_TEXTS.STATUS.IN_PROGRESS}
             onPress={() => onFilterStatusChange(DIARY_TEXTS.STATUS.IN_PROGRESS)}
             style={styles.filterChip}
-            icon={DIARY_ICONS.CLOCK}
+            icon={ICONS_NAME.CLOCK}
           >
             {DIARY_TEXTS.STATUS.IN_PROGRESS}
           </Chip>
@@ -86,7 +123,7 @@ export default function DiaryListHeader({
             selected={filterStatus === DIARY_TEXTS.STATUS.NOT_STARTED}
             onPress={() => onFilterStatusChange(DIARY_TEXTS.STATUS.NOT_STARTED)}
             style={styles.filterChip}
-            icon={DIARY_ICONS.ALERT_CIRCLE}
+            icon={ICONS_NAME.ALERT_CIRCLE}
           >
             {DIARY_TEXTS.STATUS.NOT_STARTED}
           </Chip>

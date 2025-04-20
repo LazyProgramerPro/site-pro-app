@@ -2,55 +2,29 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { ActivityIndicator, Text, useTheme } from "react-native-paper";
-import DiaryEmptyList from "../components/diary/DiaryEmptyList";
-import DiaryEntryItem, { DiaryEntry } from "../components/diary/DiaryEntryItem";
+import DiaryEntryItem from "../components/diary/DiaryEntryItem";
 import DiaryListHeader from "../components/diary/DiaryListHeader";
 import ScreenHeader from "../components/ui/ScreenHeader";
 import ScreenWrapper from "../components/ui/ScreenWrapper";
-import {
-  deleteEntry,
-  setFilterStatus,
-  setSelectedConstruction,
-  setSelectedProject,
-} from "../redux/slices/diarySlice";
+import type { DiaryEntry } from "../redux/slices/diarySlice";
+import { deleteDiaryEntry } from "../redux/slices/diarySlice";
 import { RootState, useAppDispatch, useAppSelector } from "../redux/store";
-
+import { ACCEPTANCE_REQUEST_TEXTS } from "../constants/acceptance-request";
+import LoadingOverlay from "../components/ui/LoadingOverlay";
 export default function DiaryManagementScreen() {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const theme = useTheme();
 
-  const {
-    projects,
-    constructions,
-    entries,
-    selectedProject,
-    selectedConstruction,
-    filterStatus,
-  } = useAppSelector((state: RootState) => state.diary);
-
-  const [loading, setLoading] = useState(false);
+  const { entries, selectedProject, selectedConstruction, filterStatus } =
+    useAppSelector((state: RootState) => state.diary);
+  const loading = useAppSelector((state: RootState) => state.diary.loading);
   const [selectedItem, setSelectedItem] = useState<DiaryEntry | null>(null);
-  const [visibleItemMenu, setVisibleItemMenu] = useState<string | null>(null);
-
-  // Simulate loading data
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 800);
-    return () => clearTimeout(timer);
-  }, []);
+  const [visibleItemMenu, setVisibleItemMenu] = useState<number | null>(null);
 
   const filteredEntries = entries.filter(
     (entry: DiaryEntry) => !filterStatus || entry.status === filterStatus
   );
-
-  const handleProjectSelect = (project: string) => {
-    dispatch(setSelectedProject(project));
-  };
-
-  const handleConstructionSelect = (construction: string) => {
-    dispatch(setSelectedConstruction(construction));
-  };
 
   const handleAddEntry = () => {
     if (selectedProject && selectedConstruction) {
@@ -70,7 +44,7 @@ export default function DiaryManagementScreen() {
   };
 
   const handleDeletePress = (item: DiaryEntry) => {
-    dispatch(deleteEntry(item.id));
+    dispatch(deleteDiaryEntry(item.id));
   };
 
   const renderItem = ({ item }: { item: DiaryEntry }) => (
@@ -87,55 +61,24 @@ export default function DiaryManagementScreen() {
     />
   );
 
-  const renderEmptyList = () => (
-    <DiaryEmptyList
-      message={
-        !selectedProject
-          ? "Vui lòng chọn dự án để xem nhật ký"
-          : !selectedConstruction
-          ? "Vui lòng chọn công trình để xem nhật ký"
-          : "Không có nhật ký nào"
-      }
-    />
-  );
+  const renderEmptyList = () => <></>;
 
   return (
     <ScreenWrapper>
       <View style={styles.container}>
         <ScreenHeader title="Danh sách nhật ký" onAddPress={() => {}} />
-
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={
-              selectedProject && selectedConstruction ? filteredEntries : []
-            }
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.listContainer}
-            ListHeaderComponent={() => (
-              <DiaryListHeader
-                selectedProject={selectedProject}
-                selectedConstruction={selectedConstruction}
-                projects={projects}
-                constructions={constructions}
-                onProjectSelect={handleProjectSelect}
-                onConstructionSelect={handleConstructionSelect}
-                filterStatus={filterStatus}
-                onFilterStatusChange={(status) =>
-                  dispatch(setFilterStatus(status))
-                }
-                entryCount={filteredEntries.length}
-              />
-            )}
-            ListEmptyComponent={renderEmptyList}
-            ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-          />
+        {loading && (
+          <LoadingOverlay message={ACCEPTANCE_REQUEST_TEXTS.LOADING_DATA} />
         )}
+        <FlatList
+          data={selectedProject && selectedConstruction ? filteredEntries : []}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.listContainer}
+          ListHeaderComponent={() => <DiaryListHeader />}
+          ListEmptyComponent={renderEmptyList}
+          ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+        />
       </View>
     </ScreenWrapper>
   );

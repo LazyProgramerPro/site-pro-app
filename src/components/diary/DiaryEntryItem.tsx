@@ -2,24 +2,18 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Card, Chip, IconButton, Text, useTheme } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { DIARY_COLORS, DIARY_ICONS, DIARY_TEXTS } from "../../constants/diary";
+import { DIARY_TEXTS } from "../../constants/diary";
 import BottomSheetPopup from "../ui/BottomSheetPopup";
-
-export interface DiaryEntry {
-  id: string;
-  title: string;
-  date: string;
-  status: string;
-  updatedBy: string;
-  createdBy: string;
-}
+import { STATUS_COLORS } from "../../constants/styles";
+import { ICONS_NAME } from "../../constants/icon";
+import type { DiaryEntry } from "../../redux/slices/diarySlice";
 
 interface DiaryEntryItemProps {
   item: DiaryEntry;
   selectedItem: DiaryEntry | null;
   onSelect: (item: DiaryEntry) => void;
-  visibleItemMenu: string | null;
-  onMenuPress: (itemId: string) => void;
+  visibleItemMenu: number | null;
+  onMenuPress: (itemId: number) => void;
   onMenuDismiss: () => void;
   onViewPress: (item: DiaryEntry) => void;
   onEditPress: (item: DiaryEntry) => void;
@@ -43,26 +37,30 @@ export default function DiaryEntryItem({
     switch (status) {
       case DIARY_TEXTS.STATUS.COMPLETED:
         return {
-          icon: DIARY_ICONS.CHECK_CIRCLE,
-          backgroundColor: DIARY_COLORS.STATUS.COMPLETED.BACKGROUND,
-          textColor: DIARY_COLORS.STATUS.COMPLETED.TEXT,
+          icon: ICONS_NAME.CHECK_CIRCLE,
+          backgroundColor: STATUS_COLORS.STATUS.COMPLETED.BACKGROUND,
+          textColor: STATUS_COLORS.STATUS.COMPLETED.TEXT,
         };
       case DIARY_TEXTS.STATUS.IN_PROGRESS:
         return {
-          icon: DIARY_ICONS.CLOCK,
-          backgroundColor: DIARY_COLORS.STATUS.IN_PROGRESS.BACKGROUND,
-          textColor: DIARY_COLORS.STATUS.IN_PROGRESS.TEXT,
+          icon: ICONS_NAME.CLOCK,
+          backgroundColor: STATUS_COLORS.STATUS.IN_PROGRESS.BACKGROUND,
+          textColor: STATUS_COLORS.STATUS.IN_PROGRESS.TEXT,
         };
       default:
         return {
-          icon: DIARY_ICONS.ALERT_CIRCLE,
-          backgroundColor: DIARY_COLORS.STATUS.NOT_STARTED.BACKGROUND,
-          textColor: DIARY_COLORS.STATUS.NOT_STARTED.TEXT,
+          icon: ICONS_NAME.ALERT_CIRCLE,
+          backgroundColor: STATUS_COLORS.STATUS.NOT_STARTED.BACKGROUND,
+          textColor: STATUS_COLORS.STATUS.NOT_STARTED.TEXT,
         };
     }
   };
 
   const statusStyle = getStatusStyle(item.status);
+
+  const handleMenuPress = () => {
+    onMenuPress(item.id);
+  };
 
   return (
     <>
@@ -77,12 +75,12 @@ export default function DiaryEntryItem({
           <View style={styles.itemHeader}>
             <View style={styles.itemHeaderLeft}>
               <Icon
-                name={DIARY_ICONS.NOTEBOOK}
+                name={ICONS_NAME.NOTEBOOK}
                 size={20}
                 color={
                   item.id === selectedItem?.id
-                    ? DIARY_COLORS.ICON.SELECTED
-                    : DIARY_COLORS.ICON.DEFAULT
+                    ? STATUS_COLORS.ICON.SELECTED
+                    : STATUS_COLORS.ICON.DEFAULT
                 }
               />
               <Text
@@ -93,8 +91,8 @@ export default function DiaryEntryItem({
               </Text>
             </View>
             <IconButton
-              icon={DIARY_ICONS.DOTS_VERTICAL}
-              onPress={() => onMenuPress(item.id)}
+              icon={ICONS_NAME.DOTS_VERTICAL}
+              onPress={handleMenuPress}
             />
           </View>
 
@@ -112,9 +110,9 @@ export default function DiaryEntryItem({
 
             <View style={styles.infoRow}>
               <Icon
-                name={DIARY_ICONS.CALENDAR}
+                name={ICONS_NAME.CALENDAR}
                 size={16}
-                color={DIARY_COLORS.ICON.DEFAULT}
+                color={STATUS_COLORS.ICON.DEFAULT}
                 style={styles.infoIcon}
               />
               <Text variant="bodySmall">{item.date}</Text>
@@ -122,9 +120,9 @@ export default function DiaryEntryItem({
 
             <View style={styles.infoRow}>
               <Icon
-                name={DIARY_ICONS.ACCOUNT_EDIT}
+                name={ICONS_NAME.ACCOUNT_EDIT}
                 size={16}
-                color={DIARY_COLORS.ICON.DEFAULT}
+                color={STATUS_COLORS.ICON.DEFAULT}
                 style={styles.infoIcon}
               />
               <Text variant="bodySmall">
@@ -135,9 +133,9 @@ export default function DiaryEntryItem({
 
             <View style={styles.infoRow}>
               <Icon
-                name={DIARY_ICONS.ACCOUNT}
+                name={ICONS_NAME.ACCOUNT}
                 size={16}
-                color={DIARY_COLORS.ICON.DEFAULT}
+                color={STATUS_COLORS.ICON.DEFAULT}
                 style={styles.infoIcon}
               />
               <Text variant="bodySmall">
@@ -149,26 +147,28 @@ export default function DiaryEntryItem({
         </Card.Content>
       </Card>
 
-      <BottomSheetPopup
-        visible={visibleItemMenu === item.id}
-        onDismiss={onMenuDismiss}
-        title="Tùy chọn"
-        viewAction={{
-          icon: DIARY_ICONS.EYE,
-          label: DIARY_TEXTS.ACTIONS.VIEW,
-          onPress: () => onViewPress(item),
-        }}
-        editAction={{
-          icon: DIARY_ICONS.PENCIL,
-          label: DIARY_TEXTS.ACTIONS.EDIT,
-          onPress: () => onEditPress(item),
-        }}
-        deleteAction={{
-          icon: DIARY_ICONS.DELETE,
-          label: DIARY_TEXTS.ACTIONS.DELETE,
-          onPress: () => onDeletePress(item),
-        }}
-      />
+      {visibleItemMenu === item.id && (
+        <BottomSheetPopup
+          visible={true}
+          onDismiss={onMenuDismiss}
+          title="Tùy chọn"
+          viewAction={{
+            icon: ICONS_NAME.EYE,
+            label: DIARY_TEXTS.ACTIONS.VIEW,
+            onPress: () => onViewPress(item),
+          }}
+          editAction={{
+            icon: ICONS_NAME.PENCIL,
+            label: DIARY_TEXTS.ACTIONS.EDIT,
+            onPress: () => onEditPress(item),
+          }}
+          deleteAction={{
+            icon: ICONS_NAME.DELETE,
+            label: DIARY_TEXTS.ACTIONS.DELETE,
+            onPress: () => onDeletePress(item),
+          }}
+        />
+      )}
     </>
   );
 }
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   },
   selectedCard: {
     borderWidth: 2,
-    borderColor: DIARY_COLORS.ICON.SELECTED,
+    borderColor: STATUS_COLORS.ICON.SELECTED,
   },
   itemHeader: {
     flexDirection: "row",
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   },
   selectedText: {
     fontWeight: "700",
-    color: DIARY_COLORS.ICON.SELECTED,
+    color: STATUS_COLORS.ICON.SELECTED,
   },
   contentSection: {
     paddingLeft: 4,

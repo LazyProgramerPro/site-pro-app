@@ -248,12 +248,6 @@ export const getAcceptanceRequestList = createAsyncThunk<
 >(
   "acceptanceRequest/getAcceptanceRequestList",
   async ({ projectId, constructionId, status }, thunkAPI) => {
-    console.log(
-      "getAcceptanceRequestList called with projectId, constructionId, status:",
-      projectId,
-      constructionId,
-      status
-    );
     // Simulate a delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
     // TODO: Replace with actual API call and makesure projectId, constructionId exists

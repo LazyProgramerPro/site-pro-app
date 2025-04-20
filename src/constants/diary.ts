@@ -25,92 +25,155 @@ export const DIARY_TEXTS = {
   ADD_BUTTON: "Thêm nhật ký",
 } as const;
 
-export const DIARY_ICONS = {
-  PROJECT: "folder",
-  CONSTRUCTION: "office-building",
-  CONTRACT: "file-document-outline",
-  NOTEBOOK: "notebook-outline",
-  CALENDAR: "calendar",
-  ACCOUNT_EDIT: "account-edit",
-  ACCOUNT: "account",
-  EYE: "eye",
-  PENCIL: "pencil",
-  DELETE: "delete",
-  DOTS_VERTICAL: "dots-vertical",
-  PLUS: "plus",
-  CHECK_CIRCLE: "check-circle",
-  CLOCK: "clock",
-  ALERT_CIRCLE: "alert-circle",
+export const DIARY_TYPELIST = {
+  DIARY: [
+    { id: 0, name: "construction" },
+    { id: 1, name: "material" },
+    { id: 2, name: "planning" },
+    { id: 3, name: "inspection" },
+    { id: 4, name: "report" },
+  ],
+  CAPACITY: [
+    { id: 0, name: "nhathauthicong" },
+    { id: 1, name: "tuvanthietke" },
+    { id: 2, name: "tuvangiamsat" },
+    { id: 3, name: "chudautu" },
+    { id: 4, name: "quantrivien" },
+  ],
+  SAFETY: [
+    { id: 0, name: "Đảm bảo an toàn lao động theo quy định" },
+    { id: 1, name: "Kiểm tra an toàn thiết bị" },
+    { id: 2, name: "Chuẩn bị phương án an toàn" },
+    { id: 3, name: "Đào tạo an toàn lao động" },
+    { id: 4, name: "Kiểm tra trang thiết bị bảo hộ" },
+  ],
+  ENVIRONMENT: [
+    { id: 0, name: "Tuân thủ các biện pháp bảo vệ môi trường" },
+    { id: 1, name: "Xử lý chất thải xây dựng" },
+    { id: 2, name: "Đánh giá tác động môi trường" },
+    { id: 3, name: "Kiểm soát tiếng ồn và bụi" },
+    { id: 4, name: "Quản lý nước thải" },
+  ],
 } as const;
 
-export const DIARY_COLORS = {
-  STATUS: {
-    COMPLETED: {
-      BACKGROUND: "#e8f5e9",
-      TEXT: "#2e7d32",
-    },
-    IN_PROGRESS: {
-      BACKGROUND: "#fff3e0",
-      TEXT: "#f57c00",
-    },
-    NOT_STARTED: {
-      BACKGROUND: "#ffebee",
-      TEXT: "#d32f2f",
-    },
-  },
-  ICON: {
-    DEFAULT: "#757575",
-    SELECTED: "#2196F3",
-    EMPTY: "#bdbdbd",
-  },
-  TEXT: {
-    PRIMARY: "#757575",
-    SECONDARY: "#9e9e9e",
-  },
-} as const;
+export const DIARY_WEATHER_LIST = [
+  { id: 0, name: "Nắng" },
+  { id: 1, name: "Mưa" },
+] as const;
 
 // Mock data for development
 export const DIARY_MOCK_DATA = {
   PROJECTS: [
-    "Xây dựng tuyến đường 01",
-    "Xây dựng tuyến đường 02",
-    "Xây dựng cầu vượt 01",
-  ] as string[],
+    { id: 1, name: "Xây dựng tuyến đường 01" },
+    { id: 2, name: "Đường cao tốc Bắc Nam" },
+    { id: 3, name: "Dự án cầu vượt" },
+  ] as { id: number; name: string }[],
 
-  CONSTRUCTIONS: {
-    "Xây dựng tuyến đường 01": [
-      "Công trình số 1",
-      "Công trình số 2",
-      "Công trình số 3",
-    ],
-    "Xây dựng tuyến đường 02": ["Công trình A", "Công trình B"],
-    "Xây dựng cầu vượt 01": ["Công trình X", "Công trình Y"],
-  } as { [key: string]: string[] },
+  CONSTRUCTIONS: [
+    { id: 1, name: "Công trình A", projectId: 1 },
+    { id: 2, name: "Công trình B", projectId: 2 },
+    { id: 3, name: "Công trình C", projectId: 3 },
+  ],
 
   DIARY_ENTRIES: [
     {
-      id: "1",
+      id: 0,
       title: "Nhật ký ngày 12/04/2025",
       date: "12/04/2025",
       status: DIARY_TEXTS.STATUS.COMPLETED,
-      updatedBy: "tuvanthietke",
-      createdBy: "nhathauthicong",
+      createdBy: "Nguyễn Chí Thanh",
+      updatedBy: "Nguyễn Chí Thanh",
+      description: "Ghi chép về tiến độ thi công và các vấn đề phát sinh",
+      type: { id: 0, name: "construction" },
+      projectId: 1,
+      constructionId: 1,
+      capacity: [
+        { id: 0, name: "nhathauthicong" },
+        { id: 1, name: "tuvanthietke" },
+        { id: 2, name: "tuvangiamsat" },
+      ],
+      safety: { id: 0, name: "Đảm bảo an toàn lao động theo quy định" },
+      environment: { id: 0, name: "Tuân thủ các biện pháp bảo vệ môi trường" },
+      createdAt: "2025-04-12T08:00:00Z",
+      completionDate: "2025-04-12T17:00:00Z",
+      approvedBy: { id: 2, name: "Trần Minh Hoàng" },
+      approvalDate: "2025-04-12T18:00:00Z",
+      supportingDocuments: [
+        {
+          id: 0,
+          name: "Báo cáo tiến độ",
+          url: "/documents/progress-report-1.pdf",
+        },
+        { id: 1, name: "Ảnh hiện trường", url: "/documents/site-photo-1.jpg" },
+      ],
     },
     {
-      id: "2",
+      id: 1,
       title: "Nhật ký ngày 10/04/2025",
       date: "10/04/2025",
       status: DIARY_TEXTS.STATUS.IN_PROGRESS,
-      updatedBy: "nhathauthicong",
-      createdBy: "nhathauthicong",
+      createdBy: "Nguyễn Chí Thanh",
+      updatedBy: "Lê Văn An",
+      description: "Báo cáo về tình hình thi công và vật tư",
+      type: { id: 1, name: "material" },
+      projectId: 2,
+      constructionId: 2,
+      capacity: [
+        { id: 0, name: "nhathauthicong" },
+        { id: 2, name: "tuvangiamsat" },
+      ],
+      safety: { id: 1, name: "Kiểm tra an toàn thiết bị" },
+      environment: { id: 1, name: "Xử lý chất thải xây dựng" },
+      createdAt: "2025-04-10T09:00:00Z",
+      completionDate: "2025-04-11T16:30:00Z",
+      approvedBy: { id: 2, name: "Lê Văn An" },
+      approvalDate: "2025-04-11T17:00:00Z",
+      supportingDocuments: [
+        {
+          id: 0,
+          name: "Danh sách vật tư",
+          url: "/documents/material-list-1.xlsx",
+        },
+        {
+          id: 1,
+          name: "Biên bản kiểm tra",
+          url: "/documents/inspection-report-1.docx",
+        },
+      ],
     },
     {
-      id: "3",
+      id: 2,
       title: "Nhật ký ngày 08/04/2025",
       date: "08/04/2025",
       status: DIARY_TEXTS.STATUS.NOT_STARTED,
-      updatedBy: "tuvangiamsat",
-      createdBy: "nhathauthicong",
+      createdBy: "Nguyễn Chí Thanh",
+      updatedBy: "Nguyễn Thị Hương",
+      description: "Kế hoạch thi công tuần tới",
+      type: { id: 2, name: "planning" },
+      projectId: 3,
+      constructionId: 3,
+      capacity: [
+        { id: 0, name: "nhathauthicong" },
+        { id: 1, name: "tuvanthietke" },
+      ],
+      safety: { id: 2, name: "Chuẩn bị phương án an toàn" },
+      environment: { id: 2, name: "Đánh giá tác động môi trường" },
+      createdAt: "2025-04-08T10:00:00Z",
+      completionDate: "2025-04-09T15:00:00Z",
+      approvedBy: { id: 1, name: "Nguyễn Thị Hương" },
+      approvalDate: "2025-04-09T16:00:00Z",
+      supportingDocuments: [
+        {
+          id: 0,
+          name: "Kế hoạch thi công",
+          url: "/documents/construction-plan-1.pdf",
+        },
+        {
+          id: 1,
+          name: "Phương án an toàn",
+          url: "/documents/safety-plan-1.docx",
+        },
+      ],
     },
   ],
 } as const;
