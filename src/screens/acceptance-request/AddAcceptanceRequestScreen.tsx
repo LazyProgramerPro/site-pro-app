@@ -31,8 +31,16 @@ export default function AddAcceptanceRequestScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<DashboardStackParamList>>();
 
-  const { location, projectId, constructionId } =
+  const { location, projectId, constructionId, editingAcceptanceRequest } =
     route.params as AddAcceptanceRequestRouteParams;
+
+  // TODO: Compare with editingAcceptanceRequest from redux store
+  // const { editingAcceptanceRequest } = useAppSelector(
+  //   (state: RootState) => state.acceptanceRequest
+  // );
+  // console.log("location:", location);
+
+  console.log("editingAcceptanceRequest:", editingAcceptanceRequest);
 
   const [openMenu, setOpenMenu] = useState(false);
   const [backConfirmVisible, setBackConfirmVisible] = useState(false);
@@ -77,6 +85,7 @@ export default function AddAcceptanceRequestScreen() {
             <FormAddEditAcceptionRequest
               openMenu={openMenu}
               closeMenuHandler={closeMenuHandler}
+              initialValues={editingAcceptanceRequest}
             />
           </Animatable.View>
 

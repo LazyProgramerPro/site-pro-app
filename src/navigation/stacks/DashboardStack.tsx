@@ -3,9 +3,11 @@ import {
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
 import React from "react";
+import AcceptanceRequestDetailsScreen from "../../screens/acceptance-request/AcceptanceRequestDetailsScreen";
 import AcceptanceRequestScreen from "../../screens/acceptance-request/AcceptanceRequestScreen";
 import AddAcceptanceRequestScreen from "../../screens/acceptance-request/AddAcceptanceRequestScreen";
 import AddCategoryAcceptanceScreen from "../../screens/acceptance-request/AddCategoryAcceptanceScreen";
+import CategoryAcceptanceDetailsScreen from "../../screens/acceptance-request/CategoryAcceptanceDetailsScreen";
 import CategoryAcceptanceScreen from "../../screens/acceptance-request/CategoryAcceptanceScreen";
 import CheckInManagementScreen from "../../screens/CheckInManagementScreen";
 import DashboardScreen from "../../screens/DashboardScreen";
@@ -13,7 +15,6 @@ import DiaryManagementScreen from "../../screens/DiaryManagementScreen";
 import ProblemManagementScreen from "../../screens/ProblemManagementScreen";
 import ProjectScreen from "../../screens/ProjectScreen";
 import ReportScreen from "../../screens/ReportScreen";
-import CategoryAcceptanceDetailsScreen from "../../screens/acceptance-request/CategoryAcceptanceDetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +38,13 @@ export const DashboardStack = () => {
       <Stack.Screen
         name="AcceptanceRequest"
         component={AcceptanceRequestScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="AcceptanceRequestDetails"
+        component={AcceptanceRequestDetailsScreen}
         options={{
           headerShown: false,
         }}

@@ -38,6 +38,12 @@ export default function FormAddEditAcceptionRequest({
   const theme = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { editingAcceptanceRequest } = useAppSelector(
+    (state: RootState) => state.acceptanceRequest
+  );
+
+  console.log("editingAcceptanceRequest:", initialValues);
+
   const {
     control,
     handleSubmit,
