@@ -15,6 +15,7 @@ import {
 } from "../../redux/slices/acceptanceRequestSlice";
 import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
 import FieldSelector from "../ui/FieldSelector";
+import { GlobalStyles } from "../../constants/styles";
 interface RenderIconProps {
   size: number;
 }
@@ -254,14 +255,14 @@ const styles = StyleSheet.create({
     borderColor: "transparent",
   },
   selectedChip: {
-    backgroundColor: "#3498db",
-    borderColor: "#2980b9",
+    backgroundColor: GlobalStyles.colors.primary500,
+    borderColor: GlobalStyles.colors.primary500,
     borderWidth: 1,
     elevation: 2,
   },
   selectedChipText: {
     color: "white",
-    fontWeight: "bold",
+    // fontWeight: "bold",
   },
   selectors: {
     marginBottom: 16,

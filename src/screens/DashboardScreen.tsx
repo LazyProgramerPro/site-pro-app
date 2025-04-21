@@ -166,7 +166,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F7FA",
+    backgroundColor: GlobalStyles.colors.white,
   },
   scrollContent: {
     paddingBottom: 24,
@@ -175,11 +175,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F7FA",
+    backgroundColor: GlobalStyles.colors.white,
   },
   loadingText: {
     marginTop: 16,
-    color: GlobalStyles.colors.primary500,
+    color: GlobalStyles.colors.gray700,
   },
   sectionHeader: {
     flexDirection: "row",

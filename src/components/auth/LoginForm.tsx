@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     elevation: 4,
     alignItems: "center",
-    backgroundColor: "#FAFAFA", // Same as input background color
+    backgroundColor: GlobalStyles.colors.gray100, // Lighter background
   },
   logo: {
     marginBottom: 16,
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 16,
     width: "100%",
-    backgroundColor: "#FAFAFA",
+    backgroundColor: GlobalStyles.colors.white, // White input background for contrast
   },
   inputOutline: {
     borderRadius: 8,
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   errorText: {
-    color: "#D32F2F",
+    color: GlobalStyles.colors.error500, // Use consistent error color
     marginBottom: 12,
     marginLeft: 4,
     fontSize: 12,
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   supportText: {
     marginTop: 24,
     fontSize: 12,
-    color: GlobalStyles.colors.gray500,
+    color: GlobalStyles.colors.gray700, // Slightly darker for better readability
     textAlign: "center",
   },
 });

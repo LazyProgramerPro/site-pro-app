@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import {
+  Avatar,
   IconButton,
   Portal,
   Surface,
@@ -15,7 +16,7 @@ import {
   TouchableRipple,
   useTheme,
 } from "react-native-paper";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { GlobalStyles } from "../../constants/styles";
 
 type ActionItem = {
   icon: string;
@@ -47,7 +48,9 @@ const ActionButton = ({
   theme: any;
 }) => {
   const isDanger = type === "danger";
-  const color = isDanger ? theme.colors.error : theme.colors.primary;
+  const color = isDanger
+    ? GlobalStyles.colors.red500
+    : GlobalStyles.colors.white;
 
   return (
     <TouchableRipple
@@ -59,7 +62,12 @@ const ActionButton = ({
       rippleColor={color + "20"}
     >
       <View style={styles.bottomSheetItemContent}>
-        <Icon name={action.icon} size={24} color={color} />
+        <Avatar.Icon
+          size={32}
+          icon={action.icon}
+          color={color}
+          style={{ backgroundColor: GlobalStyles.colors.primary400 }}
+        />
         <Text
           variant="bodyLarge"
           style={[

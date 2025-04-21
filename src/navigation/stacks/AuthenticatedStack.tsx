@@ -45,7 +45,7 @@ function Home() {
           headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
           headerTintColor: "white",
           tabBarStyle: {
-            backgroundColor: GlobalStyles.colors.primary500,
+            backgroundColor: GlobalStyles.colors.white, // Đổi từ primary500 sang white
             height: 60 + insets.bottom,
             paddingBottom: insets.bottom,
             borderTopWidth: 0,
@@ -55,8 +55,8 @@ function Home() {
             shadowOpacity: 0.1,
             shadowRadius: 3,
           },
-          tabBarActiveTintColor: GlobalStyles.colors.iconActive,
-          tabBarInactiveTintColor: GlobalStyles.colors.iconInactive,
+          tabBarActiveTintColor: GlobalStyles.colors.primary600,
+          tabBarInactiveTintColor: GlobalStyles.colors.gray600,
           tabBarItemStyle: {
             paddingVertical: 5,
           },

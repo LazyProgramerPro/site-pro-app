@@ -13,6 +13,7 @@ import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
 import { DashboardStackParamList } from "../../navigation/stacks/DashboardStack";
 import { AcceptanceRequest } from "../../redux/slices/acceptanceRequestSlice";
 import { RootState, useAppSelector } from "../../redux/store";
+import { GlobalStyles } from "../../constants/styles";
 
 export default function AcceptanceRequestScreen() {
   const {
@@ -121,7 +122,7 @@ export default function AcceptanceRequestScreen() {
         {loading && (
           <LoadingOverlay
             message={ACCEPTANCE_REQUEST_TEXTS.LOADING_DATA}
-            spinnerColor="#3498db"
+            spinnerColor={GlobalStyles.colors.primary500}
             spinnerSize="large"
           />
         )}
@@ -145,7 +146,7 @@ export default function AcceptanceRequestScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: GlobalStyles.colors.white,
   },
   listContainer: {
     padding: 16,
@@ -159,6 +160,6 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 16,
-    color: "#757575",
+    color: GlobalStyles.colors.gray700,
   },
 });

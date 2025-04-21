@@ -2,35 +2,41 @@ import {
   MD3LightTheme as DefaultTheme,
   MD3DarkTheme,
 } from "react-native-paper";
+import { GlobalStyles } from "../constants/styles";
 
 export const lightTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: "#1E88E5", // Xanh kỹ sư
-    onPrimary: "#FFFFFF",
+    primary: GlobalStyles.colors.primary600,
+    onPrimary: GlobalStyles.colors.white,
+    primaryContainer: GlobalStyles.colors.primary100,
+    onPrimaryContainer: GlobalStyles.colors.primary900,
 
-    secondary: "#FFC107", // Vàng cảnh báo
-    onSecondary: "#000000",
+    secondary: GlobalStyles.colors.primary200,
+    onSecondary: GlobalStyles.colors.black,
+    secondaryContainer: GlobalStyles.colors.primary50,
+    onSecondaryContainer: GlobalStyles.colors.primary800,
 
-    background: "#F5F5F5", // Xám xi măng nhạt
-    onBackground: "#212121",
+    background: GlobalStyles.colors.white,
+    onBackground: GlobalStyles.colors.black,
 
-    surface: "#FFFFFF", // Bề mặt
-    onSurface: "#212121",
+    surface: GlobalStyles.colors.gray100,
+    onSurface: GlobalStyles.colors.black,
 
-    error: "#D32F2F",
-    onError: "#FFFFFF",
+    error: GlobalStyles.colors.red600,
+    onError: GlobalStyles.colors.white,
 
-    // Optional bổ sung nếu bạn dùng những key này:
-    outline: "#B0BEC5",
+    outline: GlobalStyles.colors.gray400,
+    shadow: GlobalStyles.colors.black,
+
     elevation: {
       level0: "transparent",
-      level1: "#E0E0E0",
-      level2: "#D6D6D6",
-      level3: "#CCCCCC",
-      level4: "#C2C2C2",
-      level5: "#B8B8B8",
+      level1: GlobalStyles.colors.gray100,
+      level2: GlobalStyles.colors.gray200,
+      level3: GlobalStyles.colors.gray300,
+      level4: GlobalStyles.colors.gray400,
+      level5: GlobalStyles.colors.gray500,
     },
   },
 };
@@ -39,29 +45,35 @@ export const darkTheme = {
   ...MD3DarkTheme,
   colors: {
     ...MD3DarkTheme.colors,
-    primary: "#1976D2", // Xanh kỹ sư sáng
-    onPrimary: "#000000",
+    primary: GlobalStyles.colors.primary400,
+    onPrimary: GlobalStyles.colors.white,
+    primaryContainer: GlobalStyles.colors.primary900,
+    onPrimaryContainer: GlobalStyles.colors.primary100,
 
-    secondary: "#FFD54F", // Vàng nhẹ
-    onSecondary: "#000000",
+    secondary: GlobalStyles.colors.primary700,
+    onSecondary: GlobalStyles.colors.white,
+    secondaryContainer: GlobalStyles.colors.primary800,
+    onSecondaryContainer: GlobalStyles.colors.primary50,
 
-    background: "#121212", // Tối kỹ thuật
-    onBackground: "#E0E0E0",
+    background: GlobalStyles.colors.black,
+    onBackground: GlobalStyles.colors.white,
 
-    surface: "#1E1E1E",
-    onSurface: "#E0E0E0",
+    surface: GlobalStyles.colors.gray800,
+    onSurface: GlobalStyles.colors.white,
 
-    error: "#EF9A9A",
-    onError: "#000000",
+    error: GlobalStyles.colors.red400,
+    onError: GlobalStyles.colors.white,
 
-    outline: "#B0BEC5",
+    outline: GlobalStyles.colors.gray500,
+    shadow: GlobalStyles.colors.black,
+
     elevation: {
       level0: "transparent",
-      level1: "#1E1E1E",
-      level2: "#2A2A2A",
-      level3: "#333333",
-      level4: "#3D3D3D",
-      level5: "#474747",
+      level1: GlobalStyles.colors.gray800,
+      level2: GlobalStyles.colors.gray700,
+      level3: GlobalStyles.colors.gray600,
+      level4: GlobalStyles.colors.gray500,
+      level5: GlobalStyles.colors.gray400,
     },
   },
 };

@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: GlobalStyles.colors.gray700,
+    color: GlobalStyles.colors.gray600,
     marginTop: 4,
   },
   statDivider: {

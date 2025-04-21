@@ -46,7 +46,7 @@ const RecentProjects = ({
                         ? "#4CAF50"
                         : project.progress > 40
                         ? "#FF9800"
-                        : "#F44336",
+                        : GlobalStyles.colors.red600,
                   },
                 ]}
               />
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 6,
-    backgroundColor: "#E0E0E0",
+    backgroundColor: GlobalStyles.colors.gray200,
     borderRadius: 3,
   },
   progressFill: {

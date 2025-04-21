@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Avatar, Surface, Text, useTheme } from "react-native-paper";
+import { GlobalStyles } from "../../constants/styles";
 
 type SectionHeaderProps = {
   title: string;
@@ -19,26 +20,26 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
     <Surface
       style={[
         styles.sectionHeader,
-        { backgroundColor: theme.colors.surfaceVariant },
+        { backgroundColor: GlobalStyles.colors.gray50 },
       ]}
       elevation={2}
     >
       <View style={styles.sectionHeaderContent}>
         <Avatar.Icon
-          size={42}
+          size={48}
           icon={icon}
           style={{
-            backgroundColor: theme.colors.primaryContainer,
-            marginRight: 14,
+            backgroundColor: GlobalStyles.colors.primary50,
+            marginRight: 16,
           }}
-          color={theme.colors.primary}
+          color={GlobalStyles.colors.primary700}
         />
         <View>
           <Text style={styles.sectionHeaderText}>{title}</Text>
           <View
             style={[
               styles.sectionUnderline,
-              { backgroundColor: theme.colors.primary },
+              { backgroundColor: GlobalStyles.colors.primary600 },
             ]}
           />
         </View>
@@ -53,14 +54,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 16,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: 12,
-    marginTop: 18,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    marginTop: 20,
+    marginBottom: 14,
+    shadowColor: GlobalStyles.colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
   },
   sectionHeaderContent: {
     flexDirection: "row",
@@ -70,12 +71,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     letterSpacing: 0.3,
-    color: "#333333",
+    color: GlobalStyles.colors.gray800,
   },
   sectionUnderline: {
-    height: 2,
-    width: 30,
-    marginTop: 4,
+    height: 3,
+    width: 40,
+    marginTop: 5,
+    borderRadius: 1.5,
   },
 });
 

@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   userRole: {
-    color: "rgba(255, 255, 255, 0.8)",
+    color: GlobalStyles.colors.gray200,
     marginTop: 2,
   },
   notificationButton: {
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 4,
     right: 4,
-    backgroundColor: "#FF5252",
+    backgroundColor: GlobalStyles.colors.error500,
     borderRadius: 10,
     minWidth: 20,
     height: 20,
