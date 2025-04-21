@@ -83,7 +83,13 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
     pending: 8,
   });
 
-  const roles = ["chudautu", "nhathauthicong", "tuvangiamsat", "tuvanthietke"];
+  const roles = [
+    "nhathauthicong",
+    "nguoipheduyet",
+    "tuvangiamsat",
+    "tuvanthietke",
+    "chudautu",
+  ];
 
   useEffect(() => {
     // Simulate API loading
