@@ -9,6 +9,7 @@ import HeaderProfile from "../components/dashboard/HeaderProfile";
 import QuickAccessMenu from "../components/dashboard/QuickAccessMenu";
 import RecentProjects from "../components/dashboard/RecentProjects";
 import StatsOverview from "../components/dashboard/StatsOverview";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const menuItems = [
   { label: "Dự án", icon: "folder-outline", color: "#4CAF50", name: "Project" },
@@ -73,7 +74,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
     name: "Thuong Dev",
     avatar:
       "https://ui-avatars.com/api/?name=Thường&background=0D8ABC&color=fff&size=128",
-    role: "Quản lý dự án",
+    role: "nhathauthicong",
   });
 
   const [stats, setStats] = useState({
@@ -82,10 +83,15 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
     pending: 8,
   });
 
+  const roles = ["chudautu", "nhathauthicong", "tuvangiamsat", "tuvanthietke"];
+
   useEffect(() => {
     // Simulate API loading
     setTimeout(() => {
       setLoading(false);
+      // Save user data to local storage or state management
+      // For example, using AsyncStorage or Redux
+      AsyncStorage.setItem("user", JSON.stringify(user));
     }, 1000);
   }, []);
 

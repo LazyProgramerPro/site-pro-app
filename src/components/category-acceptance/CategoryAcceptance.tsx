@@ -30,7 +30,7 @@ export default function CategoryAcceptance() {
   // Example checklists for category 2 and 3
   // const { checklists = [] } = categoryAcceptance; // TODO: something wrong with checklists
 
-  const checklists: ChecklistItem[] = [];
+  const checklists = categoryAcceptance ?? [];
 
   // Example acceptance categories
   const acceptanceCategories = [
@@ -204,13 +204,13 @@ export default function CategoryAcceptance() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    // padding: 16,
+    // borderRadius: 8,
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 1 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 2,
+    // elevation: 2,
   },
   headerContainer: {
     flexDirection: "row",

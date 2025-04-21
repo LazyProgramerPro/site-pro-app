@@ -34,6 +34,7 @@ interface BottomSheetPopupProps {
   viewAction?: Omit<ActionItem, "type">;
   editAction?: Omit<ActionItem, "type">;
   deleteAction?: Omit<ActionItem, "type">;
+  selectedAction?: Omit<ActionItem, "type">;
 }
 
 const ActionButton = ({
@@ -91,6 +92,7 @@ export default function BottomSheetPopup({
   viewAction,
   editAction,
   deleteAction,
+  selectedAction,
 }: BottomSheetPopupProps) {
   const theme = useTheme();
   const { height } = Dimensions.get("window");
@@ -131,13 +133,21 @@ export default function BottomSheetPopup({
   const actionItems = useMemo(
     () =>
       [
+        { key: "selected", action: selectedAction, type: "primary" as const },
         { key: "add", action: addAction, type: "primary" as const },
-        { key: "cancel", action: cancelAction, type: "primary" as const },
+        { key: "cancel", action: cancelAction, type: "danger" as const },
         { key: "view", action: viewAction, type: "primary" as const },
         { key: "edit", action: editAction, type: "primary" as const },
         { key: "delete", action: deleteAction, type: "danger" as const },
       ].filter((item) => item.action),
-    [addAction, cancelAction, viewAction, editAction, deleteAction]
+    [
+      addAction,
+      cancelAction,
+      viewAction,
+      editAction,
+      deleteAction,
+      selectedAction,
+    ]
   );
 
   if (!visible) return null;

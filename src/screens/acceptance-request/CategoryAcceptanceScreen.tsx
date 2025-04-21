@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
+  Alert,
   FlatList,
   ScrollView,
   StyleSheet,
@@ -8,11 +9,14 @@ import {
   View,
 } from "react-native";
 import {
+  Button,
   Card,
   Checkbox,
   Chip,
   Divider,
   IconButton,
+  Modal,
+  Portal,
   Text,
   useTheme,
 } from "react-native-paper";
@@ -21,6 +25,8 @@ import ScreenHeader from "../../components/ui/ScreenHeader";
 import ScreenWrapper from "../../components/ui/ScreenWrapper";
 import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
 import { ICONS_NAME } from "../../constants/icon";
+import { useAppDispatch } from "../../redux/store";
+import { changeCategoryAcceptance } from "../../redux/slices/formAcceptanceRequestSlice";
 
 interface ChecklistItem {
   id: string;
@@ -29,6 +35,12 @@ interface ChecklistItem {
   description: string;
   checked: boolean;
 }
+
+const ACTIONS = {
+  SELECTED: "selected",
+  VIEW: "view",
+  DELETE: "delete",
+};
 
 export default function CategoryAcceptanceScreen() {
   const navigation = useNavigation();
@@ -41,6 +53,9 @@ export default function CategoryAcceptanceScreen() {
     width: 0,
     height: 0,
   });
+  const [backConfirmVisible, setBackConfirmVisible] = useState(false);
+
+  const dispatch = useAppDispatch();
 
   const [items, setItems] = useState<ChecklistItem[]>([
     {
@@ -193,6 +208,8 @@ export default function CategoryAcceptanceScreen() {
     );
   };
 
+  // TODO: Data checked from redux store
+
   const selectedItems = items.filter((item) => item.checked);
 
   const removeSelected = (id: string) => {
@@ -210,13 +227,15 @@ export default function CategoryAcceptanceScreen() {
     if (!activeItemId) return;
 
     switch (action) {
-      case "view":
+      case ACTIONS.VIEW:
         console.log("View item", activeItemId);
+        navigation.navigate("CategoryAcceptanceDetails", {});
         break;
-      case "select":
+      case ACTIONS.SELECTED:
+        console.log("View item", activeItemId);
         toggleCheckbox(activeItemId);
         break;
-      case "delete":
+      case ACTIONS.DELETE:
         setItems(items.filter((item) => item.id !== activeItemId));
         break;
     }
@@ -270,12 +289,23 @@ export default function CategoryAcceptanceScreen() {
     </TouchableOpacity>
   );
 
+  const handleConfirmBackPress = () => {
+    console.log("Back button pressed");
+    // If there are selected items, show confirmation modal
+    if (selectedItems.length > 0) {
+      setBackConfirmVisible(true);
+    } else {
+      // If no items are selected, just go back
+      navigation.goBack();
+    }
+  };
+
   return (
     <ScreenWrapper>
       <View style={styles.container}>
         <ScreenHeader
           title="Danh sách nghiệm thu"
-          onBackPress={() => navigation.goBack()}
+          onBackPress={() => handleConfirmBackPress()}
           onAddPress={() => navigation.navigate("AddCategoryAcceptance", {})}
         />
 
@@ -328,17 +358,88 @@ export default function CategoryAcceptanceScreen() {
           visible={menuVisible}
           onDismiss={() => setMenuVisible(false)}
           title="Tùy chọn"
+          selectedAction={{
+            icon: ICONS_NAME.SELECTED,
+            label: ACCEPTANCE_REQUEST_TEXTS.ACTIONS.SELECTED,
+            onPress: () => handleMenuAction(ACTIONS.SELECTED),
+          }}
           viewAction={{
             icon: ICONS_NAME.VIEW,
             label: ACCEPTANCE_REQUEST_TEXTS.ACTIONS.VIEW,
-            onPress: () => handleMenuAction("view"),
+            onPress: () => handleMenuAction(ACTIONS.VIEW),
           }}
           deleteAction={{
             icon: ICONS_NAME.DELETE,
             label: ACCEPTANCE_REQUEST_TEXTS.ACTIONS.DELETE,
-            onPress: () => handleMenuAction("delete"),
+            onPress: () => handleMenuAction(ACTIONS.DELETE),
           }}
         />
+
+        {/* Back Confirmation Modal */}
+        <Portal>
+          <Modal
+            visible={backConfirmVisible}
+            onDismiss={() => setBackConfirmVisible(false)}
+            contentContainerStyle={styles.modalContainer}
+          >
+            <View style={styles.modalContent}>
+              <View style={styles.modalIconContainer}>
+                <IconButton
+                  icon="alert-circle-outline"
+                  size={48}
+                  iconColor={theme.colors.primary}
+                />
+              </View>
+
+              <Text style={styles.modalTitle}>Xác nhận</Text>
+              <Text style={styles.modalDescription}>
+                Bạn đã chọn {selectedItems.length} mục. Bạn có chắc chắn muốn
+                quay lại không?
+              </Text>
+
+              <View style={styles.selectedItemsPreview}>
+                <Text style={styles.previewTitle}>Các mục đã chọn:</Text>
+                <View style={styles.previewItemsContainer}>
+                  {selectedItems.slice(0, 3).map((item, index) => (
+                    <Text key={item.id} style={styles.previewItem}>
+                      • {getDescriptionName(item.description)}
+                    </Text>
+                  ))}
+                  {selectedItems.length > 3 && (
+                    <Text style={styles.previewItem}>
+                      • Và {selectedItems.length - 3} mục khác...
+                    </Text>
+                  )}
+                </View>
+              </View>
+
+              <View style={styles.modalActions}>
+                <Button
+                  mode="outlined"
+                  onPress={() => setBackConfirmVisible(false)}
+                  style={styles.cancelButton}
+                  contentStyle={styles.buttonContent}
+                  labelStyle={styles.buttonLabel}
+                >
+                  Hủy
+                </Button>
+                <Button
+                  mode="contained"
+                  onPress={() => {
+                    setBackConfirmVisible(false);
+                    dispatch(changeCategoryAcceptance(selectedItems));
+                    navigation.goBack(); // TODO: Push data into redux store acceptanceRequestSpecialForm
+                  }}
+                  style={styles.confirmButton}
+                  contentStyle={styles.buttonContent}
+                  labelStyle={styles.buttonLabel}
+                >
+                  Quay lại
+                </Button>
+              </View>
+            </View>
+          </Modal>
+        </Portal>
       </View>
     </ScreenWrapper>
   );
@@ -467,5 +568,77 @@ const styles = StyleSheet.create({
   menuItemIcon: {
     margin: 0,
     marginRight: 12,
+  },
+
+  // New Modal Styles
+  modalContainer: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 16,
+    overflow: "hidden",
+    elevation: 5,
+  },
+  modalContent: {
+    padding: 24,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 8,
+    color: "#212121",
+    textAlign: "center",
+  },
+  modalDescription: {
+    fontSize: 16,
+    marginBottom: 16,
+    color: "#424242",
+    lineHeight: 22,
+    textAlign: "center",
+  },
+  modalIconContainer: {
+    alignItems: "center",
+    marginVertical: 16,
+  },
+  selectedItemsPreview: {
+    backgroundColor: "#f5f7fa",
+    borderRadius: 12,
+    padding: 16,
+    marginVertical: 16,
+  },
+  previewTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: "#424242",
+  },
+  previewItemsContainer: {
+    marginLeft: 4,
+  },
+  previewItem: {
+    fontSize: 14,
+    color: "#616161",
+    marginBottom: 4,
+    lineHeight: 20,
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 8,
+  },
+  cancelButton: {
+    flex: 1,
+    marginRight: 8,
+    borderColor: "#e0e0e0",
+  },
+  confirmButton: {
+    flex: 1,
+    marginLeft: 8,
+  },
+  buttonContent: {
+    height: 48,
+  },
+  buttonLabel: {
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

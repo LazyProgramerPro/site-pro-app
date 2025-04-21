@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { Chip, Surface, Text, useTheme } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Adjust based on your icon library
 import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
@@ -64,6 +64,8 @@ export default function AcceptanceRequestListHeader() {
 
   const renderIcon = (iconName: string, status: string | null) => {
     const isSelected = filterStatus === status;
+
+    // TODO: render icon based on status and color
     return ({ size }: RenderIconProps) => (
       <Icon name={iconName} size={size} color={isSelected ? "white" : "#666"} />
     );
@@ -101,134 +103,147 @@ export default function AcceptanceRequestListHeader() {
       )}
 
       {selectedProject && selectedConstruction && (
-        <View style={styles.filterContainer}>
-          <Chip
-            selected={
-              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.ALL
-            }
-            onPress={() =>
-              handleFilterStatusChange(
-                ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.ALL
-              )
-            }
-            style={[
-              styles.filterChip,
-              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.ALL &&
-                styles.selectedChip,
-            ]}
-            textStyle={
-              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.ALL &&
-              styles.selectedChipText
-            }
-          >
-            {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.ALL}
-          </Chip>
+        <View style={{ flexDirection: "row" }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.filterContainer}>
+              <Chip
+                selected={
+                  filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.ALL
+                }
+                onPress={() =>
+                  handleFilterStatusChange(
+                    ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.ALL
+                  )
+                }
+                style={[
+                  styles.filterChip,
+                  filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.ALL &&
+                    styles.selectedChip,
+                ]}
+                textStyle={
+                  filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.ALL &&
+                  styles.selectedChipText
+                }
+              >
+                {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.ALL}
+              </Chip>
 
-          <Chip
-            selected={
-              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED
-            }
-            onPress={() =>
-              handleFilterStatusChange(
-                ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED
-              )
-            }
-            style={[
-              styles.filterChip,
-              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED &&
-                styles.selectedChip,
-            ]}
-            textStyle={
-              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED &&
-              styles.selectedChipText
-            }
-            icon={renderIcon(
-              ICONS_NAME.CHECK_CIRCLE,
-              ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED
-            )}
-          >
-            {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.APPROVED}
-          </Chip>
+              <Chip
+                selected={
+                  filterStatus ===
+                  ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED
+                }
+                onPress={() =>
+                  handleFilterStatusChange(
+                    ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED
+                  )
+                }
+                style={[
+                  styles.filterChip,
+                  filterStatus ===
+                    ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED &&
+                    styles.selectedChip,
+                ]}
+                textStyle={
+                  filterStatus ===
+                    ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED &&
+                  styles.selectedChipText
+                }
+                icon={renderIcon(
+                  ICONS_NAME.CHECK_CIRCLE,
+                  ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.APPROVED
+                )}
+              >
+                {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.APPROVED}
+              </Chip>
 
-          <Chip
-            selected={
-              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS
-            }
-            onPress={() =>
-              handleFilterStatusChange(
-                ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS
-              )
-            }
-            style={[
-              styles.filterChip,
-              filterStatus ===
-                ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS &&
-                styles.selectedChip,
-            ]}
-            textStyle={
-              filterStatus ===
-                ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS &&
-              styles.selectedChipText
-            }
-            icon={renderIcon(
-              ICONS_NAME.CLOCK,
-              ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS
-            )}
-          >
-            {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.IN_PROGRESS}
-          </Chip>
+              <Chip
+                selected={
+                  filterStatus ===
+                  ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS
+                }
+                onPress={() =>
+                  handleFilterStatusChange(
+                    ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS
+                  )
+                }
+                style={[
+                  styles.filterChip,
+                  filterStatus ===
+                    ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS &&
+                    styles.selectedChip,
+                ]}
+                textStyle={
+                  filterStatus ===
+                    ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS &&
+                  styles.selectedChipText
+                }
+                icon={renderIcon(
+                  ICONS_NAME.CLOCK,
+                  ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.IN_PROGRESS
+                )}
+              >
+                {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.IN_PROGRESS}
+              </Chip>
 
-          <Chip
-            selected={
-              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING
-            }
-            onPress={() =>
-              handleFilterStatusChange(
-                ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING
-              )
-            }
-            style={[
-              styles.filterChip,
-              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING &&
-                styles.selectedChip,
-            ]}
-            textStyle={
-              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING &&
-              styles.selectedChipText
-            }
-            icon={renderIcon(
-              ICONS_NAME.ALERT_CIRCLE,
-              ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING
-            )}
-          >
-            {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.PENDING}
-          </Chip>
+              <Chip
+                selected={
+                  filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING
+                }
+                onPress={() =>
+                  handleFilterStatusChange(
+                    ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING
+                  )
+                }
+                style={[
+                  styles.filterChip,
+                  filterStatus ===
+                    ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING &&
+                    styles.selectedChip,
+                ]}
+                textStyle={
+                  filterStatus ===
+                    ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING &&
+                  styles.selectedChipText
+                }
+                icon={renderIcon(
+                  ICONS_NAME.ALERT_CIRCLE,
+                  ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.PENDING
+                )}
+              >
+                {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.PENDING}
+              </Chip>
 
-          <Chip
-            selected={
-              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED
-            }
-            onPress={() =>
-              handleFilterStatusChange(
-                ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED
-              )
-            }
-            style={[
-              styles.filterChip,
-              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED &&
-                styles.selectedChip,
-            ]}
-            textStyle={
-              filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED &&
-              styles.selectedChipText
-            }
-            icon={renderIcon(
-              ICONS_NAME.CANCEL,
-              ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED
-            )}
-          >
-            {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.REJECTED}
-          </Chip>
+              <Chip
+                selected={
+                  filterStatus ===
+                  ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED
+                }
+                onPress={() =>
+                  handleFilterStatusChange(
+                    ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED
+                  )
+                }
+                style={[
+                  styles.filterChip,
+                  filterStatus ===
+                    ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED &&
+                    styles.selectedChip,
+                ]}
+                textStyle={
+                  filterStatus ===
+                    ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED &&
+                  styles.selectedChipText
+                }
+                icon={renderIcon(
+                  ICONS_NAME.CANCEL,
+                  ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.REJECTED
+                )}
+              >
+                {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.REJECTED}
+              </Chip>
+            </View>
+          </ScrollView>
         </View>
       )}
     </View>

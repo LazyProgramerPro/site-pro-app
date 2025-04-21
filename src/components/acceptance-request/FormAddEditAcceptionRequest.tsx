@@ -7,6 +7,7 @@ import { DatePickerInput } from "react-native-paper-dates";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
 import { ICONS_NAME } from "../../constants/icon";
+import { GlobalStyles } from "../../constants/styles";
 import { RootState, useAppSelector } from "../../redux/store";
 import BottomSheetPopup from "../ui/BottomSheetPopup";
 
@@ -232,7 +233,7 @@ export default function FormAddEditAcceptionRequest({
                   <Icon
                     name="place"
                     size={20}
-                    color={theme.colors.primary}
+                    color={GlobalStyles.colors.gray700}
                     style={styles.dropdownIcon}
                   />
                 )}
@@ -300,7 +301,7 @@ export default function FormAddEditAcceptionRequest({
                   <Icon
                     name="person"
                     size={20}
-                    color={theme.colors.primary}
+                    color={GlobalStyles.colors.gray700}
                     style={styles.dropdownIcon}
                   />
                 )}

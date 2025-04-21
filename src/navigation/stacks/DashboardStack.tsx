@@ -13,6 +13,7 @@ import DiaryManagementScreen from "../../screens/DiaryManagementScreen";
 import ProblemManagementScreen from "../../screens/ProblemManagementScreen";
 import ProjectScreen from "../../screens/ProjectScreen";
 import ReportScreen from "../../screens/ReportScreen";
+import CategoryAcceptanceDetailsScreen from "../../screens/acceptance-request/CategoryAcceptanceDetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -60,6 +61,14 @@ export const DashboardStack = () => {
       <Stack.Screen
         name="AddCategoryAcceptance"
         component={AddCategoryAcceptanceScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="CategoryAcceptanceDetails"
+        component={CategoryAcceptanceDetailsScreen}
         options={{
           headerShown: false,
         }}

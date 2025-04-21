@@ -16,6 +16,7 @@ export default function ScreenHeader({
   title,
   onAddPress,
   onOpenMenuPress,
+  onBackPress,
 }: ScreenHeaderProps) {
   const navigation = useNavigation();
 
@@ -30,7 +31,7 @@ export default function ScreenHeader({
           />
         )}
         onPress={() => {
-          navigation.goBack();
+          onBackPress ? onBackPress() : navigation.goBack();
         }}
       />
       <Text variant="titleMedium" style={styles.title}>
