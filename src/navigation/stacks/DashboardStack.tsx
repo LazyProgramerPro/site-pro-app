@@ -3,9 +3,11 @@ import {
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
 import React from "react";
+import AcceptanceRequestDetailsScreen from "../../screens/acceptance-request/AcceptanceRequestDetailsScreen";
 import AcceptanceRequestScreen from "../../screens/acceptance-request/AcceptanceRequestScreen";
 import AddAcceptanceRequestScreen from "../../screens/acceptance-request/AddAcceptanceRequestScreen";
 import AddCategoryAcceptanceScreen from "../../screens/acceptance-request/AddCategoryAcceptanceScreen";
+import CategoryAcceptanceDetailsScreen from "../../screens/acceptance-request/CategoryAcceptanceDetailsScreen";
 import CategoryAcceptanceScreen from "../../screens/acceptance-request/CategoryAcceptanceScreen";
 import CheckInManagementScreen from "../../screens/CheckInManagementScreen";
 import DashboardScreen from "../../screens/DashboardScreen";
@@ -41,6 +43,13 @@ export const DashboardStack = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="AcceptanceRequestDetails"
+        component={AcceptanceRequestDetailsScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
 
       <Stack.Screen
         name="AddAcceptanceRequest"
@@ -61,6 +70,14 @@ export const DashboardStack = () => {
       <Stack.Screen
         name="AddCategoryAcceptance"
         component={AddCategoryAcceptanceScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="CategoryAcceptanceDetails"
+        component={CategoryAcceptanceDetailsScreen}
         options={{
           headerShown: false,
         }}

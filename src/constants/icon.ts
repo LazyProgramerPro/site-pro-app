@@ -19,4 +19,5 @@ export const ICONS_NAME = {
   SAVE: "content-save",
   VIEW: "eye-outline",
   CHECK: "check",
+  SELECTED: "check-circle-outline",
 } as const;

@@ -3,7 +3,14 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import * as Animatable from "react-native-animatable";
-import { useTheme } from "react-native-paper";
+import {
+  Button,
+  IconButton,
+  Modal,
+  Portal,
+  Text,
+  useTheme,
+} from "react-native-paper";
 
 import DocumentPickerComponent from "../../components/acceptance-request/DocumentPicker";
 import FormAddEditAcceptionRequest from "../../components/acceptance-request/FormAddEditAcceptionRequest";
@@ -24,10 +31,19 @@ export default function AddAcceptanceRequestScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<DashboardStackParamList>>();
 
-  const { location, projectId, constructionId } =
+  const { location, projectId, constructionId, editingAcceptanceRequest } =
     route.params as AddAcceptanceRequestRouteParams;
 
+  // TODO: Compare with editingAcceptanceRequest from redux store
+  // const { editingAcceptanceRequest } = useAppSelector(
+  //   (state: RootState) => state.acceptanceRequest
+  // );
+  // console.log("location:", location);
+
+  console.log("editingAcceptanceRequest:", editingAcceptanceRequest);
+
   const [openMenu, setOpenMenu] = useState(false);
+  const [backConfirmVisible, setBackConfirmVisible] = useState(false);
 
   const openMenuHandler = () => {
     setOpenMenu(true);
@@ -37,12 +53,16 @@ export default function AddAcceptanceRequestScreen() {
     setOpenMenu(false);
   };
 
+  const handlePressBack = () => {
+    setBackConfirmVisible(true);
+  };
+
   return (
     <ScreenWrapper>
       <View style={styles.container}>
         <ScreenHeader
           title="Thông tin yêu cầu nghiệm thu"
-          onBackPress={() => navigation.goBack()}
+          onBackPress={() => handlePressBack()}
           onOpenMenuPress={() => openMenuHandler()}
         />
 
@@ -65,6 +85,7 @@ export default function AddAcceptanceRequestScreen() {
             <FormAddEditAcceptionRequest
               openMenu={openMenu}
               closeMenuHandler={closeMenuHandler}
+              initialValues={editingAcceptanceRequest}
             />
           </Animatable.View>
 
@@ -113,6 +134,64 @@ export default function AddAcceptanceRequestScreen() {
             <DocumentPickerComponent />
           </Animatable.View>
         </ScrollView>
+
+        {/* Back Confirmation Modal */}
+        <Portal>
+          <Modal
+            visible={backConfirmVisible}
+            onDismiss={() => setBackConfirmVisible(false)}
+            contentContainerStyle={styles.modalContainer}
+          >
+            <View style={styles.modalContent}>
+              <View style={styles.modalIconContainer}>
+                <IconButton
+                  icon="alert-circle"
+                  size={48}
+                  iconColor={theme.colors.error}
+                />
+              </View>
+
+              <Text style={[styles.modalTitle, { color: theme.colors.error }]}>
+                Cảnh báo
+              </Text>
+
+              <Text style={styles.modalDescription}>
+                Bạn có thông tin chưa được lưu. Nếu quay lại bây giờ, tất cả dữ
+                liệu sẽ bị mất.
+              </Text>
+
+              <View style={styles.modalActions}>
+                <Button
+                  mode="outlined"
+                  onPress={() => setBackConfirmVisible(false)}
+                  style={styles.cancelButton}
+                  contentStyle={styles.buttonContent}
+                  labelStyle={styles.buttonLabel}
+                  icon="content-save"
+                >
+                  Tiếp tục chỉnh sửa
+                </Button>
+                <Button
+                  mode="contained"
+                  onPress={() => {
+                    setBackConfirmVisible(false);
+                    navigation.goBack();
+                    // TODO: Handle data from redux store or context
+                  }}
+                  style={[
+                    styles.confirmButton,
+                    { backgroundColor: theme.colors.error },
+                  ]}
+                  contentStyle={styles.buttonContent}
+                  labelStyle={styles.buttonLabel}
+                  icon="arrow-left"
+                >
+                  Quay lại
+                </Button>
+              </View>
+            </View>
+          </Modal>
+        </Portal>
       </View>
     </ScreenWrapper>
   );
@@ -132,5 +211,56 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 12,
     marginBottom: 8,
+  },
+
+  // Modal styles
+  modalContainer: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 16,
+    overflow: "hidden",
+    elevation: 5,
+  },
+  modalContent: {
+    padding: 24,
+  },
+  modalIconContainer: {
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  modalDescription: {
+    fontSize: 16,
+    marginBottom: 16,
+    color: "#424242",
+    lineHeight: 24,
+    textAlign: "center",
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 16,
+  },
+  cancelButton: {
+    flex: 1,
+    marginRight: 8,
+    borderColor: "#e0e0e0",
+  },
+  confirmButton: {
+    flex: 1,
+    marginLeft: 8,
+  },
+  buttonContent: {
+    height: 48,
+    paddingHorizontal: 8,
+  },
+  buttonLabel: {
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

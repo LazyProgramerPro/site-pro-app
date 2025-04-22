@@ -1,12 +1,12 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { StyleSheet, View, Image } from "react-native";
-import { Text, Button, useTheme, Card } from "react-native-paper";
+import { StyleSheet, View } from "react-native";
+import { Button, Card, Text, useTheme } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ScreenHeader from "../../components/ui/ScreenHeader";
 import ScreenWrapper from "../../components/ui/ScreenWrapper";
 
-export default function AddCategoryAcceptanceScreen() {
+export default function CategoryAcceptanceDetailsScreen() {
   const navigation = useNavigation();
   const theme = useTheme();
 
@@ -14,7 +14,7 @@ export default function AddCategoryAcceptanceScreen() {
     <ScreenWrapper>
       <View style={styles.container}>
         <ScreenHeader
-          title="Thêm hạng mục nghiệm thu"
+          title="Chi tiết danh mục nghiệm thu"
           onBackPress={() => navigation.goBack()}
         />
 

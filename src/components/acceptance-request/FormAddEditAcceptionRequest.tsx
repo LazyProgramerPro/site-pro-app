@@ -7,6 +7,7 @@ import { DatePickerInput } from "react-native-paper-dates";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
 import { ICONS_NAME } from "../../constants/icon";
+import { GlobalStyles } from "../../constants/styles";
 import { RootState, useAppSelector } from "../../redux/store";
 import BottomSheetPopup from "../ui/BottomSheetPopup";
 
@@ -36,6 +37,12 @@ export default function FormAddEditAcceptionRequest({
 }: FormAddEditProps) {
   const theme = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { editingAcceptanceRequest } = useAppSelector(
+    (state: RootState) => state.acceptanceRequest
+  );
+
+  console.log("editingAcceptanceRequest:", initialValues);
 
   const {
     control,
@@ -232,7 +239,7 @@ export default function FormAddEditAcceptionRequest({
                   <Icon
                     name="place"
                     size={20}
-                    color={theme.colors.primary}
+                    color={GlobalStyles.colors.gray700}
                     style={styles.dropdownIcon}
                   />
                 )}
@@ -300,7 +307,7 @@ export default function FormAddEditAcceptionRequest({
                   <Icon
                     name="person"
                     size={20}
-                    color={theme.colors.primary}
+                    color={GlobalStyles.colors.gray700}
                     style={styles.dropdownIcon}
                   />
                 )}
@@ -316,6 +323,7 @@ export default function FormAddEditAcceptionRequest({
         visible={openMenu}
         onDismiss={handleCloseMenu}
         title="Tùy chọn"
+        // TODO: handle cho từng loại ROLES
         addAction={{
           icon: ICONS_NAME.SAVE,
           label: ACCEPTANCE_REQUEST_TEXTS.ACTIONS.SAVE_ACCEPTANCE_REQUEST,

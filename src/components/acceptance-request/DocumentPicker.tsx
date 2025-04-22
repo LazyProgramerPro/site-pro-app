@@ -174,8 +174,8 @@ const DocumentPickerComponent: React.FC<DocumentPickerProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    // paddingHorizontal: 16,
+    // paddingVertical: 12,
     backgroundColor: "#FFFFFF",
     borderRadius: 8,
   },
@@ -270,8 +270,9 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     marginTop: 12,
-    fontSize: 14,
+    fontSize: 16,
     color: "#757575",
+    fontWeight: "500",
   },
 });
 

@@ -1,6 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Card, Chip, IconButton, Text, useTheme } from "react-native-paper";
+import {
+  Button,
+  Card,
+  Chip,
+  Dialog,
+  IconButton,
+  Portal,
+  Snackbar,
+  Text,
+  useTheme,
+} from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { useNavigation } from "@react-navigation/native";
@@ -13,7 +23,6 @@ import { DashboardStackParamList } from "../../navigation/stacks/DashboardStack"
 import {
   AcceptanceRequest,
   cancelEditingAcceptanceRequest,
-  deleteAcceptanceRequest,
   startEditingAcceptanceRequest,
 } from "../../redux/slices/acceptanceRequestSlice";
 import { RootState, useAppDispatch } from "../../redux/store";
@@ -28,6 +37,8 @@ export default function AcceptanceRequestItem({
 }: AcceptanceRequestItemProps) {
   const theme = useTheme();
   const dispatch = useAppDispatch();
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
   const { editingAcceptanceRequest, selectedProject, selectedConstruction } =
     useSelector((state: RootState) => state.acceptanceRequest);
 
@@ -45,6 +56,7 @@ export default function AcceptanceRequestItem({
 
   const handleViewPressAcceptanceRequest = (item: AcceptanceRequest) => {
     console.log("View item:", item);
+    navigation.navigate("AcceptanceRequestDetails", {});
   };
 
   const handleEditPressAcceptanceRequest = (item: AcceptanceRequest) => {
@@ -56,8 +68,27 @@ export default function AcceptanceRequestItem({
       editingAcceptanceRequest,
     });
   };
+
   const handleDeletePressAcceptanceRequest = (item: AcceptanceRequest) => {
-    dispatch(deleteAcceptanceRequest(item.id));
+    setDeleteDialogVisible(true);
+  };
+
+  const confirmDelete = () => {
+    // TODO:
+    // dispatch(deleteAcceptanceRequest(item.id))
+    //   .unwrap()
+    //   .then(() => {
+    //     setSnackbarVisible(true);
+    //     handleCloseMenu();
+    //   })
+    //   .catch((error) => {
+    //     console.error("Failed to delete:", error);
+    //   });
+
+    // Simulate successful deletion
+    setSnackbarVisible(true);
+    handleCloseMenu();
+    setDeleteDialogVisible(false);
   };
 
   const handleOpenMenu = (acceptanceRequestId: number) => {
@@ -65,6 +96,7 @@ export default function AcceptanceRequestItem({
   };
 
   const handleCloseMenu = () => {
+    console.log("Close menu"); // TODO: haddle close menu logic khi chuyển màn ko call đến hàm này
     dispatch(cancelEditingAcceptanceRequest());
   };
 
@@ -201,6 +233,41 @@ export default function AcceptanceRequestItem({
           onPress: () => handleDeletePressAcceptanceRequest(item),
         }}
       />
+
+      {/* Confirm Delete Dialog */}
+      <Portal>
+        <Dialog
+          visible={deleteDialogVisible}
+          onDismiss={() => setDeleteDialogVisible(false)}
+        >
+          <Dialog.Title>Xác nhận xóa</Dialog.Title>
+          <Dialog.Content>
+            <Text>
+              Bạn có chắc chắn muốn xóa yêu cầu nghiệm thu "{item.name}" không?
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setDeleteDialogVisible(false)}>Hủy</Button>
+            <Button onPress={confirmDelete} textColor={theme.colors.error}>
+              Xóa
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+
+      {/* Success Snackbar */}
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={3000}
+        action={{
+          label: "Đóng",
+          onPress: () => setSnackbarVisible(false),
+        }}
+        style={styles.snackbar}
+      >
+        Đã xóa yêu cầu nghiệm thu thành công
+      </Snackbar>
     </>
   );
 }
@@ -250,5 +317,8 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 12,
+  },
+  snackbar: {
+    marginBottom: 20,
   },
 });
