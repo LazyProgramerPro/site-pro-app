@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Chip, Surface, Text } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -15,6 +15,7 @@ import {
   Construction,
   Project,
   getConstructions,
+  getProjects,
 } from "../../redux/slices/projectSlice";
 import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
 import FieldSelector from "../ui/FieldSelector";
@@ -26,13 +27,17 @@ interface RenderIconProps {
 export default function DiaryListHeader() {
   const dispatch = useAppDispatch();
   const {
-    projects,
-    constructions,
     selectedProject,
     selectedConstruction,
     entries,
     query: { filterStatus },
   } = useAppSelector((state: RootState) => state.diary);
+  const projects = useAppSelector(
+    (state: RootState) => state.project.projectList
+  );
+  const constructions = useAppSelector(
+    (state: RootState) => state.project.constructions
+  );
 
   const handleSelectedProject = (project: Project) => {
     dispatch(setSelectedProject(project));

@@ -26,6 +26,12 @@ export interface Project {
   code: string;
 }
 
+export interface Construction {
+  id: number;
+  name: string;
+  projectId: number;
+}
+
 interface ProjectState {
   projectList: Project[];
   editingProject: Project | null;
@@ -34,6 +40,7 @@ interface ProjectState {
   query: {
     filterStatus?: string | null;
   };
+  constructions: Construction[];
 }
 
 const projectsFakeData = Array.from({ length: 20 }, (_, index) => ({
@@ -54,6 +61,12 @@ const projectsFakeData = Array.from({ length: 20 }, (_, index) => ({
   code: `PRJ-${index + 1}`,
 }));
 
+const constructionsFakeData = [
+  { id: 1, name: "Công trình A", projectId: 1 },
+  { id: 2, name: "Công trình B", projectId: 2 },
+  { id: 3, name: "Công trình C", projectId: 3 },
+];
+
 // Initial state with proper typing
 const initialState: ProjectState = {
   projectList: [],
@@ -63,6 +76,7 @@ const initialState: ProjectState = {
   query: {
     filterStatus: null,
   },
+  constructions: [],
 };
 
 // Define the async thunk for fetching Projects
@@ -86,6 +100,22 @@ export const getProjects = createAsyncThunk<Project[]>(
     }
   }
 );
+
+export const getConstructions = createAsyncThunk<
+  Construction[],
+  number | undefined
+>("project/getConstructions", async (projectId, thunkAPI) => {
+  console.log("getConstructions called", projectId);
+  // Simulate a delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  if (!projectId) {
+    return constructionsFakeData;
+  }
+  const filteredConstructions = constructionsFakeData.filter(
+    (construction: Construction) => construction.projectId === projectId
+  ); // TODO: Replace with actual API call
+  return filteredConstructions;
+});
 
 // Define the request body type
 interface ProjectRequestBody {
@@ -171,6 +201,12 @@ const projectSlice = createSlice({
         getProjects.fulfilled,
         (state, action: PayloadAction<Project[]>) => {
           state.projectList = action.payload;
+        }
+      )
+      .addCase(
+        getConstructions.fulfilled,
+        (state, action: PayloadAction<Construction[]>) => {
+          state.constructions = action.payload;
         }
       )
       .addCase(

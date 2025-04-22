@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useEffect } from "react";
 import { Alert, FlatList, StyleSheet, View } from "react-native";
 import { useTheme } from "react-native-paper";
 import DiaryEntryItem from "../../components/diary/DiaryEntryItem";
@@ -13,6 +13,8 @@ import { DashboardStackParamList } from "../../navigation/stacks/DashboardStack"
 import type { DiaryEntry } from "../../redux/slices/diarySlice";
 import { deleteDiaryEntry } from "../../redux/slices/diarySlice";
 import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
+import { getConstructions } from "../../redux/slices/projectSlice";
+import { getProjects } from "../../redux/slices/projectSlice";
 
 type NavigationProp = NativeStackNavigationProp<DashboardStackParamList>;
 
@@ -51,6 +53,10 @@ export default function DiaryManagementScreen() {
       constructionId: selectedConstruction?.id ?? null,
     });
   };
+
+  useEffect(() => {
+    dispatch(getProjects());
+  }, []);
 
   const renderItem = ({ item }: { item: DiaryEntry }) => (
     <DiaryEntryItem item={item} />

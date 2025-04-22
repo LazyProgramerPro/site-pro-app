@@ -5,6 +5,7 @@ import {
   StyleSheet,
   View,
   Image,
+  ScrollView,
 } from "react-native";
 import { List, Menu, TouchableRipple, Surface, Text } from "react-native-paper";
 import { COMMON_CONSTANTS } from "../../constants/common";
@@ -79,27 +80,46 @@ export default function FieldSelector({
             {renderSelector()}
           </View>
         }
+        style={{ maxHeight: 300 }}
         contentStyle={[
-          { width: anchorWidth },
+          {
+            width: anchorWidth,
+            paddingVertical: 8,
+          },
           Platform.OS === "android"
             ? { marginTop: anchorHeight + 34 }
             : { marginTop: anchorHeight },
         ]}
       >
-        {items.map((item) => (
-          <Menu.Item
-            key={item.id}
-            onPress={() => {
-              onSelect(item);
-              closeMenu();
-            }}
-            title={item.name}
-            titleStyle={{
-              fontSize: 16,
-              fontWeight: selectedItem === item.name ? "700" : "400",
-            }}
-          />
-        ))}
+        <ScrollView style={{ maxHeight: 300 }}>
+          {items.map((item) => (
+            // <View
+            //   key={item.id}
+            //   style={{ width: anchorWidth, backgroundColor: "blue" }}
+            // >
+            <TouchableRipple
+              key={item.id}
+              onPress={() => {
+                onSelect(item);
+                closeMenu();
+              }}
+              style={{
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: selectedItem === item.name ? "700" : "400",
+                }}
+              >
+                {item.name}
+              </Text>
+            </TouchableRipple>
+            // </View>
+          ))}
+        </ScrollView>
       </Menu>
     </View>
   );
