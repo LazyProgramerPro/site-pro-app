@@ -105,7 +105,6 @@ export const getConstructions = createAsyncThunk<
   Construction[],
   number | undefined
 >("project/getConstructions", async (projectId, thunkAPI) => {
-  console.log("getConstructions called", projectId);
   // Simulate a delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
   if (!projectId) {
