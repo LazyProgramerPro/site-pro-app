@@ -1,0 +1,47 @@
+export const PROJECT_TEXTS = {
+  ADD_REQUEST: "Thêm yêu cầu nghiệm thu",
+  NAME: "Yêu cầu nghiệm thu",
+  SCREEN_TITLE: "Danh sách yêu cầu nghiệm thu",
+  PLEASE_SELECT_PROJECT: "Vui lòng chọn dự án để xem yêu cầu nghiệm thu",
+  PLEASE_SELECT_CONSTRUCTION:
+    "Vui lòng chọn công trình để xem yêu cầu nghiệm thu",
+  NO_ACCEPTANCE_REQUESTS: "Không có yêu cầu nghiệm thu nào",
+  LOADING_DATA: "Đang tải dữ liệu...",
+  SELECT_PROJECT: "Chọn dự án",
+  SELECT_CONSTRUCTION: "Chọn công trình",
+  SELECT_CONTRACT: "Chọn hợp đồng",
+  EMPTY_LIST: {
+    NO_DATA: "Không có yêu cầu nghiệm thu nào",
+    TITLE: "Không tìm thấy yêu cầu nghiệm thu nào",
+    SUBTITLE: "Thử lọc khác",
+  },
+  STATUS_LABEL: {
+    ALL: "Tất cả",
+    REJECTED: "Bị từ chối",
+    APPROVED: "Đã duyệt",
+    PENDING: "Chờ duyệt",
+    IN_PROGRESS: "Đang thực hiện",
+  },
+  STATUS_VALUE: {
+    ALL: null,
+    REJECTED: "REJECTED",
+    APPROVED: "APPROVED",
+    PENDING: "PENDING",
+    IN_PROGRESS: "IN_PROGRESS",
+  },
+  ACTIONS: {
+    VIEW: "Xem",
+    EDIT: "Cập nhật và gửi yêu cầu nghiệm thu",
+    DELETE: "Xoá",
+    ADD: "Thêm",
+    CANCEL: "Huỷ",
+    APPROVE: "Duyệt",
+    SAVE_ACCEPTANCE_REQUEST: "Lưu thông tin yêu cầu phê duyệt",
+    SELECTED: "Chọn",
+  },
+  INFO: {
+    UPDATED_BY: "Cập nhật:",
+    CREATED_BY: "Tạo bởi:",
+  },
+  ADD_BUTTON: "Thêm yêu cầu nghiệm thu",
+} as const;

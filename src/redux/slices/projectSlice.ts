@@ -7,7 +7,9 @@ import {
 import http from "../../utils/http";
 
 // Define interfaces for better type safety
+
 type GenericAsyncThunk = AsyncThunk<unknown, unknown, any>;
+
 type PendingAction = ReturnType<GenericAsyncThunk["pending"]>;
 type RejectedAction = ReturnType<GenericAsyncThunk["rejected"]>;
 type FulfilledAction = ReturnType<GenericAsyncThunk["fulfilled"]>;
@@ -15,6 +17,13 @@ type FulfilledAction = ReturnType<GenericAsyncThunk["fulfilled"]>;
 export interface Project {
   id: number;
   name: string;
+  progress: number;
+  dueDate: string;
+  image: string;
+  status: string;
+  approvalDate: string;
+  approvedBy: string;
+  code: string;
 }
 
 interface ProjectState {
@@ -25,26 +34,25 @@ interface ProjectState {
   query: {
     filterStatus?: string | null;
   };
-  constructions: Construction[];
 }
 
-export interface Construction {
-  id: number;
-  name: string;
-  projectId: number;
-}
-
-const projectsFakeData = [
-  { id: 1, name: "Xây dựng tuyến đường 01" },
-  { id: 2, name: "Đường cao tốc Bắc Nam" },
-  { id: 3, name: "Dự án cầu vượt" },
-];
-
-const constructionsFakeData = [
-  { id: 1, name: "Công trình A", projectId: 1 },
-  { id: 2, name: "Công trình B", projectId: 2 },
-  { id: 3, name: "Công trình C", projectId: 3 },
-];
+const projectsFakeData = Array.from({ length: 20 }, (_, index) => ({
+  id: index + 1,
+  name: `Dự án số ${index + 1}`,
+  progress: Math.floor(Math.random() * 101), // Random progress between 0 and 100
+  dueDate: new Date(
+    Date.now() + Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000
+  ).toISOString(), // Random future date within a year
+  image: `https://via.placeholder.com/150?text=Project+${index + 1}`,
+  status: ["Pending", "In Progress", "Completed"][
+    Math.floor(Math.random() * 3)
+  ], // Random status
+  approvalDate: new Date(
+    Date.now() - Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000
+  ).toISOString(), // Random past date within a year
+  approvedBy: `User ${Math.floor(Math.random() * 10) + 1}`,
+  code: `PRJ-${index + 1}`,
+}));
 
 // Initial state with proper typing
 const initialState: ProjectState = {
@@ -55,7 +63,6 @@ const initialState: ProjectState = {
   query: {
     filterStatus: null,
   },
-  constructions: [],
 };
 
 // Define the async thunk for fetching Projects
@@ -79,21 +86,6 @@ export const getProjects = createAsyncThunk<Project[]>(
     }
   }
 );
-
-export const getConstructions = createAsyncThunk<
-  Construction[],
-  number | undefined
->("project/getConstructions", async (projectId, thunkAPI) => {
-  // Simulate a delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  if (!projectId) {
-    return [];
-  }
-  const filteredConstructions = constructionsFakeData.filter(
-    (construction: Construction) => construction.projectId === projectId
-  ); // TODO: Replace with actual API call
-  return filteredConstructions;
-});
 
 // Define the request body type
 interface ProjectRequestBody {
@@ -179,12 +171,6 @@ const projectSlice = createSlice({
         getProjects.fulfilled,
         (state, action: PayloadAction<Project[]>) => {
           state.projectList = action.payload;
-        }
-      )
-      .addCase(
-        getConstructions.fulfilled,
-        (state, action: PayloadAction<Construction[]>) => {
-          state.constructions = action.payload;
         }
       )
       .addCase(
