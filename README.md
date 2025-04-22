@@ -418,3 +418,63 @@ npx expo start
 <https://developer.android.com/build/configure-app-module>
 <https://developer.android.com/guide/topics/manifest/manifest-intro#perms>
 <https://developer.android.com/studio/publish/versioning>
+
+# Using Github Copilot
+
+- Install Github Copilot
+- Using AI to generate code
+- Using AI to generate comments
+- Chú ý Github Copilot có thể tạo ra nhiều kết quả, di chuyển đến các kết quả khác nhau khi chuúng ta gõ
+- Sử dụng "Next Edit" suggestions để di chuyển đến các kết quả khác nhau
+- Prompt AI: Cố gắng sử dụng tên các function rõ ràng, sử dụng các từ khóa như "Create", "Generate", "Write", "Build", "Implement" để yêu cầu AI tạo ra các đoạn mã cụ thể
+- Sử dụng các từ khóa như "Explain", "Describe", "Summarize" để yêu cầu AI giải thích hoặc tóm tắt mã
+- Sử dụng các từ khóa như "Refactor", "Optimize", "Improve" để yêu cầu AI tối ưu hóa hoặc cải thiện mã
+- Sử dụng các từ khóa như "Test", "Debug", "Fix" để yêu cầu AI kiểm tra hoặc sửa lỗi mã
+- Sử dụng các từ khóa như "Translate", "Convert", "Change" để yêu cầu AI chuyển đổi mã từ ngôn ngữ này sang ngôn ngữ khác
+
+=> Copilot sẽ đánh giá các mã xung quanh con trỏ chuột và đưa ra các gợi ý dựa trên mã đó( Sử dụng các prompt comment)
+
+## Sử dụng Comment
+
+## Sử dụng Inline Chat(Ctrl + I)
+
+## Các tính năng đáng chú ý
+
+- Next Edit: Di chuyển đến các kết quả khác nhau khi chuúng ta gõ
+- Use Instruction File: Sử dụng file hướng dẫn để yêu cầu AI tạo ra các đoạn mã cụ thể. Tạo ra bằng cách tạo một file mới với tên là "instruction.md" và viết các hướng dẫn trong đó bên trong thư mục .github : Điều này giúp gen ra các đoạn mã cụ thể hơn và chính xác hơn ( Ví dụ như phù hợp với tên đặt của các function, biến, class trong mã của bạn). Vì mỗi project có 1 cách đặt tên khác nhau nên ko thể áp dụng chung cho tất cả các project. Tuy vậy nên có 1 bộ hướng dẫn riêng cho từng project
+- Temporal Context: Tự động lấy các tệp được chỉnh sửa gần đây trong repo của bạn và sử dụng chúng để tạo mã
+- Ngôi sao lấp lánh : Code Actions
+
+- Chú ý thêm các tính năng mới
+
+## Adding context to the prompt
+
+- Sử dụng "# @ /" bên trong inline chat để thêm ngữ cảnh cho các đoạn mã mà bạn muốn AI tạo ra
+- Sử dụng "@" trong Chat để hỏi những vấn đề cụ thể
+
+## Running Terminal with AI
+
+- Chú ý các Command con như /fix /explain /extract /test /debug
+- Sử dụng các command này để yêu cầu AI thực hiện các tác vụ cụ thể trong terminal
+
+## Edit multiple Files
+
+- Sử dụng mode Ask, Edit, Agent để yêu cầu AI thực hiện các tác vụ cụ thể trong nhiều tệp
+- Edit (Copilot Edits):Tốt cho việc yêu cầu điều chỉnh mã nhiều tập tin (ví dụ: để tái cấu trúc mã). Mặc dù vậy, sẽ có thể được thay thế bằng "Agent Mode" trong tương lai.
+- Ask (Copilot Chat): Tốt cho việc yêu cầu AI thực hiện các tác vụ cụ thể trong một tệp
+- Agent Mode: Trải nghiệm chỉnh sửa Copilot "tốt hơn". Hoạt động giống như các chỉnh sửa Copilot nhưng AI nên có sự hiểu biết sâu sắc hơn về cơ sở mã của bạn và có thể đề xuất (và chạy) các lệnh của dòng / dòng lệnh. Nó cũng sẽ thực hiện các thay đổi mã trên nhiều tệp. Ý tưởng chung là bạn nói với AI những gì nó cần làm, và nó đi trước, thực hiện một kế hoạch và thực hiện tất cả các thay đổi cần thiết. Theo kinh nghiệm của tôi, nó có thể bị mất và nó cũng không nhất thiết tạo ra kết quả tuyệt vời. Bạn nên tự mình thử nghiệm nó. Và nó chắc chắn là một chế độ hữu ích (giống như chỉnh sửa Copilot) để thực hiện các thay đổi hoặc tái cấu trúc nhiều tập tin với sự trợ giúp của AI.
+
+## Unit Testing
+
+## Các prompt cần thiết ( Prompt engineering)
+
+- Viết tốt sẽ đem lại kết quả tốt
+- Sử dụng các từ khóa như "Create", "Generate", "Write", "Build", "Implement" để yêu cầu AI tạo ra các đoạn mã cụ thể
+- Sử dụng các từ khóa như "Explain", "Describe", "Summarize" để yêu cầu AI giải thích hoặc tóm tắt mã
+- Sử dụng các từ khóa như "Refactor", "Optimize", "Improve" để yêu cầu AI tối ưu hóa hoặc cải thiện mã
+- Sử dụng các từ khóa như "Test", "Debug", "Fix" để yêu cầu AI kiểm tra hoặc sửa lỗi mã
+- Sử dụng các từ khóa như "Translate", "Convert", "Change" để yêu cầu AI chuyển đổi mã từ ngôn ngữ này sang ngôn ngữ khác
+- Thêm Context
+- Thêm các ví dụ cụ thể
+- Chia nhỏ các task phức tạp thành các task nhỏ hơn
+- Thêm những file để tham chiếu : Sử dụng #
