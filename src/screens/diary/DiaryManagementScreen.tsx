@@ -1,26 +1,29 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Text, useTheme } from "react-native-paper";
-import DiaryEntryItem from "../components/diary/DiaryEntryItem";
-import DiaryListHeader from "../components/diary/DiaryListHeader";
-import ScreenHeader from "../components/ui/ScreenHeader";
-import ScreenWrapper from "../components/ui/ScreenWrapper";
-import type { DiaryEntry } from "../redux/slices/diarySlice";
-import { deleteDiaryEntry } from "../redux/slices/diarySlice";
-import { RootState, useAppDispatch, useAppSelector } from "../redux/store";
-import { ACCEPTANCE_REQUEST_TEXTS } from "../constants/acceptance-request";
-import LoadingOverlay from "../components/ui/LoadingOverlay";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React from "react";
+import { Alert, FlatList, StyleSheet, View } from "react-native";
+import { useTheme } from "react-native-paper";
+import DiaryEntryItem from "../../components/diary/DiaryEntryItem";
+import DiaryListHeader from "../../components/diary/DiaryListHeader";
+import LoadingOverlay from "../../components/ui/LoadingOverlay";
+import ScreenHeader from "../../components/ui/ScreenHeader";
+import ScreenWrapper from "../../components/ui/ScreenWrapper";
+import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
+import { DashboardStackParamList } from "../../navigation/stacks/DashboardStack";
+import type { DiaryEntry } from "../../redux/slices/diarySlice";
+import { deleteDiaryEntry } from "../../redux/slices/diarySlice";
+import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
+
+type NavigationProp = NativeStackNavigationProp<DashboardStackParamList>;
+
 export default function DiaryManagementScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const dispatch = useAppDispatch();
   const theme = useTheme();
 
   const { entries, selectedProject, selectedConstruction, filterStatus } =
     useAppSelector((state: RootState) => state.diary);
   const loading = useAppSelector((state: RootState) => state.diary.loading);
-  const [selectedItem, setSelectedItem] = useState<DiaryEntry | null>(null);
-  const [visibleItemMenu, setVisibleItemMenu] = useState<number | null>(null);
 
   const filteredEntries = entries.filter(
     (entry: DiaryEntry) => !filterStatus || entry.status === filterStatus
@@ -35,16 +38,18 @@ export default function DiaryManagementScreen() {
     }
   };
 
-  const handleViewPress = (item: DiaryEntry) => {
-    console.log("View item:", item);
-  };
-
-  const handleEditPress = (item: DiaryEntry) => {
-    console.log("Edit item:", item);
-  };
-
-  const handleDeletePress = (item: DiaryEntry) => {
-    dispatch(deleteDiaryEntry(item.id));
+  const handleAddPress = () => {
+    if (!selectedProject || !selectedConstruction) {
+      Alert.alert(
+        "Yêu cầu bắt buộc",
+        "Vui lòng chọn dự án và công trình trước khi thêm yêu cầu."
+      );
+      return;
+    }
+    navigation.navigate("AddDiary", {
+      projectId: selectedProject?.id ?? null,
+      constructionId: selectedConstruction?.id ?? null,
+    });
   };
 
   const renderItem = ({ item }: { item: DiaryEntry }) => (
@@ -56,7 +61,12 @@ export default function DiaryManagementScreen() {
   return (
     <ScreenWrapper>
       <View style={styles.container}>
-        <ScreenHeader title="Danh sách nhật ký" onAddPress={() => {}} />
+        <ScreenHeader
+          title="Danh sách nhật ký"
+          onAddPress={() => {
+            handleAddPress();
+          }}
+        />
         {loading && (
           <LoadingOverlay message={ACCEPTANCE_REQUEST_TEXTS.LOADING_DATA} />
         )}

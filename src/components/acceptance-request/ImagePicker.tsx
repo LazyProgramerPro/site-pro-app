@@ -12,21 +12,13 @@ import {
   View,
 } from "react-native";
 import { changeImages } from "../../redux/slices/formAcceptanceRequestSlice";
-import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
+import { useAppDispatch } from "../../redux/store";
 
 const ImagePickerComponent: React.FC = () => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const fadeAnim = React.useRef(new Animated.Value(1)).current;
   const dispatch = useAppDispatch();
-
-  const { images } = useAppSelector(
-    (state: RootState) => state.acceptanceRequestSpecialForm.data || []
-  );
-
-  console.log("selectedImages", selectedImages);
-
-  console.log("images", images);
 
   const MAX_IMAGES = 10;
 
@@ -43,7 +35,7 @@ const ImagePickerComponent: React.FC = () => {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
         allowsEditing: false,
         quality: 0.8,
         allowsMultipleSelection: true,

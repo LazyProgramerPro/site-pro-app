@@ -1,34 +1,32 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Card, Chip, IconButton, Text, useTheme } from "react-native-paper";
+import { Card, Chip, IconButton, Text } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { DIARY_TEXTS } from "../../constants/diary";
-import BottomSheetPopup from "../ui/BottomSheetPopup";
-import { STATUS_COLORS } from "../../constants/styles";
 import { ICONS_NAME } from "../../constants/icon";
-import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
+import { STATUS_COLORS } from "../../constants/styles";
 import {
   cancelEditingDiary,
   deleteDiaryEntry,
+  DiaryEntry,
   startEditingDiaryRequest,
 } from "../../redux/slices/diarySlice";
-
-export interface DiaryEntry {
-  id: number;
-  title: string;
-  date: string;
-  status: string;
-  updatedBy: string;
-  createdBy: string;
-}
+import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
+import BottomSheetPopup from "../ui/BottomSheetPopup";
+import { useNavigation } from "@react-navigation/native";
+import { DashboardStackParamList } from "../../navigation/stacks/DashboardStack";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 interface DiaryEntryItemProps {
   item: DiaryEntry;
 }
 
+type NavigationProp = NativeStackNavigationProp<DashboardStackParamList>;
+
 export default function DiaryEntryItem({ item }: DiaryEntryItemProps) {
   const dispatch = useAppDispatch();
-  const { selectedProject, selectedConstruction, editingDiary } =
+  const navigation = useNavigation<NavigationProp>();
+  const { editingDiary, selectedProject, selectedConstruction } =
     useAppSelector((state: RootState) => state.diary);
 
   const getStatusStyle = (status: string) => {
@@ -70,6 +68,11 @@ export default function DiaryEntryItem({ item }: DiaryEntryItemProps) {
 
   const handleEditPressDiary = (diary: DiaryEntry) => {
     // TODO: Implement edit diary functionality
+    navigation.navigate("AddDiary", {
+      projectId: selectedProject?.id ?? null,
+      constructionId: selectedConstruction?.id ?? null,
+      diary: item,
+    });
     handleCloseMenu();
   };
 

@@ -61,6 +61,33 @@ export const DIARY_WEATHER_LIST = [
   { id: 1, name: "Mưa" },
 ] as const;
 
+export const DIARY_OPTIONS = {
+  TYPES: [
+    { id: "1", name: "Nhật ký thi công xây dựng" },
+    { id: "2", name: "Nhật ký an toàn lao động" },
+  ],
+
+  SAFETY: [
+    { id: "1", name: "An toàn" },
+    { id: "2", name: "Cảnh báo" },
+    { id: "3", name: "Nguy hiểm" },
+  ],
+
+  ENVIRONMENT: [
+    { id: "1", name: "Trong nhà" },
+    { id: "2", name: "Ngoài trời" },
+    { id: "3", name: "Hỗn hợp" },
+  ],
+
+  WEATHER: [
+    { id: "1", name: "Nắng" },
+    { id: "2", name: "Mưa" },
+    { id: "3", name: "Nhiều mây" },
+    { id: "4", name: "Âm u" },
+    { id: "5", name: "Sương mù" },
+  ],
+};
+
 // Mock data for development
 export const DIARY_MOCK_DATA = {
   PROJECTS: [
@@ -77,16 +104,17 @@ export const DIARY_MOCK_DATA = {
 
   DIARY_ENTRIES: [
     {
-      id: 0,
+      id: 1,
       title: "Nhật ký ngày 12/04/2025",
       date: "12/04/2025",
       status: DIARY_TEXTS.STATUS.COMPLETED,
       createdBy: "Nguyễn Chí Thanh",
       updatedBy: "Nguyễn Chí Thanh",
       description: "Ghi chép về tiến độ thi công và các vấn đề phát sinh",
-      type: { id: 0, name: "construction" },
+      type: { id: "1", name: "Nhật ký thi công xây dựng" },
       projectId: 1,
       constructionId: 1,
+      weather: "Nắng",
       capacity: [
         { id: 0, name: "nhathauthicong" },
         { id: 1, name: "tuvanthietke" },
@@ -98,26 +126,21 @@ export const DIARY_MOCK_DATA = {
       completionDate: "2025-04-12T17:00:00Z",
       approvedBy: { id: 2, name: "Trần Minh Hoàng" },
       approvalDate: "2025-04-12T18:00:00Z",
-      supportingDocuments: [
-        {
-          id: 0,
-          name: "Báo cáo tiến độ",
-          url: "/documents/progress-report-1.pdf",
-        },
-        { id: 1, name: "Ảnh hiện trường", url: "/documents/site-photo-1.jpg" },
-      ],
+      images: [],
+      supportingDocuments: [],
     },
     {
-      id: 1,
+      id: 2,
       title: "Nhật ký ngày 10/04/2025",
       date: "10/04/2025",
       status: DIARY_TEXTS.STATUS.IN_PROGRESS,
       createdBy: "Nguyễn Chí Thanh",
       updatedBy: "Lê Văn An",
       description: "Báo cáo về tình hình thi công và vật tư",
-      type: { id: 1, name: "material" },
+      type: { id: "1", name: "Nhật ký thi công xây dựng" },
       projectId: 2,
       constructionId: 2,
+      weather: "Mưa",
       capacity: [
         { id: 0, name: "nhathauthicong" },
         { id: 2, name: "tuvangiamsat" },
@@ -128,30 +151,21 @@ export const DIARY_MOCK_DATA = {
       completionDate: "2025-04-11T16:30:00Z",
       approvedBy: { id: 2, name: "Lê Văn An" },
       approvalDate: "2025-04-11T17:00:00Z",
-      supportingDocuments: [
-        {
-          id: 0,
-          name: "Danh sách vật tư",
-          url: "/documents/material-list-1.xlsx",
-        },
-        {
-          id: 1,
-          name: "Biên bản kiểm tra",
-          url: "/documents/inspection-report-1.docx",
-        },
-      ],
+      images: [],
+      supportingDocuments: [],
     },
     {
-      id: 2,
+      id: 3,
       title: "Nhật ký ngày 08/04/2025",
       date: "08/04/2025",
       status: DIARY_TEXTS.STATUS.NOT_STARTED,
       createdBy: "Nguyễn Chí Thanh",
       updatedBy: "Nguyễn Thị Hương",
       description: "Kế hoạch thi công tuần tới",
-      type: { id: 2, name: "planning" },
+      type: { id: "2", name: "Nhật ký an toàn lao động" },
       projectId: 3,
       constructionId: 3,
+      weather: "Nhiều mây",
       capacity: [
         { id: 0, name: "nhathauthicong" },
         { id: 1, name: "tuvanthietke" },
@@ -162,18 +176,8 @@ export const DIARY_MOCK_DATA = {
       completionDate: "2025-04-09T15:00:00Z",
       approvedBy: { id: 1, name: "Nguyễn Thị Hương" },
       approvalDate: "2025-04-09T16:00:00Z",
-      supportingDocuments: [
-        {
-          id: 0,
-          name: "Kế hoạch thi công",
-          url: "/documents/construction-plan-1.pdf",
-        },
-        {
-          id: 1,
-          name: "Phương án an toàn",
-          url: "/documents/safety-plan-1.docx",
-        },
-      ],
+      images: [],
+      supportingDocuments: [],
     },
   ],
 } as const;

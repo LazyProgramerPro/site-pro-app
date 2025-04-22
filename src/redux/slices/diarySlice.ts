@@ -5,6 +5,7 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { DIARY_MOCK_DATA } from "../../constants/diary";
+import { DocumentFile } from "../../types/common";
 
 // Define types for async thunks
 type GenericAsyncThunk = AsyncThunk<unknown, unknown, any>;
@@ -24,11 +25,13 @@ export interface DiaryEntry {
   capacity: { id: number; name: string }[];
   safety: { id: number; name: string };
   environment: { id: number; name: string };
+  weather: string;
+  images: string[];
   createdAt: string;
   completionDate: string;
   approvedBy: { id: number; name: string };
   approvalDate: string;
-  supportingDocuments: { id: number; name: string; url: string }[];
+  supportingDocuments: DocumentFile[];
   constructionId: number;
   projectId: number;
 }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Chip, Surface, Text } from "react-native-paper";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
 import { DIARY_TEXTS } from "../../constants/diary";
 import { ICONS_NAME } from "../../constants/icon";
@@ -17,6 +18,11 @@ import {
 } from "../../redux/slices/projectSlice";
 import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
 import FieldSelector from "../ui/FieldSelector";
+import { GlobalStyles } from "../../constants/styles";
+interface RenderIconProps {
+  size: number;
+}
+
 export default function DiaryListHeader() {
   const dispatch = useAppDispatch();
   const {
@@ -27,8 +33,6 @@ export default function DiaryListHeader() {
     entries,
     query: { filterStatus },
   } = useAppSelector((state: RootState) => state.diary);
-
-  console.log("filterStatus", filterStatus);
 
   const handleSelectedProject = (project: Project) => {
     dispatch(setSelectedProject(project));
@@ -62,6 +66,13 @@ export default function DiaryListHeader() {
   const onFilterStatusChange = (status: string | null) => {
     dispatch(setFilterStatus(status));
     fetchDiaryList({ status });
+  };
+
+  const renderIcon = (iconName: string, status: string | null) => {
+    const isSelected = filterStatus === status;
+    return ({ size }: RenderIconProps) => (
+      <Icon name={iconName} size={size} color={isSelected ? "white" : "#666"} />
+    );
   };
 
   return (
@@ -99,31 +110,70 @@ export default function DiaryListHeader() {
           <Chip
             selected={filterStatus === null}
             onPress={() => onFilterStatusChange(null)}
-            style={styles.filterChip}
+            style={[
+              styles.filterChip,
+              filterStatus === null && styles.selectedChip,
+            ]}
+            textStyle={filterStatus === null && styles.selectedChipText}
+            icon={
+              filterStatus === null
+                ? renderIcon(ICONS_NAME.CHECK, null)
+                : undefined
+            }
           >
             {DIARY_TEXTS.STATUS.ALL}
           </Chip>
           <Chip
             selected={filterStatus === DIARY_TEXTS.STATUS.COMPLETED}
             onPress={() => onFilterStatusChange(DIARY_TEXTS.STATUS.COMPLETED)}
-            style={styles.filterChip}
-            icon={ICONS_NAME.CHECK_CIRCLE}
+            style={[
+              styles.filterChip,
+              filterStatus === DIARY_TEXTS.STATUS.COMPLETED &&
+                styles.selectedChip,
+            ]}
+            textStyle={
+              filterStatus === DIARY_TEXTS.STATUS.COMPLETED &&
+              styles.selectedChipText
+            }
+            icon={renderIcon(
+              ICONS_NAME.CHECK_CIRCLE,
+              DIARY_TEXTS.STATUS.COMPLETED
+            )}
           >
             {DIARY_TEXTS.STATUS.COMPLETED}
           </Chip>
           <Chip
             selected={filterStatus === DIARY_TEXTS.STATUS.IN_PROGRESS}
             onPress={() => onFilterStatusChange(DIARY_TEXTS.STATUS.IN_PROGRESS)}
-            style={styles.filterChip}
-            icon={ICONS_NAME.CLOCK}
+            style={
+              (styles.filterChip,
+              filterStatus === DIARY_TEXTS.STATUS.IN_PROGRESS &&
+                styles.selectedChip)
+            }
+            textStyle={
+              filterStatus === DIARY_TEXTS.STATUS.IN_PROGRESS &&
+              styles.selectedChipText
+            }
+            icon={renderIcon(ICONS_NAME.CLOCK, DIARY_TEXTS.STATUS.IN_PROGRESS)}
           >
             {DIARY_TEXTS.STATUS.IN_PROGRESS}
           </Chip>
           <Chip
             selected={filterStatus === DIARY_TEXTS.STATUS.NOT_STARTED}
             onPress={() => onFilterStatusChange(DIARY_TEXTS.STATUS.NOT_STARTED)}
-            style={styles.filterChip}
-            icon={ICONS_NAME.ALERT_CIRCLE}
+            style={[
+              styles.filterChip,
+              filterStatus === DIARY_TEXTS.STATUS.NOT_STARTED &&
+                styles.selectedChip,
+            ]}
+            textStyle={
+              filterStatus === DIARY_TEXTS.STATUS.NOT_STARTED &&
+              styles.selectedChipText
+            }
+            icon={renderIcon(
+              ICONS_NAME.ALERT_CIRCLE,
+              DIARY_TEXTS.STATUS.NOT_STARTED
+            )}
           >
             {DIARY_TEXTS.STATUS.NOT_STARTED}
           </Chip>
@@ -149,6 +199,16 @@ const styles = StyleSheet.create({
   },
   filterChip: {
     marginRight: 8,
+  },
+  selectedChip: {
+    backgroundColor: GlobalStyles.colors.primary500,
+    borderColor: GlobalStyles.colors.primary500,
+    borderWidth: 1,
+    elevation: 2,
+  },
+  selectedChipText: {
+    color: "white",
+    // fontWeight: "bold",
   },
   selectors: {
     marginBottom: 16,
