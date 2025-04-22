@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 import { Button, Dialog, Portal, TextInput } from "react-native-paper";
+import { GlobalStyles } from "../../constants/styles";
 
 interface ApprovalDialogProps {
   visible: boolean;
@@ -35,8 +36,22 @@ export default function ApprovalDialog({
           />
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={onDismiss}>Thoát</Button>
-          <Button onPress={handleApprove}>Đồng ý</Button>
+          <Button
+            onPress={onDismiss}
+            buttonColor="#f44336"
+            style={styles.button}
+            textColor="white"
+          >
+            Thoát
+          </Button>
+          <Button
+            onPress={handleApprove}
+            buttonColor={GlobalStyles.colors.primary500}
+            style={styles.button}
+            textColor="white"
+          >
+            Đồng ý
+          </Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
@@ -49,5 +64,9 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 16,
+  },
+  button: {
+    minWidth: 100,
+    paddingHorizontal: 20,
   },
 });

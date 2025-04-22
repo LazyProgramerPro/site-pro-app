@@ -139,12 +139,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   attachmentButton: {
     borderRadius: 8,
@@ -162,7 +156,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
     color: "#333333",
   },

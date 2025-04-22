@@ -22,6 +22,7 @@ import {
 } from "../../redux/slices/diarySlice";
 import { useAppDispatch } from "../../redux/store";
 import { DocumentFile } from "../../types/common";
+import LoadingOverlay from "../../components/ui/LoadingOverlay";
 
 interface Capability {
   code: string;
