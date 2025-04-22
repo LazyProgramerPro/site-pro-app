@@ -3,6 +3,7 @@ import {
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
 import React from "react";
+import { DiaryEntry } from "../../redux/slices/diarySlice";
 import AcceptanceRequestDetailsScreen from "../../screens/acceptance-request/AcceptanceRequestDetailsScreen";
 import AcceptanceRequestScreen from "../../screens/acceptance-request/AcceptanceRequestScreen";
 import AddAcceptanceRequestScreen from "../../screens/acceptance-request/AddAcceptanceRequestScreen";
@@ -11,12 +12,12 @@ import CategoryAcceptanceDetailsScreen from "../../screens/acceptance-request/Ca
 import CategoryAcceptanceScreen from "../../screens/acceptance-request/CategoryAcceptanceScreen";
 import CheckInManagementScreen from "../../screens/CheckInManagementScreen";
 import DashboardScreen from "../../screens/DashboardScreen";
+import AddDiaryScreen from "../../screens/diary/AddDiaryScreen";
 import DiaryManagementScreen from "../../screens/diary/DiaryManagementScreen";
 import ProblemManagementScreen from "../../screens/ProblemManagementScreen";
-import ProjectScreen from "../../screens/ProjectScreen";
+import ProjectDetailsScreen from "../../screens/project/ProjectDetailsScreen";
+import ProjectScreen from "../../screens/project/ProjectScreen";
 import ReportScreen from "../../screens/ReportScreen";
-import AddDiaryScreen from "../../screens/diary/AddDiaryScreen";
-import { DiaryEntry } from "../../redux/slices/diarySlice";
 const Stack = createNativeStackNavigator();
 
 export const DashboardStack = () => {
@@ -31,6 +32,13 @@ export const DashboardStack = () => {
       <Stack.Screen
         name="Project"
         component={ProjectScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ProjectDetails"
+        component={ProjectDetailsScreen}
         options={{
           headerShown: false,
         }}
