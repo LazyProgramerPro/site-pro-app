@@ -18,6 +18,7 @@ import ProblemManagementScreen from "../../screens/ProblemManagementScreen";
 import ProjectDetailsScreen from "../../screens/project/ProjectDetailsScreen";
 import ProjectScreen from "../../screens/project/ProjectScreen";
 import ReportScreen from "../../screens/ReportScreen";
+import ViewDiaryScreen from "../../screens/diary/ViewDiaryScreen";
 const Stack = createNativeStackNavigator();
 
 export const DashboardStack = () => {
@@ -129,6 +130,13 @@ export const DashboardStack = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="ViewDiary"
+        component={ViewDiaryScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 };
@@ -147,6 +155,9 @@ export type DashboardStackParamList = {
     projectId: number | null;
     constructionId: number | null;
     diary?: DiaryEntry; // Optional diary entry for editing
+  };
+  ViewDiary: {
+    diary: DiaryEntry;
   };
 };
 

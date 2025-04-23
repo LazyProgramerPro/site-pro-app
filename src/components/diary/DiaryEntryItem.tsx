@@ -62,6 +62,9 @@ export default function DiaryEntryItem({ item }: DiaryEntryItemProps) {
   };
 
   const handleViewPressDiary = (diary: DiaryEntry) => {
+    navigation.navigate("ViewDiary", {
+      diary: item,
+    });
     // TODO: Implement view diary functionality
     handleCloseMenu();
   };
@@ -89,6 +92,7 @@ export default function DiaryEntryItem({ item }: DiaryEntryItemProps) {
           styles.card,
           item.id === editingDiary?.id && styles.selectedCard,
         ]}
+        onPress={() => handleViewPressDiary(item)}
       >
         <Card.Content>
           <View style={styles.itemHeader}>
