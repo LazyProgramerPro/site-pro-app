@@ -23,6 +23,9 @@ export const DIARY_TEXTS = {
     CREATED_BY: "Tạo bởi:",
   },
   ADD_BUTTON: "Thêm nhật ký",
+  PLEASE_SELECT_PROJECT: "Vui lòng chọn dự án để xem nhật ký",
+  PLEASE_SELECT_CONSTRUCTION: "Vui lòng chọn công trình để xem nhật ký",
+  NO_DIARY: "Không có nhật ký nào",
 } as const;
 
 export const DIARY_TYPELIST = {

@@ -194,10 +194,13 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     elevation: 2,
+    padding: 1,
   },
   selectedCard: {
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: STATUS_COLORS.ICON.SELECTED,
+    elevation: 4,
+    padding: 0,
   },
   itemHeader: {
     flexDirection: "row",
@@ -212,7 +215,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   selectedText: {
-    fontWeight: "700",
     color: STATUS_COLORS.ICON.SELECTED,
   },
   contentSection: {

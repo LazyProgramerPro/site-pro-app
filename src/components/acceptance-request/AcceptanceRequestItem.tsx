@@ -147,11 +147,13 @@ export default function AcceptanceRequestItem({
               />
               <Text
                 variant="titleMedium"
-                style={
-                  item.id === editingAcceptanceRequest?.id
-                    ? styles.selectedText
-                    : {}
-                }
+                style={[
+                  styles.titleText,
+                  item.id === editingAcceptanceRequest?.id &&
+                    styles.selectedText,
+                ]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
               >
                 {item.name}
               </Text>
@@ -276,10 +278,13 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     elevation: 2,
+    padding: 1,
   },
   selectedCard: {
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: STATUS_COLORS.ICON.SELECTED,
+    elevation: 4,
+    padding: 0,
   },
   itemHeader: {
     flexDirection: "row",
@@ -294,8 +299,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   selectedText: {
-    fontWeight: "700",
     color: STATUS_COLORS.ICON.SELECTED,
+  },
+  titleText: {
+    flex: 1,
+    maxWidth: "90%",
   },
   contentSection: {
     paddingLeft: 4,

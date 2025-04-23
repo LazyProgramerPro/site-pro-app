@@ -15,6 +15,8 @@ import { deleteDiaryEntry } from "../../redux/slices/diarySlice";
 import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
 import { getConstructions } from "../../redux/slices/projectSlice";
 import { getProjects } from "../../redux/slices/projectSlice";
+import EmptyList from "../../components/ui/EmptyList";
+import { DIARY_TEXTS } from "../../constants/diary";
 
 type NavigationProp = NativeStackNavigationProp<DashboardStackParamList>;
 
@@ -62,8 +64,17 @@ export default function DiaryManagementScreen() {
     <DiaryEntryItem item={item} />
   );
 
-  const renderEmptyList = () => <></>;
-
+  const renderEmptyList = () => (
+    <EmptyList
+      message={
+        !selectedProject
+          ? DIARY_TEXTS.PLEASE_SELECT_PROJECT
+          : !selectedConstruction
+          ? DIARY_TEXTS.PLEASE_SELECT_CONSTRUCTION
+          : DIARY_TEXTS.NO_DIARY
+      }
+    />
+  );
   return (
     <ScreenWrapper>
       <View style={styles.container}>

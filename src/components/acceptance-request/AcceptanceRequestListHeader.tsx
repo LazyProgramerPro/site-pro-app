@@ -124,6 +124,11 @@ export default function AcceptanceRequestListHeader() {
                   filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.ALL &&
                   styles.selectedChipText
                 }
+                icon={
+                  filterStatus === ACCEPTANCE_REQUEST_TEXTS.STATUS_VALUE.ALL
+                    ? renderIcon(ICONS_NAME.CHECK, null)
+                    : undefined
+                }
               >
                 {ACCEPTANCE_REQUEST_TEXTS.STATUS_LABEL.ALL}
               </Chip>

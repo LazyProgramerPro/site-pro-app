@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, ScrollView } from "react-native";
 import { Chip, Surface, Text } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
@@ -111,7 +111,11 @@ export default function DiaryListHeader() {
       )}
 
       {selectedProject && selectedConstruction && (
-        <View style={styles.filterContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterContainer}
+        >
           <Chip
             selected={filterStatus === null}
             onPress={() => onFilterStatusChange(null)}
@@ -182,7 +186,7 @@ export default function DiaryListHeader() {
           >
             {DIARY_TEXTS.STATUS.NOT_STARTED}
           </Chip>
-        </View>
+        </ScrollView>
       )}
     </View>
   );
@@ -199,8 +203,7 @@ const styles = StyleSheet.create({
   },
   filterContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
+    paddingVertical: 8,
   },
   filterChip: {
     marginRight: 8,
