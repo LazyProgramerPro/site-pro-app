@@ -434,17 +434,26 @@ npx expo start
 
 => Copilot sẽ đánh giá các mã xung quanh con trỏ chuột và đưa ra các gợi ý dựa trên mã đó( Sử dụng các prompt comment)
 
+## Token, LLM, Context Window Size
+
 ## Sử dụng Comment
 
 ## Sử dụng Inline Chat(Ctrl + I)
 
 ## Các tính năng đáng chú ý
 
+- Generate Documentation: Tạo ra các tài liệu cho các function, class, module
+- Gemnerate Commit Message: Tạo ra các commit message cho các thay đổi trong mã
+- Generate README: Tạo ra các tài liệu README cho các dự án(sử dụng kèm @workspace)
+- Explain/Fix/Refactor: Giải thích, sửa lỗi, tối ưu hóa mã(<https://code.visualstudio.com/docs/copilot/copilot-customization#_reusable-prompt-files-experimental>)
+
 - Next Edit: Di chuyển đến các kết quả khác nhau khi chuúng ta gõ
-- Use Instruction File: Sử dụng file hướng dẫn để yêu cầu AI tạo ra các đoạn mã cụ thể. Tạo ra bằng cách tạo một file mới với tên là "instruction.md" và viết các hướng dẫn trong đó bên trong thư mục .github : Điều này giúp gen ra các đoạn mã cụ thể hơn và chính xác hơn ( Ví dụ như phù hợp với tên đặt của các function, biến, class trong mã của bạn). Vì mỗi project có 1 cách đặt tên khác nhau nên ko thể áp dụng chung cho tất cả các project. Tuy vậy nên có 1 bộ hướng dẫn riêng cho từng project
+- Use Instruction File: Sử dụng file hướng dẫn để yêu cầu AI tạo ra các đoạn mã cụ thể. Tạo ra bằng cách tạo một file mới với tên là "instruction.md" và viết các hướng dẫn trong đó bên trong thư mục .github : Điều này giúp gen ra các đoạn mã cụ thể hơn và chính xác hơn ( Ví dụ như phù hợp với tên đặt của các function, biến, class trong mã của bạn). Vì mỗi project có 1 cách đặt tên khác nhau nên ko thể áp dụng chung cho tất cả các project. Tuy vậy nên có 1 bộ hướng dẫn riêng cho từng project(<https://code.visualstudio.com/docs/copilot/copilot-customization#_define-codegeneration-custom-instructions>)
+  - Những tệp tái sử dụng có đuổi là .prompt (<https://code.visualstudio.com/docs/copilot/copilot-customization#_define-codegeneration-custom-instructions>)
+  - Tham khảo tại Cursor directory: <https://cursor.directory/>
 - Temporal Context: Tự động lấy các tệp được chỉnh sửa gần đây trong repo của bạn và sử dụng chúng để tạo mã
 - Ngôi sao lấp lánh : Code Actions
-
+<https://docs.github.com/en/copilot/copilot-chat-cookbook>
 - Chú ý thêm các tính năng mới
 
 ## Adding context to the prompt
@@ -478,3 +487,52 @@ npx expo start
 - Thêm các ví dụ cụ thể
 - Chia nhỏ các task phức tạp thành các task nhỏ hơn
 - Thêm những file để tham chiếu : Sử dụng #
+
+# Cursor AI
+
+## About LLMs, Embbeddings, Context and Limit of AI
+
+- Bạn dụng UI để làm việc với các models: Claude, Chat GPT ..? Chúng làm việc như thế nào? Làm thế nào để chúng hiểu những gì bạn viết cho nó ?
+- Làm thế nào để chúng hiểu những prompt của bạn?
+- Làm thế nào ngôn ngữ của con người chuyển sang 1 cái gì đó mà máy tính có thể hiểu được?
+
+### Embeddings
+
+- Embedding là gì?
+- Embedding là một cách để chuyển đổi dữ liệu thành các vector số học mà máy tính có thể hiểu được (Word->Vector)
+- VD:
+  - "Tôi thích ăn pizza" -> [0.1, 0.2, 0.3, 0.4]
+  - "Tôi thích ăn sushi" -> [0.5, 0.6, 0.7, 0.8]
+  - "Tôi thích ăn phở" -> [0.9, 1.0, 1.1, 1.2]
+
+### Prediction
+
+- Prediction là gì?
+- Prediction là quá trình mà máy tính sử dụng các vector số học để dự đoán kết quả, và dự đoán những gì xảy ra tiếp theo
+- VD:
+  - King - Man + Woman = Queen
+
+### Hallucinate
+
+- Hallucinate là gì?
+
+### Context Window
+
+- Context Window là gì?
+- Là 1 bộ nhớ ngắn hạn mà máy tính sử dụng để lưu trữ các thông tin cần thiết để dự đoán kết quả
+- Context Window có giới hạn về kích thước, và khi vượt quá giới hạn này, máy tính sẽ không thể nhớ được các thông tin trước đó và có thể lặp lại
+thông tin trước đó
+- VD:
+  - Claude: 200000 từ
+  - Chat GPT4o: 128000 từ
+  - Chat GPT4o: 32000 từ
+
+### Rules of AI
+
+<https://github.com/piotr-jura-udemy/cursorai-nextjs/blob/main/rules-for-ai.txt>
+
+- Khi chúng ta tạo dự án mới sẽ có 1 tệp tin là cursorrules, bạn sẽ giữ nó như 1 phần của dự án ( giống file của github copilot).Đối với dự án đó có lẽ đó là cách bạn muốn dự án được thực thi
+- Bạn có thể tìm thấy những lời nhắc mã cụ thể , và cũng có thể đưa vào với mỗi dự án mới:<https://cursor.directory/>
+<https://github.com/piotr-jura-udemy/cursorai-nextjs/blob/main/prompts/001-shadcn-themes.txt>
+
+### Composer
