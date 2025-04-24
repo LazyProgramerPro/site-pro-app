@@ -1,10 +1,17 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useState, useCallback } from "react";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import ApprovalDialog from "../../components/diary/ApprovalDialog";
-import AttachmentSelector from "../../components/diary/AttachmentSelector";
+import AttachmentSelector from "../../components/ui/AttachmentSelector";
 import CapabilityDialog from "../../components/diary/CapabilityDialog";
 import CapabilityTable from "../../components/diary/CapabilityTable";
 import BottomSheetPopup from "../../components/ui/BottomSheetPopup";
@@ -24,6 +31,10 @@ import {
 import { useAppDispatch } from "../../redux/store";
 import { DocumentFile } from "../../types/common";
 import LoadingOverlay from "../../components/ui/LoadingOverlay";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import * as Animatable from "react-native-animatable";
+import SectionHeader from "../../components/acceptance-request/SectionHeader";
+import StatusCard from "../../components/acceptance-request/StatusCard";
 
 interface Capability {
   code: string;
@@ -218,106 +229,142 @@ export default function AddDiaryScreen() {
         />
 
         <ScrollView style={styles.formContainer}>
-          <TextInput
-            value={diaryId}
-            mode="outlined"
-            style={[styles.input, styles.disabledInput]}
-            contentStyle={styles.inputContent}
-            disabled
+          <StatusCard
+            status={diary?.status || DIARY_TEXTS.STATUS.NOT_STARTED}
+            username={diary?.updatedBy || "Nguyễn Chí Thanh"}
+            statusType={
+              diary?.status === DIARY_TEXTS.STATUS.COMPLETED
+                ? "approved"
+                : diary?.status === DIARY_TEXTS.STATUS.IN_PROGRESS
+                ? "processing"
+                : "pending"
+            }
+            timestamp={diary?.date || new Date().toLocaleDateString()}
           />
-
-          <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Tên nhật ký</Text>
+          <SectionHeader
+            title="Thông tin cơ bản"
+            section="basicInfo"
+            icon="information-outline"
+          />
+          <Animatable.View
+            animation="fadeIn"
+            duration={400}
+            style={styles.sectionContent}
+          >
             <TextInput
-              value={diaryName}
-              onChangeText={setDiaryName}
+              value={diaryId}
               mode="outlined"
-              style={styles.input}
+              style={[styles.input, styles.disabledInput]}
               contentStyle={styles.inputContent}
-              placeholder="Nhập tên nhật ký"
+              disabled
             />
-          </View>
 
-          <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Mô tả nhật ký</Text>
-            <TextInput
-              value={description}
-              onChangeText={setDescription}
-              mode="outlined"
-              multiline
-              numberOfLines={3}
-              style={[styles.input, styles.multilineInput]}
-              contentStyle={styles.multilineInputContent}
-              placeholder="Nhập mô tả"
-            />
-          </View>
-
-          <FieldSelector
-            title="Loại nhật ký"
-            icon="notebook"
-            items={diaryTypes}
-            selectedItem={diaryType}
-            type={COMMON_CONSTANTS.FIELD_SELECTOR_TYPE.TEXT_OUT_FIELD}
-            onSelect={(item) => setDiaryType(item.name)}
-          />
-
-          {diaryType !== "Nhật ký an toàn lao động" && (
             <View style={styles.fieldGroup}>
-              <Text style={styles.label}>Chọn năng lực</Text>
-              <Button
-                mode="contained"
-                onPress={showCapabilityDialog}
-                style={styles.attachmentButton}
-                icon="account-hard-hat"
-              >
-                Thêm năng lực
-              </Button>
-              <CapabilityTable
-                capabilities={capabilities}
-                onDelete={handleDeleteCapability}
+              <Text style={styles.label}>Tên nhật ký</Text>
+              <TextInput
+                value={diaryName}
+                onChangeText={setDiaryName}
+                mode="outlined"
+                style={styles.input}
+                contentStyle={styles.inputContent}
+                placeholder="Nhập tên nhật ký"
               />
             </View>
-          )}
 
-          <FieldSelector
-            title="An toàn"
-            icon="shield-check"
-            items={safetyLevels}
-            selectedItem={safety}
-            type={COMMON_CONSTANTS.FIELD_SELECTOR_TYPE.TEXT_OUT_FIELD}
-            onSelect={(item) => setSafety(item.name)}
-          />
+            <View style={styles.fieldGroup}>
+              <Text style={styles.label}>Mô tả nhật ký</Text>
+              <TextInput
+                value={description}
+                onChangeText={setDescription}
+                mode="outlined"
+                multiline
+                numberOfLines={3}
+                style={[styles.input, styles.multilineInput]}
+                contentStyle={styles.multilineInputContent}
+                placeholder="Nhập mô tả"
+              />
+            </View>
 
-          <FieldSelector
-            title="Môi trường"
-            icon="tree"
-            items={environmentTypes}
-            selectedItem={environment}
-            type={COMMON_CONSTANTS.FIELD_SELECTOR_TYPE.TEXT_OUT_FIELD}
-            onSelect={(item) => setEnvironment(item.name)}
-          />
+            <FieldSelector
+              title="Loại nhật ký"
+              icon="notebook"
+              items={diaryTypes}
+              selectedItem={diaryType}
+              type={COMMON_CONSTANTS.FIELD_SELECTOR_TYPE.TEXT_OUT_FIELD}
+              onSelect={(item) => setDiaryType(item.name)}
+            />
 
-          <FieldSelector
-            title="Chọn thời tiết"
-            icon="weather-cloudy"
-            items={weatherConditions}
-            selectedItem={weather}
-            type={COMMON_CONSTANTS.FIELD_SELECTOR_TYPE.TEXT_OUT_FIELD}
-            onSelect={(item) => setWeather(item.name)}
-          />
+            {diaryType !== "Nhật ký an toàn lao động" && (
+              <View style={styles.fieldGroup}>
+                <View style={styles.capabilitySelector}>
+                  <Text style={styles.capabilitySelectorText}>
+                    Chọn năng lực
+                  </Text>
+                  <TouchableOpacity onPress={showCapabilityDialog}>
+                    <MaterialCommunityIcons
+                      name="plus"
+                      size={24}
+                      color={GlobalStyles.colors.primary500}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <CapabilityTable
+                  capabilities={capabilities}
+                  onDelete={handleDeleteCapability}
+                />
+              </View>
+            )}
 
-          <AttachmentSelector
-            selectedImages={selectedImages || []}
-            documents={selectedDocuments || []}
-            onImageSelected={setSelectedImages}
-            onDocumentSelected={setSelectedDocuments}
+            <FieldSelector
+              title="An toàn"
+              icon="shield-check"
+              items={safetyLevels}
+              selectedItem={safety}
+              type={COMMON_CONSTANTS.FIELD_SELECTOR_TYPE.TEXT_OUT_FIELD}
+              onSelect={(item) => setSafety(item.name)}
+            />
+
+            <FieldSelector
+              title="Môi trường"
+              icon="tree"
+              items={environmentTypes}
+              selectedItem={environment}
+              type={COMMON_CONSTANTS.FIELD_SELECTOR_TYPE.TEXT_OUT_FIELD}
+              onSelect={(item) => setEnvironment(item.name)}
+            />
+
+            <FieldSelector
+              title="Chọn thời tiết"
+              icon="weather-cloudy"
+              items={weatherConditions}
+              selectedItem={weather}
+              type={COMMON_CONSTANTS.FIELD_SELECTOR_TYPE.TEXT_OUT_FIELD}
+              onSelect={(item) => setWeather(item.name)}
+            />
+          </Animatable.View>
+          <SectionHeader
+            title="Thông tin đính kèm"
+            section="basicInfo"
+            icon="file"
           />
+          <Animatable.View
+            animation="fadeIn"
+            duration={400}
+            style={styles.sectionContent}
+          >
+            <AttachmentSelector
+              selectedImages={selectedImages || []}
+              documents={selectedDocuments || []}
+              onImageSelected={setSelectedImages}
+              onDocumentSelected={setSelectedDocuments}
+            />
+          </Animatable.View>
         </ScrollView>
 
         <BottomSheetPopup
           visible={isMenuVisible}
           onDismiss={handleCloseMenu}
-          title=""
+          title="Tuỳ chọn"
           addAction={{
             icon: "content-save",
             label: "Lưu thông tin nhật ký",
@@ -354,8 +401,6 @@ export default function AddDiaryScreen() {
           visible={showBackConfirmation}
           onDismiss={handleCancelBack}
           onConfirm={handleConfirmBack}
-          title="Xác nhận quay lại"
-          message="Bạn có chắc chắn muốn quay lại? Tất cả thay đổi sẽ không được lưu."
         />
       </View>
     </ScreenWrapper>
@@ -435,5 +480,65 @@ const styles = StyleSheet.create({
     left: 16,
     right: 16,
     backgroundColor: "#d32f2f",
+  },
+  selectorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  selectorButton: {
+    flex: 1,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+    borderRightWidth: 0,
+    backgroundColor: "#fff",
+    borderColor: GlobalStyles.colors.gray400,
+  },
+  textContainer: {
+    height: 48,
+    justifyContent: "center",
+    paddingLeft: 12,
+    borderWidth: 1,
+    borderTopLeftRadius: 4,
+    borderBottomLeftRadius: 4,
+  },
+  selectorButtonLabel: {
+    fontSize: 16,
+    color: GlobalStyles.colors.gray700,
+  },
+  dropdownButton: {
+    width: 48,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderLeftWidth: 0,
+    backgroundColor: "#fff",
+    borderColor: GlobalStyles.colors.gray400,
+    borderTopRightRadius: 4,
+    borderBottomRightRadius: 4,
+  },
+  dropdownButtonContent: {
+    height: 48,
+  },
+  capabilitySelector: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: "#fff",
+    // borderWidth: 1,
+    borderRadius: 4,
+    borderColor: GlobalStyles.colors.gray400,
+    marginBottom: 12,
+  },
+  capabilitySelectorText: {
+    fontSize: 16,
+    color: GlobalStyles.colors.gray700,
+  },
+  sectionContent: {
+    padding: 12,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    marginBottom: 8,
   },
 });

@@ -4,6 +4,7 @@ import {
 } from "@react-navigation/native-stack";
 import React from "react";
 import { DiaryEntry } from "../../redux/slices/diarySlice";
+import { Problem } from "../../redux/slices/problemSlice";
 import AcceptanceRequestDetailsScreen from "../../screens/acceptance-request/AcceptanceRequestDetailsScreen";
 import AcceptanceRequestScreen from "../../screens/acceptance-request/AcceptanceRequestScreen";
 import AddAcceptanceRequestScreen from "../../screens/acceptance-request/AddAcceptanceRequestScreen";
@@ -14,11 +15,14 @@ import CheckInManagementScreen from "../../screens/CheckInManagementScreen";
 import DashboardScreen from "../../screens/DashboardScreen";
 import AddDiaryScreen from "../../screens/diary/AddDiaryScreen";
 import DiaryManagementScreen from "../../screens/diary/DiaryManagementScreen";
-import ProblemManagementScreen from "../../screens/ProblemManagementScreen";
+import ProblemManagementScreen from "../../screens/problem/ProblemManagementScreen";
+import AddProblemScreen from "../../screens/problem/AddProblemScreen";
+import ViewProblemScreen from "../../screens/problem/ViewProblemScreen";
 import ProjectDetailsScreen from "../../screens/project/ProjectDetailsScreen";
 import ProjectScreen from "../../screens/project/ProjectScreen";
 import ReportScreen from "../../screens/ReportScreen";
 import ViewDiaryScreen from "../../screens/diary/ViewDiaryScreen";
+
 const Stack = createNativeStackNavigator();
 
 export const DashboardStack = () => {
@@ -137,6 +141,20 @@ export const DashboardStack = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="AddProblem"
+        component={AddProblemScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ViewProblem"
+        component={ViewProblemScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 };
@@ -158,6 +176,14 @@ export type DashboardStackParamList = {
   };
   ViewDiary: {
     diary: DiaryEntry;
+  };
+  AddProblem: {
+    projectId: number | null;
+    constructionId: number | null;
+    problem?: Problem; // Optional problem entry for editing
+  };
+  ViewProblem: {
+    problem: Problem;
   };
 };
 

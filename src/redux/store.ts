@@ -5,6 +5,7 @@ import authReducer from "./slices/authSlice";
 import diaryReducer from "./slices/diarySlice";
 import { acceptanceRequestSpecialFormReducer } from "./slices/formAcceptanceRequestSlice";
 import projectReducer from "./slices/projectSlice";
+import problemReducer from "./slices/problemSlice";
 
 const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ const store = configureStore({
     acceptanceRequest: acceptanceRequestReducer,
     acceptanceRequestSpecialForm: acceptanceRequestSpecialFormReducer,
     project: projectReducer,
+    problem: problemReducer,
   },
 });
 

@@ -158,14 +158,6 @@ export default function DocumentPickerComponent({
 
   return (
     <View style={styles.container}>
-      <Button
-        mode="contained"
-        onPress={handleChooseDocument}
-        style={styles.attachmentButton}
-      >
-        Chọn văn bản
-      </Button>
-
       {documents.length > 0 ? (
         <>
           <View style={styles.headerRow}>
@@ -221,6 +213,20 @@ export default function DocumentPickerComponent({
           <Text style={styles.emptyText}>Chưa có tài liệu được chọn</Text>
         </View>
       )}
+      <Button
+        mode="contained"
+        onPress={handleChooseDocument}
+        style={styles.attachmentButton}
+        icon={() => (
+          <MaterialCommunityIcons
+            name="cloud-upload-outline"
+            size={24}
+            color="white"
+          />
+        )}
+      >
+        Chọn văn bản
+      </Button>
     </View>
   );
 }
@@ -232,7 +238,11 @@ const styles = StyleSheet.create({
   },
   attachmentButton: {
     borderRadius: 8,
-    marginBottom: 16,
+    marginTop: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
   },
   headerRow: {
     flexDirection: "row",

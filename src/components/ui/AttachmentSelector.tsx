@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { DocumentFile } from "../../types/common";
-import DocumentPickerComponent from "./DocumentPickerComponent";
 import ImagePickerComponent from "./ImagePickerComponent";
+import DocumentPickerComponent from "./DocumentPickerComponent";
 
 interface AttachmentSelectorProps {
   selectedImages?: string[];
@@ -27,7 +27,6 @@ export default function AttachmentSelector({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Thông tin đính kèm:</Text>
       <ImagePickerComponent
         onImageSelected={handleImageSelected}
         selectedImages={selectedImages}
@@ -43,6 +42,9 @@ export default function AttachmentSelector({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 20,
+    backgroundColor: "white",
+    borderRadius: 8,
+    padding: 12,
   },
   label: {
     fontSize: 16,

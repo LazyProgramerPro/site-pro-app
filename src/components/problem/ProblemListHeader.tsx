@@ -3,48 +3,49 @@ import { StyleSheet, View, ScrollView } from "react-native";
 import { Chip, Surface, Text } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ACCEPTANCE_REQUEST_TEXTS } from "../../constants/acceptance-request";
-import { DIARY_TEXTS } from "../../constants/diary";
+import { PROBLEM_TEXTS } from "../../constants/problem";
 import { ICONS_NAME } from "../../constants/icon";
 import {
   setFilterStatus,
   setSelectedConstruction,
   setSelectedProject,
-  getDiaryList,
-} from "../../redux/slices/diarySlice";
+  getProblemList,
+} from "../../redux/slices/problemSlice";
 import {
   Construction,
   Project,
-  getConstructions,
+  getContracts,
 } from "../../redux/slices/projectSlice";
 import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
 import FieldSelector from "../ui/FieldSelector";
 import { GlobalStyles } from "../../constants/styles";
+
 interface RenderIconProps {
   size: number;
 }
 
-export default function DiaryListHeader() {
+export default function ProblemListHeader() {
   const dispatch = useAppDispatch();
   const {
     selectedProject,
     selectedConstruction,
-    entries,
+    problems,
     query: { filterStatus },
-  } = useAppSelector((state: RootState) => state.diary);
+  } = useAppSelector((state: RootState) => state.problem);
   const projects = useAppSelector(
     (state: RootState) => state.project.projectList
   );
-  const constructions = useAppSelector(
-    (state: RootState) => state.project.constructions
+  const contracts = useAppSelector(
+    (state: RootState) => state.project.contracts
   );
 
   const handleSelectedProject = (project: Project) => {
     dispatch(setSelectedProject(project));
     dispatch(setSelectedConstruction(null)); // Reset construction when project changes
-    dispatch(getConstructions(project.id)); // Fetch constructions for the selected project
+    dispatch(getContracts(project.id)); // Fetch constructions for the selected project
   };
 
-  const fetchDiaryList = ({
+  const fetchProblemList = ({
     construction,
     status,
   }: {
@@ -52,7 +53,7 @@ export default function DiaryListHeader() {
     status?: string | null;
   }) => {
     dispatch(
-      getDiaryList({
+      getProblemList({
         projectId: selectedProject?.id,
         constructionId: construction?.id
           ? construction?.id
@@ -64,12 +65,12 @@ export default function DiaryListHeader() {
 
   const handleConstructionSelect = (construction: Construction) => {
     dispatch(setSelectedConstruction(construction));
-    fetchDiaryList({ construction });
+    fetchProblemList({ construction });
   };
 
   const onFilterStatusChange = (status: string | null) => {
     dispatch(setFilterStatus(status));
-    fetchDiaryList({ status });
+    fetchProblemList({ status });
   };
 
   const renderIcon = (iconName: string, status: string | null) => {
@@ -93,9 +94,9 @@ export default function DiaryListHeader() {
         {selectedProject && (
           <View style={styles.selectorMargin}>
             <FieldSelector
-              title={ACCEPTANCE_REQUEST_TEXTS.SELECT_CONSTRUCTION}
-              icon={ICONS_NAME.CONSTRUCTION}
-              items={constructions}
+              title={"Chọn hợp đồng"}
+              icon={ICONS_NAME.CONTRACT}
+              items={contracts}
               selectedItem={selectedConstruction?.name || undefined}
               onSelect={handleConstructionSelect}
             />
@@ -105,7 +106,7 @@ export default function DiaryListHeader() {
 
       {selectedProject && selectedConstruction && (
         <Text variant="titleMedium" style={styles.listTitle}>
-          {entries.length} nhật ký
+          {problems.length} vấn đề
         </Text>
       )}
 
@@ -113,77 +114,76 @@ export default function DiaryListHeader() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filterContainer}
+          style={styles.filterContainer}
         >
           <Chip
-            selected={filterStatus === null}
-            onPress={() => onFilterStatusChange(null)}
             style={[
               styles.filterChip,
               filterStatus === null && styles.selectedChip,
             ]}
-            textStyle={filterStatus === null && styles.selectedChipText}
-            icon={
-              filterStatus === null
-                ? renderIcon(ICONS_NAME.CHECK_CIRCLE, null)
-                : undefined
-            }
+            textStyle={[filterStatus === null && styles.selectedChipText]}
+            icon={renderIcon(ICONS_NAME.FILTER, null)}
+            onPress={() => onFilterStatusChange(null)}
           >
-            {DIARY_TEXTS.STATUS.ALL}
+            {PROBLEM_TEXTS.STATUS.ALL}
           </Chip>
           <Chip
-            selected={filterStatus === DIARY_TEXTS.STATUS.COMPLETED}
-            onPress={() => onFilterStatusChange(DIARY_TEXTS.STATUS.COMPLETED)}
             style={[
               styles.filterChip,
-              filterStatus === DIARY_TEXTS.STATUS.COMPLETED &&
+              filterStatus === PROBLEM_TEXTS.STATUS.COMPLETED &&
                 styles.selectedChip,
             ]}
-            textStyle={
-              filterStatus === DIARY_TEXTS.STATUS.COMPLETED &&
-              styles.selectedChipText
-            }
+            textStyle={[
+              filterStatus === PROBLEM_TEXTS.STATUS.COMPLETED &&
+                styles.selectedChipText,
+            ]}
             icon={renderIcon(
               ICONS_NAME.CHECK_CIRCLE,
-              DIARY_TEXTS.STATUS.COMPLETED
+              PROBLEM_TEXTS.STATUS.COMPLETED
             )}
+            onPress={() => onFilterStatusChange(PROBLEM_TEXTS.STATUS.COMPLETED)}
           >
-            {DIARY_TEXTS.STATUS.COMPLETED}
+            {PROBLEM_TEXTS.STATUS.COMPLETED}
           </Chip>
           <Chip
-            selected={filterStatus === DIARY_TEXTS.STATUS.IN_PROGRESS}
-            onPress={() => onFilterStatusChange(DIARY_TEXTS.STATUS.IN_PROGRESS)}
-            style={
-              (styles.filterChip,
-              filterStatus === DIARY_TEXTS.STATUS.IN_PROGRESS &&
-                styles.selectedChip)
-            }
-            textStyle={
-              filterStatus === DIARY_TEXTS.STATUS.IN_PROGRESS &&
-              styles.selectedChipText
-            }
-            icon={renderIcon(ICONS_NAME.CLOCK, DIARY_TEXTS.STATUS.IN_PROGRESS)}
-          >
-            {DIARY_TEXTS.STATUS.IN_PROGRESS}
-          </Chip>
-          <Chip
-            selected={filterStatus === DIARY_TEXTS.STATUS.NOT_STARTED}
-            onPress={() => onFilterStatusChange(DIARY_TEXTS.STATUS.NOT_STARTED)}
             style={[
               styles.filterChip,
-              filterStatus === DIARY_TEXTS.STATUS.NOT_STARTED &&
+              filterStatus === PROBLEM_TEXTS.STATUS.IN_PROGRESS &&
                 styles.selectedChip,
             ]}
-            textStyle={
-              filterStatus === DIARY_TEXTS.STATUS.NOT_STARTED &&
-              styles.selectedChipText
+            textStyle={[
+              filterStatus === PROBLEM_TEXTS.STATUS.IN_PROGRESS &&
+                styles.selectedChipText,
+            ]}
+            icon={renderIcon(
+              ICONS_NAME.CLOCK,
+              PROBLEM_TEXTS.STATUS.IN_PROGRESS
+            )}
+            onPress={() =>
+              onFilterStatusChange(PROBLEM_TEXTS.STATUS.IN_PROGRESS)
             }
+          >
+            {PROBLEM_TEXTS.STATUS.IN_PROGRESS}
+          </Chip>
+          <Chip
+            style={[
+              styles.filterChip,
+              filterStatus === PROBLEM_TEXTS.STATUS.NOT_STARTED &&
+                styles.selectedChip,
+            ]}
+            textStyle={[
+              filterStatus === PROBLEM_TEXTS.STATUS.NOT_STARTED &&
+                styles.selectedChipText,
+            ]}
             icon={renderIcon(
               ICONS_NAME.ALERT_CIRCLE,
-              DIARY_TEXTS.STATUS.NOT_STARTED
+              PROBLEM_TEXTS.STATUS.NOT_STARTED
             )}
+            onPress={() =>
+              onFilterStatusChange(PROBLEM_TEXTS.STATUS.NOT_STARTED)
+            }
           >
-            {DIARY_TEXTS.STATUS.NOT_STARTED}
+            {PROBLEM_TEXTS.STATUS.NOT_STARTED}
           </Chip>
         </ScrollView>
       )}
@@ -215,7 +215,6 @@ const styles = StyleSheet.create({
   },
   selectedChipText: {
     color: "white",
-    // fontWeight: "bold",
   },
   selectors: {
     marginBottom: 16,

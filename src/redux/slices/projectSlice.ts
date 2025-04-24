@@ -32,6 +32,18 @@ export interface Construction {
   projectId: number;
 }
 
+export interface Contract {
+  id: number;
+  name: string;
+  projectId: number;
+  contractNumber: string;
+  startDate: string;
+  endDate: string;
+  value: number;
+  status: string;
+  contractor: string;
+}
+
 interface ProjectState {
   projectList: Project[];
   editingProject: Project | null;
@@ -41,6 +53,7 @@ interface ProjectState {
     filterStatus?: string | null;
   };
   constructions: Construction[];
+  contracts: Contract[];
 }
 
 const projectsFakeData = Array.from({ length: 20 }, (_, index) => ({
@@ -67,6 +80,42 @@ const constructionsFakeData = [
   { id: 3, name: "Công trình C", projectId: 3 },
 ];
 
+const contractsFakeData = [
+  {
+    id: 1,
+    name: "Hợp đồng xây dựng nhà A",
+    projectId: 1,
+    contractNumber: "HD-001",
+    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+    value: 5000000000,
+    status: "Đang thực hiện",
+    contractor: "Công ty Xây dựng ABC",
+  },
+  {
+    id: 2,
+    name: "Hợp đồng thiết kế công trình B",
+    projectId: 2,
+    contractNumber: "HD-002",
+    startDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    endDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
+    value: 2000000000,
+    status: "Đã ký",
+    contractor: "Công ty Thiết kế XYZ",
+  },
+  {
+    id: 3,
+    name: "Hợp đồng giám sát công trình C",
+    projectId: 3,
+    contractNumber: "HD-003",
+    startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+    endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(),
+    value: 1000000000,
+    status: "Hoàn thành",
+    contractor: "Công ty Giám sát DEF",
+  },
+];
+
 // Initial state with proper typing
 const initialState: ProjectState = {
   projectList: [],
@@ -77,6 +126,7 @@ const initialState: ProjectState = {
     filterStatus: null,
   },
   constructions: [],
+  contracts: [],
 };
 
 // Define the async thunk for fetching Projects
@@ -115,6 +165,21 @@ export const getConstructions = createAsyncThunk<
   ); // TODO: Replace with actual API call
   return filteredConstructions;
 });
+
+export const getContracts = createAsyncThunk<Contract[], number | undefined>(
+  "project/getContracts",
+  async (projectId, thunkAPI) => {
+    // Simulate a delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    if (!projectId) {
+      return contractsFakeData;
+    }
+    const filteredContracts = contractsFakeData.filter(
+      (contract: Contract) => contract.projectId === projectId
+    ); // TODO: Replace with actual API call
+    return filteredContracts;
+  }
+);
 
 // Define the request body type
 interface ProjectRequestBody {
@@ -206,6 +271,12 @@ const projectSlice = createSlice({
         getConstructions.fulfilled,
         (state, action: PayloadAction<Construction[]>) => {
           state.constructions = action.payload;
+        }
+      )
+      .addCase(
+        getContracts.fulfilled,
+        (state, action: PayloadAction<Contract[]>) => {
+          state.contracts = action.payload;
         }
       )
       .addCase(

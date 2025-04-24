@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Button } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface ImagePickerProps {
   onImageSelected: (uris: string[]) => void;
@@ -90,47 +90,66 @@ export default function ImagePickerComponent({
 
   return (
     <View style={styles.container}>
+      {selectedImages.length > 0 ? (
+        <>
+          {selectedImages.length > 0 && (
+            <View style={styles.headerContainer}>
+              <Text style={styles.sectionTitle}>
+                Hình ảnh ({selectedImages.length}/{MAX_IMAGES})
+              </Text>
+              <View style={styles.headerActions}>
+                {selectedImages.length > 0 && (
+                  <TouchableOpacity
+                    style={styles.clearButton}
+                    onPress={clearImages}
+                    disabled={isLoading}
+                  >
+                    <Ionicons name="trash-outline" size={16} color="#d32f2f" />
+                    <Text style={styles.clearButtonText}>Xóa tất cả</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+          )}
+          <View style={styles.imageGrid}>
+            {selectedImages.map((uri, index) => (
+              <View key={index} style={styles.imageContainer}>
+                <Image source={{ uri }} style={styles.image} />
+                <TouchableOpacity
+                  style={styles.removeButton}
+                  onPress={() => removeImage(index)}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <Ionicons name="close-circle" size={24} color="white" />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        </>
+      ) : (
+        <View style={styles.emptyStateContainer}>
+          <Ionicons name="images-outline" size={60} color="#e0e0e0" />
+          <Text style={styles.emptyStateText}>Chưa có hình ảnh nào</Text>
+          <Text style={styles.emptyStateSubText}>
+            Chọn tối đa {MAX_IMAGES} hình ảnh để đính kèm
+          </Text>
+        </View>
+      )}
       <Button
         mode="contained"
         onPress={handleChooseImage}
         style={styles.attachmentButton}
         loading={isLoading}
+        icon={() => (
+          <MaterialCommunityIcons
+            name="cloud-upload-outline"
+            size={24}
+            color="white"
+          />
+        )}
       >
         Chọn ảnh
       </Button>
-      {selectedImages.length > 0 && (
-        <View style={styles.headerContainer}>
-          <Text style={styles.sectionTitle}>
-            Hình ảnh ({selectedImages.length}/{MAX_IMAGES})
-          </Text>
-          <View style={styles.headerActions}>
-            {selectedImages.length > 0 && (
-              <TouchableOpacity
-                style={styles.clearButton}
-                onPress={clearImages}
-                disabled={isLoading}
-              >
-                <Ionicons name="trash-outline" size={16} color="#d32f2f" />
-                <Text style={styles.clearButtonText}>Xóa tất cả</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-      )}
-      <View style={styles.imageGrid}>
-        {selectedImages.map((uri, index) => (
-          <View key={index} style={styles.imageContainer}>
-            <Image source={{ uri }} style={styles.image} />
-            <TouchableOpacity
-              style={styles.removeButton}
-              onPress={() => removeImage(index)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <Ionicons name="close-circle" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
-        ))}
-      </View>
     </View>
   );
 }
@@ -142,7 +161,7 @@ const styles = StyleSheet.create({
   },
   attachmentButton: {
     borderRadius: 8,
-    marginBottom: 16,
+    marginTop: 16,
   },
   headerContainer: {
     flexDirection: "row",
