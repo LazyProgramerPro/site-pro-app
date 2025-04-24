@@ -24,6 +24,7 @@ import {
   AddAcceptanceRequestRouteParams,
   DashboardStackParamList,
 } from "../../navigation/stacks/DashboardStack";
+import BackConfirmationModal from "../../components/ui/BackConfirmationModal";
 
 export default function AddAcceptanceRequestScreen() {
   const theme = useTheme();
@@ -136,62 +137,15 @@ export default function AddAcceptanceRequestScreen() {
         </ScrollView>
 
         {/* Back Confirmation Modal */}
-        <Portal>
-          <Modal
-            visible={backConfirmVisible}
-            onDismiss={() => setBackConfirmVisible(false)}
-            contentContainerStyle={styles.modalContainer}
-          >
-            <View style={styles.modalContent}>
-              <View style={styles.modalIconContainer}>
-                <IconButton
-                  icon="alert-circle"
-                  size={48}
-                  iconColor={theme.colors.error}
-                />
-              </View>
-
-              <Text style={[styles.modalTitle, { color: theme.colors.error }]}>
-                Cảnh báo
-              </Text>
-
-              <Text style={styles.modalDescription}>
-                Bạn có thông tin chưa được lưu. Nếu quay lại bây giờ, tất cả dữ
-                liệu sẽ bị mất.
-              </Text>
-
-              <View style={styles.modalActions}>
-                <Button
-                  mode="outlined"
-                  onPress={() => setBackConfirmVisible(false)}
-                  style={styles.cancelButton}
-                  contentStyle={styles.buttonContent}
-                  labelStyle={styles.buttonLabel}
-                  icon="content-save"
-                >
-                  Tiếp tục chỉnh sửa
-                </Button>
-                <Button
-                  mode="contained"
-                  onPress={() => {
-                    setBackConfirmVisible(false);
-                    navigation.goBack();
-                    // TODO: Handle data from redux store or context
-                  }}
-                  style={[
-                    styles.confirmButton,
-                    { backgroundColor: theme.colors.error },
-                  ]}
-                  contentStyle={styles.buttonContent}
-                  labelStyle={styles.buttonLabel}
-                  icon="arrow-left"
-                >
-                  Quay lại
-                </Button>
-              </View>
-            </View>
-          </Modal>
-        </Portal>
+        <BackConfirmationModal
+          visible={backConfirmVisible}
+          onDismiss={() => setBackConfirmVisible(false)}
+          onConfirm={() => {
+            setBackConfirmVisible(false);
+            navigation.goBack();
+            // TODO: Handle data from redux store or context
+          }}
+        />
       </View>
     </ScreenWrapper>
   );

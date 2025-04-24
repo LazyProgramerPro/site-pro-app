@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import ApprovalDialog from "../../components/diary/ApprovalDialog";
@@ -11,6 +11,7 @@ import BottomSheetPopup from "../../components/ui/BottomSheetPopup";
 import FieldSelector from "../../components/ui/FieldSelector";
 import ScreenHeader from "../../components/ui/ScreenHeader";
 import ScreenWrapper from "../../components/ui/ScreenWrapper";
+import BackConfirmationModal from "../../components/ui/BackConfirmationModal";
 import { COMMON_CONSTANTS } from "../../constants/common";
 import { DIARY_OPTIONS, DIARY_TEXTS } from "../../constants/diary";
 import { GlobalStyles, STATUS_COLORS } from "../../constants/styles";
@@ -71,6 +72,7 @@ export default function AddDiaryScreen() {
       workforceQuantity: "0",
     })) || []
   );
+  const [showBackConfirmation, setShowBackConfirmation] = useState(false);
 
   const diaryTypes = DIARY_OPTIONS.TYPES;
   const safetyLevels = DIARY_OPTIONS.SAFETY;
@@ -193,12 +195,25 @@ export default function AddDiaryScreen() {
     handleCloseMenu();
   };
 
+  const handleBackPress = useCallback(() => {
+    setShowBackConfirmation(true);
+  }, []);
+
+  const handleConfirmBack = useCallback(() => {
+    setShowBackConfirmation(false);
+    navigation.goBack();
+  }, [navigation]);
+
+  const handleCancelBack = useCallback(() => {
+    setShowBackConfirmation(false);
+  }, []);
+
   return (
     <ScreenWrapper>
       <View style={styles.container}>
         <ScreenHeader
           title="Thông tin nhật ký"
-          onBackPress={() => navigation.goBack()}
+          onBackPress={handleBackPress}
           onOpenMenuPress={handleOpenMenu}
         />
 
@@ -333,6 +348,14 @@ export default function AddDiaryScreen() {
           visible={isApprovalDialogVisible}
           onDismiss={() => setIsApprovalDialogVisible(false)}
           onApprove={handleSendForApproval}
+        />
+
+        <BackConfirmationModal
+          visible={showBackConfirmation}
+          onDismiss={handleCancelBack}
+          onConfirm={handleConfirmBack}
+          title="Xác nhận quay lại"
+          message="Bạn có chắc chắn muốn quay lại? Tất cả thay đổi sẽ không được lưu."
         />
       </View>
     </ScreenWrapper>
