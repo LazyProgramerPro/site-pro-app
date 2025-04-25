@@ -5,12 +5,14 @@ import ScreenWrapper from "../components/ui/ScreenWrapper";
 import { GlobalStyles } from "../constants/styles";
 
 // Import our new components
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderProfile from "../components/dashboard/HeaderProfile";
 import QuickAccessMenu from "../components/dashboard/QuickAccessMenu";
 import RecentProjects from "../components/dashboard/RecentProjects";
 import StatsOverview from "../components/dashboard/StatsOverview";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import NotificationModal from "../components/ui/NotificationModal";
+import { getProjects } from "../redux/slices/projectSlice";
+import { RootState, useAppDispatch, useAppSelector } from "../redux/store";
 
 const menuItems = [
   { label: "Dự án", icon: "folder-outline", color: "#4CAF50", name: "Project" },
@@ -39,33 +41,6 @@ const menuItems = [
     name: "CheckInManagement",
   },
   { label: "Báo cáo", icon: "chart-bar", color: "#795548", name: "Report" },
-];
-
-const recentProjects = [
-  {
-    id: "1",
-    name: "Xây dựng chung cư Star Heights",
-    progress: 65,
-    dueDate: "31/07/2025",
-    image:
-      "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=400",
-  },
-  {
-    id: "2",
-    name: "Cải tạo khu đô thị Hà Đông",
-    progress: 28,
-    dueDate: "15/09/2025",
-    image:
-      "https://images.unsplash.com/photo-1503387837-b154d5074bd2?q=80&w=400",
-  },
-  {
-    id: "3",
-    name: "Nhà máy xử lý nước Bắc Ninh",
-    progress: 92,
-    dueDate: "20/05/2025",
-    image:
-      "https://images.unsplash.com/photo-1510146758428-e5e4b17b8b6a?q=80&w=400",
-  },
 ];
 
 export default function DashboardScreen({ navigation }: { navigation: any }) {
@@ -119,6 +94,10 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
     },
   ]);
 
+  const dispatch = useAppDispatch();
+
+  const { projectList } = useAppSelector((state: RootState) => state.project);
+
   useEffect(() => {
     // Simulate API loading
     setTimeout(() => {
@@ -126,6 +105,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
       // Save user data to local storage or state management
       // For example, using AsyncStorage or Redux
       AsyncStorage.setItem("user", JSON.stringify(user));
+      dispatch(getProjects());
     }, 1000);
   }, []);
 
@@ -140,7 +120,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
     navigation.navigate(screenName);
   };
 
-  const handleProjectPress = (projectId: string) => {
+  const handleProjectPress = (projectId: number) => {
     navigation.navigate("ProjectDetails", { projectId });
   };
 
@@ -194,7 +174,9 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
         />
 
         <RecentProjects
-          projects={recentProjects}
+          projects={
+            projectList.length > 4 ? projectList.slice(0, 4) : projectList
+          }
           onProjectPress={handleProjectPress}
           onViewAllPress={handleViewAllProjects}
         />

@@ -2,18 +2,11 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Card, Chip, Text } from "react-native-paper";
 import { GlobalStyles } from "../../constants/styles";
-
-type Project = {
-  id: string;
-  name: string;
-  progress: number;
-  dueDate: string;
-  image: string;
-};
+import { Project } from "../../redux/slices/projectSlice";
 
 type RecentProjectsProps = {
   projects: Project[];
-  onProjectPress: (projectId: string) => void;
+  onProjectPress: (projectId: number) => void;
   onViewAllPress: () => void;
 };
 

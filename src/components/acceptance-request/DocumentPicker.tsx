@@ -1,7 +1,17 @@
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
+import * as IntentLauncher from "expo-intent-launcher";
+import * as WebBrowser from "expo-web-browser";
 import React, { useState } from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import {
   DocumentFile,
   changeDocuments,
@@ -78,6 +88,80 @@ const DocumentPickerComponent: React.FC<DocumentPickerProps> = ({
     }
   };
 
+  const handleViewDocument = async (document: DocumentFile) => {
+    try {
+      if (Platform.OS === "android") {
+        const fileInfo = await FileSystem.getInfoAsync(document.uri);
+        if (!fileInfo.exists) {
+          throw new Error("File does not exist");
+        }
+
+        // Get MIME type based on file extension
+        const getMimeType = (filename: string) => {
+          const extension = filename.split(".").pop()?.toLowerCase();
+          switch (extension) {
+            case "pdf":
+              return "application/pdf";
+            case "doc":
+            case "docx":
+              return "application/msword";
+            case "xls":
+            case "xlsx":
+              return "application/vnd.ms-excel";
+            case "ppt":
+            case "pptx":
+              return "application/vnd.ms-powerpoint";
+            case "txt":
+              return "text/plain";
+            case "jpg":
+            case "jpeg":
+              return "image/jpeg";
+            case "png":
+              return "image/png";
+            default:
+              return "*/*";
+          }
+        };
+
+        const mimeType = getMimeType(document.name);
+
+        // First try to open with VIEW intent
+        try {
+          await IntentLauncher.startActivityAsync(
+            "android.intent.action.VIEW",
+            {
+              data: document.uri,
+              type: mimeType,
+              flags: 1, // FLAG_GRANT_READ_URI_PERMISSION
+            }
+          );
+        } catch (error) {
+          console.log("VIEW intent failed, trying with content URI");
+          // If VIEW intent fails, try with content URI
+          const contentUri = await FileSystem.getContentUriAsync(document.uri);
+          await IntentLauncher.startActivityAsync(
+            "android.intent.action.VIEW",
+            {
+              data: contentUri,
+              type: mimeType,
+              flags: 1,
+            }
+          );
+        }
+      } else {
+        // For iOS, use WebBrowser
+        const fileInfo = await FileSystem.getInfoAsync(document.uri);
+        if (!fileInfo.exists) {
+          throw new Error("File does not exist");
+        }
+        await WebBrowser.openBrowserAsync(document.uri);
+      }
+    } catch (error) {
+      console.error("Error opening document:", error);
+      Alert.alert("Error", "Could not open the document. Please try again.");
+    }
+  };
+
   const removeDocument = (id: string) => {
     const updatedDocs = documents.filter((doc) => doc.id !== id);
     setDocuments(updatedDocs);
@@ -127,14 +211,17 @@ const DocumentPickerComponent: React.FC<DocumentPickerProps> = ({
                     color="#4285F4"
                   />
                 </View>
-                <View style={styles.documentInfo}>
+                <TouchableOpacity
+                  style={styles.documentInfo}
+                  onPress={() => handleViewDocument(item)}
+                >
                   <Text style={styles.documentName} numberOfLines={1}>
                     {item.name}
                   </Text>
                   <Text style={styles.documentSize}>
                     {formatFileSize(item.size)}
                   </Text>
-                </View>
+                </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => removeDocument(item.id)}
                   style={styles.removeButton}

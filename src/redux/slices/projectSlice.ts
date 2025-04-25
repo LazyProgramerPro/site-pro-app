@@ -63,7 +63,7 @@ const projectsFakeData = Array.from({ length: 20 }, (_, index) => ({
   dueDate: new Date(
     Date.now() + Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000
   ).toISOString(), // Random future date within a year
-  image: `https://via.placeholder.com/150?text=Project+${index + 1}`,
+  image: `https://picsum.photos/400/600?random=${index + 1}`, // Higher resolution image from Picsum
   status: ["Pending", "In Progress", "Completed"][
     Math.floor(Math.random() * 3)
   ], // Random status
