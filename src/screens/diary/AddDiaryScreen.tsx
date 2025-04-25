@@ -229,18 +229,20 @@ export default function AddDiaryScreen() {
         />
 
         <ScrollView style={styles.formContainer}>
-          <StatusCard
-            status={diary?.status || DIARY_TEXTS.STATUS.NOT_STARTED}
-            username={diary?.updatedBy || "Nguyễn Chí Thanh"}
-            statusType={
-              diary?.status === DIARY_TEXTS.STATUS.COMPLETED
-                ? "approved"
-                : diary?.status === DIARY_TEXTS.STATUS.IN_PROGRESS
-                ? "processing"
-                : "pending"
-            }
-            timestamp={diary?.date || new Date().toLocaleDateString()}
-          />
+          {diary && (
+            <StatusCard
+              status={diary?.status || DIARY_TEXTS.STATUS.NOT_STARTED}
+              username={diary?.updatedBy || "Nguyễn Chí Thanh"}
+              statusType={
+                diary?.status === DIARY_TEXTS.STATUS.COMPLETED
+                  ? "approved"
+                  : diary?.status === DIARY_TEXTS.STATUS.IN_PROGRESS
+                  ? "processing"
+                  : "pending"
+              }
+              timestamp={diary?.date || new Date().toLocaleDateString()}
+            />
+          )}
           <SectionHeader
             title="Thông tin cơ bản"
             section="basicInfo"

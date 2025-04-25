@@ -66,8 +66,12 @@ const ActionButton = ({
         <Avatar.Icon
           size={32}
           icon={action.icon}
-          color={color}
-          style={{ backgroundColor: GlobalStyles.colors.primary400 }}
+          color={GlobalStyles.colors.white}
+          style={{
+            backgroundColor: isDanger
+              ? GlobalStyles.colors.red500
+              : GlobalStyles.colors.primary400,
+          }}
         />
         <Text
           variant="bodyLarge"

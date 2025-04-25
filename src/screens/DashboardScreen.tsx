@@ -10,6 +10,7 @@ import QuickAccessMenu from "../components/dashboard/QuickAccessMenu";
 import RecentProjects from "../components/dashboard/RecentProjects";
 import StatsOverview from "../components/dashboard/StatsOverview";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import NotificationModal from "../components/ui/NotificationModal";
 
 const menuItems = [
   { label: "Dự án", icon: "folder-outline", color: "#4CAF50", name: "Project" },
@@ -91,6 +92,33 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
     "chudautu",
   ];
 
+  const [notificationModalVisible, setNotificationModalVisible] =
+    useState(false);
+  const [notifications] = useState([
+    {
+      id: "1",
+      title: "Công trình mới được thêm",
+      message:
+        "Công trình 'Chung cư Green City' đã được thêm vào dự án của bạn",
+      time: "10 phút trước",
+      isRead: false,
+    },
+    {
+      id: "2",
+      title: "Nhật ký cần phê duyệt",
+      message: "Có 3 nhật ký mới cần được phê duyệt từ đội thi công",
+      time: "1 giờ trước",
+      isRead: false,
+    },
+    {
+      id: "3",
+      title: "Cập nhật tiến độ",
+      message: "Dự án 'Khu đô thị mới' đã đạt 75% tiến độ",
+      time: "2 giờ trước",
+      isRead: true,
+    },
+  ]);
+
   useEffect(() => {
     // Simulate API loading
     setTimeout(() => {
@@ -121,7 +149,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
   };
 
   const handleNotificationPress = () => {
-    navigation.navigate("Notifications");
+    setNotificationModalVisible(true);
   };
 
   if (loading) {
@@ -171,6 +199,12 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
           onViewAllPress={handleViewAllProjects}
         />
       </ScrollView>
+
+      <NotificationModal
+        visible={notificationModalVisible}
+        onDismiss={() => setNotificationModalVisible(false)}
+        notifications={notifications}
+      />
     </ScreenWrapper>
   );
 }

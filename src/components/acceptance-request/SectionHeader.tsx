@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingVertical: 16,
     borderRadius: 12,
-    marginTop: 20,
     marginBottom: 14,
     shadowColor: GlobalStyles.colors.black,
     shadowOffset: { width: 0, height: 2 },

@@ -153,22 +153,24 @@ export default function AddProblemScreen() {
         />
 
         <ScrollView style={styles.formContainer}>
-          <StatusCard
-            status={status}
-            username={problem?.updatedBy || "Nguyễn Chí Thanh"}
-            statusType={
-              status === PROBLEM_TEXTS.STATUS.COMPLETED
-                ? "approved"
-                : status === PROBLEM_TEXTS.STATUS.IN_PROGRESS
-                ? "processing"
-                : "pending"
-            }
-            timestamp={
-              problem?.createdAt
-                ? new Date(problem.createdAt).toLocaleString()
-                : "Hôm nay"
-            }
-          />
+          {/* {problem && (
+            <StatusCard
+              status={status}
+              username={problem?.updatedBy || "Nguyễn Chí Thanh"}
+              statusType={
+                status === PROBLEM_TEXTS.STATUS.COMPLETED
+                  ? "approved"
+                  : status === PROBLEM_TEXTS.STATUS.IN_PROGRESS
+                  ? "processing"
+                  : "pending"
+              }
+              timestamp={
+                problem?.createdAt
+                  ? new Date(problem.createdAt).toLocaleString()
+                  : "Hôm nay"
+              }
+            />
+          )} */}
 
           <SectionHeader
             title="Thông tin cơ bản"
