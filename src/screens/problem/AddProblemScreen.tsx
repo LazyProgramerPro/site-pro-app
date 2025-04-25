@@ -141,7 +141,6 @@ export default function AddProblemScreen() {
   const handleCancelBack = useCallback(() => {
     setShowBackConfirmation(false);
   }, []);
-  console.log(problem);
 
   return (
     <ScreenWrapper>

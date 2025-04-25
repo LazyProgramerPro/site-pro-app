@@ -253,12 +253,11 @@ const styles = StyleSheet.create({
   imageGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "flex-start",
+    gap: 8,
   },
   imageContainer: {
-    width: 100,
-    height: 100,
-    margin: 2.5,
+    width: "31%",
+    aspectRatio: 1,
     position: "relative",
     borderRadius: 8,
     overflow: "hidden",

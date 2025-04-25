@@ -140,14 +140,14 @@ export default function MultiFieldSelector({
             >
               <View style={styles.menuItemContent}>
                 {selectedItems.some((selected) => selected.id === item.id) && (
-                  <List.Icon icon="check" style={styles.checkIcon} />
+                  <List.Icon
+                    icon="check"
+                    color={GlobalStyles.colors.primary500}
+                    style={styles.checkIcon}
+                  />
                 )}
                 <Text
-                  style={[
-                    styles.menuItemText,
-                    selectedItems.some((selected) => selected.id === item.id) &&
-                      styles.selectedMenuItemText,
-                  ]}
+                  style={[styles.menuItemText, styles.selectedMenuItemText]}
                 >
                   {item.name}
                 </Text>
@@ -218,7 +218,6 @@ const styles = StyleSheet.create({
   checkIcon: {
     margin: 0,
     marginRight: 8,
-    color: GlobalStyles.colors.primary500,
   },
   selectedMenuItem: {
     backgroundColor: GlobalStyles.colors.primary100,

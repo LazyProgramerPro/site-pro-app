@@ -1,10 +1,10 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Card, Chip, IconButton, Text } from "react-native-paper";
+import { Chip, Text } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { PROBLEM_TEXTS } from "../../constants/problem";
 import { ICONS_NAME } from "../../constants/icon";
-import { GlobalStyles, STATUS_COLORS } from "../../constants/styles";
+import { STATUS_COLORS } from "../../constants/styles";
 import {
   cancelEditingProblem,
   deleteProblem,
@@ -12,10 +12,10 @@ import {
   startEditingProblem,
 } from "../../redux/slices/problemSlice";
 import { RootState, useAppDispatch, useAppSelector } from "../../redux/store";
-import BottomSheetPopup from "../ui/BottomSheetPopup";
 import { useNavigation } from "@react-navigation/native";
 import { DashboardStackParamList } from "../../navigation/stacks/DashboardStack";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import CommonCard from "../ui/CommonCard";
 
 interface ProblemEntryItemProps {
   item: Problem;
@@ -88,118 +88,57 @@ export default function ProblemEntryItem({ item }: ProblemEntryItemProps) {
   };
 
   return (
-    <>
-      <Card
-        style={[
-          styles.card,
-          item.id === editingProblem?.id && styles.selectedCard,
-        ]}
-        onPress={() => handleViewPressProblem(item)}
-      >
-        <Card.Content>
-          <View style={styles.itemHeader}>
-            <View style={styles.itemHeaderLeft}>
-              <Icon
-                name={ICONS_NAME.ALERT_CIRCLE}
-                size={20}
-                color={
-                  item.id === editingProblem?.id
-                    ? STATUS_COLORS.ICON.SELECTED
-                    : STATUS_COLORS.ICON.DEFAULT
-                }
-              />
-              <Text
-                variant="titleMedium"
-                style={
-                  item.id === editingProblem?.id
-                    ? styles.selectedText
-                    : { marginLeft: 8 }
-                }
-              >
-                {item.title}
-              </Text>
-            </View>
-            <IconButton
-              icon={ICONS_NAME.DOTS_VERTICAL}
-              onPress={() => handleOpenMenu(item.id)}
-            />
-          </View>
-
-          <View style={styles.itemContent}>
-            <Text variant="bodyMedium" style={styles.description}>
-              {item.description}
-            </Text>
-            <View style={styles.itemFooter}>
-              <Chip
-                style={[
-                  styles.statusChip,
-                  { backgroundColor: statusStyle.backgroundColor },
-                ]}
-                textStyle={{ color: statusStyle.textColor }}
-                icon={statusStyle.icon}
-              >
-                {item.status}
-              </Chip>
-              <Text variant="bodySmall" style={styles.createdByText}>
-                Tạo bởi: {item.createdBy}
-              </Text>
-            </View>
-          </View>
-        </Card.Content>
-      </Card>
-
-      <BottomSheetPopup
-        visible={editingProblem?.id === item.id}
-        onDismiss={handleCloseMenu}
-        title="Tùy chọn"
-        viewAction={{
+    <CommonCard
+      isSelected={item.id === editingProblem?.id}
+      onPress={() => handleViewPressProblem(item)}
+      title={item.title}
+      onMenuPress={() => handleOpenMenu(item.id)}
+      showMenu={editingProblem?.id === item.id}
+      onDismissMenu={handleCloseMenu}
+      menuActions={{
+        viewAction: {
           icon: ICONS_NAME.EYE,
           label: PROBLEM_TEXTS.ACTIONS.VIEW,
           onPress: () => handleViewPressProblem(item),
-        }}
-        editAction={{
+        },
+        editAction: {
           icon: ICONS_NAME.PENCIL,
           label: PROBLEM_TEXTS.ACTIONS.EDIT,
           onPress: () => handleEditPressProblem(item),
-        }}
-        deleteAction={{
+        },
+        deleteAction: {
           icon: ICONS_NAME.DELETE,
           label: PROBLEM_TEXTS.ACTIONS.DELETE,
           onPress: () => handleDeletePressProblem(item),
-        }}
-      />
-    </>
+        },
+      }}
+    >
+      <View style={styles.contentSection}>
+        <Text variant="bodyMedium" style={styles.description}>
+          {item.description}
+        </Text>
+        <View style={styles.itemFooter}>
+          <Chip
+            style={[
+              styles.statusChip,
+              { backgroundColor: statusStyle.backgroundColor },
+            ]}
+            textStyle={{ color: statusStyle.textColor }}
+            icon={statusStyle.icon}
+          >
+            {item.status}
+          </Chip>
+          <Text variant="bodySmall" style={styles.createdByText}>
+            Tạo bởi: {item.createdBy}
+          </Text>
+        </View>
+      </View>
+    </CommonCard>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    marginBottom: 8,
-    elevation: 2,
-    padding: 1,
-  },
-  selectedCard: {
-    borderColor: STATUS_COLORS.ICON.SELECTED,
-    borderWidth: 1,
-    elevation: 4,
-    padding: 0,
-  },
-  itemHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  itemHeaderLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  selectedText: {
-    color: STATUS_COLORS.ICON.SELECTED,
-    marginLeft: 8,
-  },
-  itemContent: {
+  contentSection: {
     marginTop: 8,
   },
   description: {
@@ -210,9 +149,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   statusChip: {
-    height: 32,
-  },
-  priorityChip: {
     height: 32,
   },
   createdByText: {

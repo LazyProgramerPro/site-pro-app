@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Divider, Surface, Text } from "react-native-paper";
 import { GlobalStyles } from "../../constants/styles";
+import { STATUS_COLORS } from "../../constants/styles";
 
 type StatsOverviewProps = {
   stats: {
@@ -20,13 +21,21 @@ const StatsOverview = ({ stats }: StatsOverviewProps) => {
       </View>
       <Divider style={styles.statDivider} />
       <View style={styles.statItem}>
-        <Text style={styles.statValue}>{stats.active}</Text>
-        <Text style={styles.statLabel}>Đang triển khai</Text>
+        <Text style={[styles.statValue, styles.activeStatValue]}>
+          {stats.active}
+        </Text>
+        <Text style={[styles.statLabel, styles.activeStatLabel]}>
+          Đang triển khai
+        </Text>
       </View>
       <Divider style={styles.statDivider} />
       <View style={styles.statItem}>
-        <Text style={styles.statValue}>{stats.pending}</Text>
-        <Text style={styles.statLabel}>Cần xử lý</Text>
+        <Text style={[styles.statValue, styles.pendingStatValue]}>
+          {stats.pending}
+        </Text>
+        <Text style={[styles.statLabel, styles.pendingStatLabel]}>
+          Cần xử lý
+        </Text>
       </View>
     </Surface>
   );
@@ -59,6 +68,18 @@ const styles = StyleSheet.create({
     height: "70%",
     width: 1,
     alignSelf: "center",
+  },
+  activeStatValue: {
+    color: STATUS_COLORS.STATUS.COMPLETED.TEXT,
+  },
+  activeStatLabel: {
+    color: STATUS_COLORS.STATUS.COMPLETED.TEXT,
+  },
+  pendingStatValue: {
+    color: GlobalStyles.colors.error500,
+  },
+  pendingStatLabel: {
+    color: GlobalStyles.colors.error500,
   },
 });
 
