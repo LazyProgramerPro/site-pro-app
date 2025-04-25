@@ -136,7 +136,7 @@ export const getProjects = createAsyncThunk<Project[]>(
     try {
       console.log("getProjects called");
       // Simulate a delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return projectsFakeData;
       // const response = await http.get<Project[]>("projects", {
       //   signal: thunkAPI.signal,
@@ -156,7 +156,7 @@ export const getConstructions = createAsyncThunk<
   number | undefined
 >("project/getConstructions", async (projectId, thunkAPI) => {
   // Simulate a delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 500));
   if (!projectId) {
     return constructionsFakeData;
   }
@@ -170,7 +170,7 @@ export const getContracts = createAsyncThunk<Contract[], number | undefined>(
   "project/getContracts",
   async (projectId, thunkAPI) => {
     // Simulate a delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     if (!projectId) {
       return contractsFakeData;
     }

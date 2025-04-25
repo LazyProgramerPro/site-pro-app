@@ -3,10 +3,9 @@ import {
   createAsyncThunk,
   createSlice,
   PayloadAction,
-  SerializedError,
 } from "@reduxjs/toolkit";
-import { DocumentFile } from "../../types/common";
 import { PROBLEMS } from "../../constants/problem";
+import { DocumentFile } from "../../types/common";
 
 type GenericAsyncThunk = AsyncThunk<unknown, unknown, any>;
 type PendingAction = ReturnType<GenericAsyncThunk["pending"]>;
@@ -49,7 +48,7 @@ export const getProblemList = createAsyncThunk<
   { projectId?: number; constructionId?: number; status?: string | null }
 >("diary/getProblemList", async ({ projectId, constructionId, status }) => {
   // Simulate a delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 500));
   // TODO: Replace with actual API call
   const filteredDiary = PROBLEMS.filter((request) => {
     return (

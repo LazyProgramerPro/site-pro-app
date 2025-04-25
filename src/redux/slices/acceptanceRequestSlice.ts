@@ -220,7 +220,7 @@ export const getProjects = createAsyncThunk<Project[]>(
   async (_, thunkAPI) => {
     console.log("getProjects called");
     // Simulate a delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     return projectsFakeData;
   }
 );
@@ -231,7 +231,7 @@ export const getConstructions = createAsyncThunk<
 >("acceptanceRequest/getConstructions", async (projectId, thunkAPI) => {
   console.log("getConstructions called with projectId:", projectId);
   // Simulate a delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 500));
   if (!projectId) {
     return [];
   }
@@ -249,7 +249,7 @@ export const getAcceptanceRequestList = createAsyncThunk<
   "acceptanceRequest/getAcceptanceRequestList",
   async ({ projectId, constructionId, status }, thunkAPI) => {
     // Simulate a delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     // TODO: Replace with actual API call and makesure projectId, constructionId exists
     const filteredAcceptanceRequests = fakeAcceptanceRequestList.filter(
       (request) =>

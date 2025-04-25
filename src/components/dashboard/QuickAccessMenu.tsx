@@ -29,7 +29,7 @@ const QuickAccessMenu = ({
     <TouchableOpacity
       style={styles.gridItem}
       onPress={() => onMenuItemPress(item.name)}
-      activeOpacity={0.5}
+      activeOpacity={0.8}
     >
       <View style={styles.menuSurface}>
         <View

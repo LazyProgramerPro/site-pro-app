@@ -94,7 +94,7 @@ export const getDiaryList = createAsyncThunk<
   { projectId?: number; constructionId?: number; status?: string | null }
 >("diary/getDiaryList", async ({ projectId, constructionId, status }) => {
   // Simulate a delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 500));
   // TODO: Replace with actual API call
   const filteredDiary = DIARY_MOCK_DATA.DIARY_ENTRIES.filter((request) => {
     return (
@@ -112,7 +112,7 @@ export const addDiaryEntry = createAsyncThunk<DiaryEntry, DiaryEntry>(
   async (entry, { rejectWithValue }) => {
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return entry;
     } catch (error) {
       return rejectWithValue(error);
@@ -125,7 +125,7 @@ export const updateDiaryEntry = createAsyncThunk<DiaryEntry, DiaryEntry>(
   async (entry, { rejectWithValue }) => {
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return entry;
     } catch (error) {
       return rejectWithValue(error);
@@ -138,7 +138,7 @@ export const deleteDiaryEntry = createAsyncThunk<number, number>(
   async (entryId, { rejectWithValue }) => {
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       return entryId;
     } catch (error) {
       return rejectWithValue(error);

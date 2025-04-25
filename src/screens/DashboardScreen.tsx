@@ -106,7 +106,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
       // For example, using AsyncStorage or Redux
       AsyncStorage.setItem("user", JSON.stringify(user));
       dispatch(getProjects());
-    }, 1000);
+    }, 500);
   }, []);
 
   const onRefresh = React.useCallback(() => {
