@@ -4,9 +4,9 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "android": "yarn install && expo start --android",
-    "ios": "yarn install && expo start --ios",
-    "web": "yarn install && expo start --web"
+    "android": "npm install && expo start --android",
+    "ios": "npm install && expo start --ios",
+    "web": "npm install && expo start --web"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
