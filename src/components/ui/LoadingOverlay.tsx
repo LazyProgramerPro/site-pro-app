@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
+  Image,
   StyleSheet,
   Text,
   View,
@@ -69,8 +70,11 @@ function LoadingOverlay({
       >
         {showLogo && (
           <View style={styles.logoContainer}>
-            {/* Add your app logo here */}
-            <View style={styles.logoPlaceholder} />
+            <Image
+              source={require("../../../assets/images/logo.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
           </View>
         )}
         <Text style={styles.message}>{message}</Text>
@@ -123,6 +127,11 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     marginBottom: 16,
+  },
+  logo: {
+    width: 60,
+    height: 60,
+    marginBottom: 8,
   },
   logoPlaceholder: {
     width: 60,

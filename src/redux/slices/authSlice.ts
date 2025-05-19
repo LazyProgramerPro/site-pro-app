@@ -2,38 +2,50 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface AuthState {
-  token: string | null;
+  user: AuthUser | null;
   isAuthenticated: boolean;
   loading: boolean;
 }
 
 const initialState: AuthState = {
-  token: null,
+  user: null,
   isAuthenticated: false,
   loading: true,
 };
+
+interface AuthUser {
+  access_token: string;
+  token: string;
+  refresh_token: string;
+  expires_in: number;
+  refresh_expires_in: number;
+  token_created_at: string;
+  refresh_token_created_at: string;
+  username: string;
+  is_active: boolean;
+}
 
 // Thunk: load token từ AsyncStorage
 export const loadTokenFromStorage = createAsyncThunk(
   "auth/loadToken",
   async () => {
-    const token = await AsyncStorage.getItem("token");
-    return token;
+    const user = await AsyncStorage.getItem("user");
+    return user ? JSON.parse(user) : null;
   }
 );
 
 // Thunk: login và lưu token
 export const authenticate = createAsyncThunk(
   "auth/authenticate",
-  async (token: string) => {
-    await AsyncStorage.setItem("token", token);
-    return token;
+  async (user: AuthUser) => {
+    await AsyncStorage.setItem("user", JSON.stringify(user));
+    return user;
   }
 );
 
 // Thunk: logout
 export const logout = createAsyncThunk("auth/logout", async () => {
-  await AsyncStorage.removeItem("token");
+  await AsyncStorage.removeItem("user");
 });
 
 const authSlice = createSlice({
@@ -44,21 +56,21 @@ const authSlice = createSlice({
     builder
       .addCase(
         loadTokenFromStorage.fulfilled,
-        (state, action: PayloadAction<string | null>) => {
-          state.token = action.payload;
+        (state, action: PayloadAction<AuthUser | null>) => {
+          state.user = action.payload;
           state.isAuthenticated = !!action.payload;
           state.loading = false;
         }
       )
       .addCase(
         authenticate.fulfilled,
-        (state, action: PayloadAction<string>) => {
-          state.token = action.payload;
+        (state, action: PayloadAction<AuthUser>) => {
+          state.user = action.payload;
           state.isAuthenticated = true;
         }
       )
       .addCase(logout.fulfilled, (state) => {
-        state.token = null;
+        state.user = null;
         state.isAuthenticated = false;
       })
       .addMatcher(

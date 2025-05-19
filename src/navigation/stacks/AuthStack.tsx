@@ -28,16 +28,16 @@ export default function AuthStack() {
         backgroundColor="transparent"
         translucent
       />
-
       {/* Gradient background that extends under status bar */}
       <LinearGradient
         colors={[
-          GlobalStyles.colors.primary800 || "#004d40",
-          GlobalStyles.colors.primary500 || "#00897b",
+          GlobalStyles.colors.primary900 || "#0D47A1",
+          GlobalStyles.colors.primary600 || "#1E88E5",
         ]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFillObject}
       />
-
       {/* Safe area container for content */}
       <SafeAreaView
         style={styles.container}

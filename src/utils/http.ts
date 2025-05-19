@@ -2,23 +2,32 @@ import axios, {
   AxiosError,
   AxiosInstance,
   AxiosRequestConfig,
-  AxiosResponse,
   CancelTokenSource,
 } from "axios";
+import { Platform } from "react-native";
 
-// Define interface for config with abort property
+// Interface cho config có thể abort
 interface ConfigWithAbort extends AxiosRequestConfig {
   abort?: (cancel: (reason?: string) => void) => void;
 }
 
 const axiosParams: AxiosRequestConfig = {
-  // Set different base URL based on the environment
   baseURL:
-    process.env.NODE_ENV === "development" ? "http://localhost:3000" : "/",
+    process.env.NODE_ENV === "development"
+      ? Platform.OS === "android"
+        ? "https://api.sitepro.vn" // Đặc biệt cho Android Emulator
+        : "https://api.sitepro.vn" // IP máy thật cho các thiết bị khác
+      : "https://api.sitepro.vn",
 };
 
-// Create axios instance with default params
+// Tạo instance
 const axiosInstance: AxiosInstance = axios.create(axiosParams);
+
+// 📌 Interceptor: chỉ trả về response.data
+axiosInstance.interceptors.response.use(
+  (response) => response.data,
+  (error) => Promise.reject(error)
+);
 
 export const didAbort = (error: unknown): { aborted: boolean } | false =>
   axios.isCancel(error) && { aborted: true };
@@ -29,7 +38,7 @@ export const isApiError = (error: unknown): error is AxiosError =>
   axios.isAxiosError(error);
 
 const withAbort = <T>(fn: Function) => {
-  const executor = async (...args: any[]): Promise<AxiosResponse<T>> => {
+  const executor = async (...args: any[]): Promise<T> => {
     const originalConfig: ConfigWithAbort = args[args.length - 1];
     const { abort, ...config } = originalConfig;
 
@@ -62,29 +71,23 @@ const withAbort = <T>(fn: Function) => {
 };
 
 interface Http {
-  get: <T = any>(
-    url: string,
-    config?: ConfigWithAbort
-  ) => Promise<AxiosResponse<T>>;
-  delete: <T = any>(
-    url: string,
-    config?: ConfigWithAbort
-  ) => Promise<AxiosResponse<T>>;
+  get: <T = any>(url: string, config?: ConfigWithAbort) => Promise<T>;
+  delete: <T = any>(url: string, config?: ConfigWithAbort) => Promise<T>;
   post: <T = any>(
     url: string,
     body: any,
     config?: ConfigWithAbort
-  ) => Promise<AxiosResponse<T>>;
+  ) => Promise<T>;
   patch: <T = any>(
     url: string,
     body: any,
     config?: ConfigWithAbort
-  ) => Promise<AxiosResponse<T>>;
+  ) => Promise<T>;
   put: <T = any>(
     url: string,
     body: any,
     config?: ConfigWithAbort
-  ) => Promise<AxiosResponse<T>>;
+  ) => Promise<T>;
 }
 
 const http = (axios: AxiosInstance): Http => {
