@@ -5,6 +5,7 @@ import LoadingOverlay from "../components/ui/LoadingOverlay";
 import ScreenWrapper from "../components/ui/ScreenWrapper";
 import { authenticate } from "../redux/slices/authSlice";
 import { useAppDispatch } from "../redux/store";
+import { tokenService } from "../services/token-service";
 import http from "../utils/http";
 
 type FormData = {
@@ -75,10 +76,12 @@ function LoginScreen() {
         refresh_token_created_at: new Date().toISOString(),
         username,
         is_active,
-      };
-
-      // Đăng nhập thành công - redirect ngay và hiển thị Snackbar
+      }; // Đăng nhập thành công - redirect ngay và hiển thị Snackbar
       dispatch(authenticate(userData));
+
+      // Thiết lập cơ chế refresh token tự động
+      tokenService.setupTokenRefresh();
+
       showSnackbar("Đăng nhập thành công!", "success");
     } catch (error) {
       console.error("Login error:", error);
