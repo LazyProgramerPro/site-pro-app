@@ -6,7 +6,7 @@ import { STATUS_COLORS } from "../../constants/styles";
 
 type StatsOverviewProps = {
   stats: {
-    projects: number;
+    totalProject: number;
     active: number;
     pending: number;
   };
@@ -16,7 +16,7 @@ const StatsOverview = ({ stats }: StatsOverviewProps) => {
   return (
     <Surface style={styles.statsContainer} elevation={2}>
       <View style={styles.statItem}>
-        <Text style={styles.statValue}>{stats.projects}</Text>
+        <Text style={styles.statValue}>{stats.totalProject}</Text>
         <Text style={styles.statLabel}>Dự án</Text>
       </View>
       <Divider style={styles.statDivider} />

@@ -14,28 +14,51 @@ type PendingAction = ReturnType<GenericAsyncThunk["pending"]>;
 type RejectedAction = ReturnType<GenericAsyncThunk["rejected"]>;
 type FulfilledAction = ReturnType<GenericAsyncThunk["fulfilled"]>;
 
+// Response từ API định nghĩa cấu trúc trả về từ backend
+export interface ApiResponse<T> {
+  rc: {
+    code: number;
+    desc: string;
+  };
+  pageNo: number;
+  pageSize: number;
+  totalCount: number;
+  totalPage: number;
+  data: T;
+}
+
 export interface Project {
-  id: number;
-  name: string;
-  progress: number;
-  dueDate: string;
-  image: string;
-  status: string;
-  approvalDate: string;
-  approvedBy: string;
+  id: string;
   code: string;
+  name: string;
+  description: string;
+  creator_id: string;
+  start_at: string;
+  finish_at: string;
+  created_at: string;
+  updated_at: string;
+  nha_thau_thi_cong_name: string;
+  nha_thau_thi_cong_id: string;
+  tu_van_giam_sat_name: string;
+  tu_van_giam_sat_id: string;
+  tu_van_thiet_ke_name: string;
+  tu_van_thiet_ke_id: string;
+  // Các trường thêm để tương thích với UI hiện tại
+  progress?: number;
+  image?: string;
+  status?: string;
 }
 
 export interface Construction {
-  id: number;
+  id: string;
   name: string;
-  projectId: number;
+  projectId: string;
 }
 
 export interface Contract {
-  id: number;
+  id: string;
   name: string;
-  projectId: number;
+  projectId: string;
   contractNumber: string;
   startDate: string;
   endDate: string;
@@ -49,6 +72,7 @@ interface ProjectState {
   editingProject: Project | null;
   loading: boolean;
   currentRequestId: string | undefined;
+  totalCount: number;
   query: {
     filterStatus?: string | null;
   };
@@ -56,35 +80,17 @@ interface ProjectState {
   contracts: Contract[];
 }
 
-const projectsFakeData = Array.from({ length: 20 }, (_, index) => ({
-  id: index + 1,
-  name: `Dự án số ${index + 1}`,
-  progress: Math.floor(Math.random() * 101), // Random progress between 0 and 100
-  dueDate: new Date(
-    Date.now() + Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000
-  ).toISOString(), // Random future date within a year
-  image: `https://picsum.photos/400/600?random=${index + 1}`, // Higher resolution image from Picsum
-  status: ["Pending", "In Progress", "Completed"][
-    Math.floor(Math.random() * 3)
-  ], // Random status
-  approvalDate: new Date(
-    Date.now() - Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000
-  ).toISOString(), // Random past date within a year
-  approvedBy: `User ${Math.floor(Math.random() * 10) + 1}`,
-  code: `PRJ-${index + 1}`,
-}));
-
 const constructionsFakeData = [
-  { id: 1, name: "Công trình A", projectId: 1 },
-  { id: 2, name: "Công trình B", projectId: 2 },
-  { id: 3, name: "Công trình C", projectId: 3 },
+  { id: "1", name: "Công trình A", projectId: "1" },
+  { id: "2", name: "Công trình B", projectId: "2" },
+  { id: "3", name: "Công trình C", projectId: "3" },
 ];
 
 const contractsFakeData = [
   {
-    id: 1,
+    id: "1",
     name: "Hợp đồng xây dựng nhà A",
-    projectId: 1,
+    projectId: "1",
     contractNumber: "HD-001",
     startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
     endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
@@ -93,9 +99,9 @@ const contractsFakeData = [
     contractor: "Công ty Xây dựng ABC",
   },
   {
-    id: 2,
+    id: "2",
     name: "Hợp đồng thiết kế công trình B",
-    projectId: 2,
+    projectId: "2",
     contractNumber: "HD-002",
     startDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
     endDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
@@ -104,9 +110,9 @@ const contractsFakeData = [
     contractor: "Công ty Thiết kế XYZ",
   },
   {
-    id: 3,
+    id: "3",
     name: "Hợp đồng giám sát công trình C",
-    projectId: 3,
+    projectId: "3",
     contractNumber: "HD-003",
     startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
     endDate: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(),
@@ -122,6 +128,7 @@ const initialState: ProjectState = {
   editingProject: null,
   loading: false,
   currentRequestId: undefined,
+  totalCount: 0,
   query: {
     filterStatus: null,
   },
@@ -129,31 +136,60 @@ const initialState: ProjectState = {
   contracts: [],
 };
 
-// Define the async thunk for fetching Projects
-export const getProjects = createAsyncThunk<Project[]>(
-  "project/getProjects",
-  async (_, thunkAPI) => {
-    try {
-      console.log("getProjects called");
-      // Simulate a delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      return projectsFakeData;
-      // const response = await http.get<Project[]>("projects", {
-      //   signal: thunkAPI.signal,
-      // });
-      // return response.data;
-    } catch (error: any) {
-      if (error.name === "AxiosError" && error.response?.status === 422) {
-        return thunkAPI.rejectWithValue(error.response.data);
-      }
-      throw error;
+// Define the async thunk for fetching Projects with new API structure
+export const getProjects = createAsyncThunk<{
+  data: Project[];
+  totalCount: number;
+}>("project/getProjects", async (filters: any, thunkAPI) => {
+  try {
+    const response = await http.post("/auth/duan/list", {
+      ...filters,
+    });
+
+    console.log("Response from getProjects:", response);
+
+    const { rc, data, totalCount } = response;
+
+    if (rc?.code !== 0) {
+      return thunkAPI.rejectWithValue(rc?.desc || "Lỗi không xác định!");
     }
+
+    // Chuyển đổi dữ liệu về định dạng mong muốn
+    const projects = data.map((project: any) => ({
+      id: project.id,
+      code: project.code,
+      name: project.name,
+      description: project.description,
+      creator_id: project.creator_id,
+      start_at: project.start_at,
+      finish_at: project.finish_at,
+      created_at: project.created_at,
+      updated_at: project.updated_at,
+      nha_thau_thi_cong_name: project.nha_thau_thi_cong_name,
+      nha_thau_thi_cong_id: project.nha_thau_thi_cong_id,
+      tu_van_giam_sat_name: project.tu_van_giam_sat_name,
+      tu_van_giam_sat_id: project.tu_van_giam_sat_id,
+      tu_van_thiet_ke_name: project.tu_van_thiet_ke_name,
+      tu_van_thiet_ke_id: project.tu_van_thiet_ke_id,
+      progress: project.progress ?? 70,
+      status: project.status ?? "Pending",
+      image:
+        project.image ??
+        `https://picsum.photos/400/600?random=${project.id + 1}`,
+    }));
+
+    return { data: projects, totalCount };
+  } catch (error: any) {
+    if (error.name === "AxiosError" && error.response?.status === 422) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+    throw error;
   }
-);
+});
 
 export const getConstructions = createAsyncThunk<
   Construction[],
-  number | undefined
+  string | undefined
 >("project/getConstructions", async (projectId, thunkAPI) => {
   // Simulate a delay
   await new Promise((resolve) => setTimeout(resolve, 500));
@@ -161,12 +197,19 @@ export const getConstructions = createAsyncThunk<
     return constructionsFakeData;
   }
   const filteredConstructions = constructionsFakeData.filter(
-    (construction: Construction) => construction.projectId === projectId
+    (construction) => construction.projectId === projectId
   ); // TODO: Replace with actual API call
+
+  // Khi gọi API thực tế
+  // const response = await http.get<ApiResponse<Construction[]>>(`constructions?projectId=${projectId}`, {
+  //   signal: thunkAPI.signal,
+  // });
+  // return response.data.data;
+
   return filteredConstructions;
 });
 
-export const getContracts = createAsyncThunk<Contract[], number | undefined>(
+export const getContracts = createAsyncThunk<Contract[], string | undefined>(
   "project/getContracts",
   async (projectId, thunkAPI) => {
     // Simulate a delay
@@ -175,32 +218,66 @@ export const getContracts = createAsyncThunk<Contract[], number | undefined>(
       return contractsFakeData;
     }
     const filteredContracts = contractsFakeData.filter(
-      (contract: Contract) => contract.projectId === projectId
+      (contract) => contract.projectId === projectId
     ); // TODO: Replace with actual API call
+
+    // Khi gọi API thực tế
+    // const response = await http.get<ApiResponse<Contract[]>>(`contracts?projectId=${projectId}`, {
+    //   signal: thunkAPI.signal,
+    // });
+    // return response.data.data;
+
     return filteredContracts;
   }
 );
 
 // Define the request body type
+// Cập nhật interface cho phù hợp với API mới
 interface ProjectRequestBody {
   name: string;
+  code?: string;
   description?: string;
-  startDate?: string;
-  endDate?: string;
+  start_at?: string;
+  finish_at?: string;
+  nha_thau_thi_cong_id?: string;
+  tu_van_giam_sat_id?: string;
+  tu_van_thiet_ke_id?: string;
   status?: string;
-  budget?: number;
-  manager?: string;
-  location?: string;
 }
 
 export const addProject = createAsyncThunk<Project, ProjectRequestBody>(
   "project/addProject",
   async (body, thunkAPI) => {
     try {
-      const response = await http.post<Project>("projects", body, {
-        signal: thunkAPI.signal,
-      });
-      return response.data;
+      // Khi làm việc với API thực tế
+      // const response = await http.post<ApiResponse<Project>>("projects", body, {
+      //   signal: thunkAPI.signal,
+      // });
+      // return response.data.data;
+
+      // Hiện tại đang sử dụng dữ liệu giả cho ví dụ
+      const fakeNewProject: Project = {
+        id: Date.now().toString(),
+        code: `PRJ-${Date.now()}`,
+        name: body.name,
+        description: body.description || "",
+        creator_id: "current-user-id",
+        start_at: body.start_at || new Date().toISOString(),
+        finish_at:
+          body.finish_at ||
+          new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        nha_thau_thi_cong_name: "Nhà thầu demo",
+        nha_thau_thi_cong_id: body.nha_thau_thi_cong_id || "",
+        tu_van_giam_sat_name: "Tư vấn giám sát demo",
+        tu_van_giam_sat_id: body.tu_van_giam_sat_id || "",
+        tu_van_thiet_ke_name: "Tư vấn thiết kế demo",
+        tu_van_thiet_ke_id: body.tu_van_thiet_ke_id || "",
+        progress: 0,
+        status: "Pending",
+      };
+      return fakeNewProject;
     } catch (error: any) {
       if (error.name === "AxiosError" && error.response?.status === 422) {
         return thunkAPI.rejectWithValue(error.response.data);
@@ -211,20 +288,25 @@ export const addProject = createAsyncThunk<Project, ProjectRequestBody>(
 );
 
 interface UpdateProjectParams {
-  projectId: number;
+  projectId: string;
   body: Partial<ProjectRequestBody>;
 }
 
 export const updateProject = createAsyncThunk<Project, UpdateProjectParams>(
   "project/updateProject",
-  async ({ projectId, body }, thunkAPI) => {
+  async (body, thunkAPI) => {
     try {
-      const response = await http.put<Project>(`projects/${projectId}`, body, {
+      const { rc, item } = await http.put("/auth/duan/update", body, {
         signal: thunkAPI.signal,
       });
-      return response.data;
-    } catch (error: any) {
-      if (error.name === "AxiosError" && error.response?.status === 422) {
+
+      if (rc?.code !== 0) {
+        return thunkAPI.rejectWithValue(rc?.desc || "Lỗi không xác định!");
+      }
+
+      return item;
+    } catch (error) {
+      if (error.name === "AxiosError" && error.response.status === 422) {
         return thunkAPI.rejectWithValue(error.response.data);
       }
       throw error;
@@ -232,13 +314,17 @@ export const updateProject = createAsyncThunk<Project, UpdateProjectParams>(
   }
 );
 
-export const deleteProject = createAsyncThunk<any, number>(
+export const deleteProject = createAsyncThunk<any, string>(
   "project/deleteProject",
   async (projectId, thunkAPI) => {
-    const response = await http.delete(`projects/${projectId}`, {
-      signal: thunkAPI.signal,
-    });
-    return response.data;
+    const response = await http.delete<ApiResponse<any>>(
+      `projects/${projectId}`,
+      {
+        signal: thunkAPI.signal,
+      }
+    );
+    // Vì kiểu trả về đã được khai báo là any trong generics
+    return response.data.data as any;
   }
 );
 
@@ -246,7 +332,7 @@ const projectSlice = createSlice({
   name: "project",
   initialState,
   reducers: {
-    startEditingProject: (state, action: PayloadAction<number>) => {
+    startEditingProject: (state, action: PayloadAction<string>) => {
       const projectId = action.payload;
       const foundProject =
         state.projectList.find((project) => project.id === projectId) || null;
@@ -263,8 +349,12 @@ const projectSlice = createSlice({
     builder
       .addCase(
         getProjects.fulfilled,
-        (state, action: PayloadAction<Project[]>) => {
-          state.projectList = action.payload;
+        (
+          state,
+          action: PayloadAction<{ data: Project[]; totalCount: number }>
+        ) => {
+          state.projectList = action.payload.data;
+          state.totalCount = action.payload.totalCount;
         }
       )
       .addCase(

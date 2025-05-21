@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator, Text } from "react-native-paper";
 import ScreenWrapper from "../components/ui/ScreenWrapper";
 import { GlobalStyles } from "../constants/styles";
 
 // Import our new components
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderProfile from "../components/dashboard/HeaderProfile";
 import QuickAccessMenu from "../components/dashboard/QuickAccessMenu";
 import RecentProjects from "../components/dashboard/RecentProjects";
@@ -45,27 +44,27 @@ const menuItems = [
 
 export default function DashboardScreen({ navigation }: { navigation: any }) {
   const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState({
-    name: "Thuong Dev",
-    avatar:
-      "https://ui-avatars.com/api/?name=Thường&background=0D8ABC&color=fff&size=128",
-    role: "nhathauthicong",
-  });
 
-  const [stats, setStats] = useState({
-    projects: 12,
-    active: 5,
-    pending: 8,
-  });
+  // Lấy user từ redux store
+  const user = useAppSelector((state: RootState) => state.auth.user);
+  // Lấy projectList và totalCount từ redux store
+  const {
+    projectList,
+    totalCount: totalProject,
+    loading,
+  } = useAppSelector((state: RootState) => state.project);
 
-  const roles = [
-    "nhathauthicong",
-    "nguoipheduyet",
-    "tuvangiamsat",
-    "tuvanthietke",
-    "chudautu",
-  ];
+  console.log("Project List:", projectList);
+
+  // Tính toán stats từ projectList
+  const stats = useMemo(
+    () => ({
+      totalProject: totalProject,
+      active: projectList.filter((p) => p.status === "Đang triển khai").length,
+      pending: projectList.filter((p) => p.status === "Chờ duyệt").length,
+    }),
+    [totalProject, projectList]
+  );
 
   const [notificationModalVisible, setNotificationModalVisible] =
     useState(false);
@@ -96,17 +95,9 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
 
   const dispatch = useAppDispatch();
 
-  const { projectList } = useAppSelector((state: RootState) => state.project);
-
   useEffect(() => {
-    // Simulate API loading
-    setTimeout(() => {
-      setLoading(false);
-      // Save user data to local storage or state management
-      // For example, using AsyncStorage or Redux
-      AsyncStorage.setItem("user", JSON.stringify(user));
-      dispatch(getProjects());
-    }, 500);
+    console.log("Fetching projects...");
+    dispatch(getProjects());
   }, []);
 
   const onRefresh = React.useCallback(() => {
@@ -132,6 +123,21 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
     setNotificationModalVisible(true);
   };
 
+  // Chuẩn hóa user cho HeaderProfile (tránh null)
+  const headerUser = user
+    ? {
+        name: user.username || "Người dùng",
+        avatar:
+          "https://ui-avatars.com/api/?name=Thường&background=0D8ABC&color=fff&size=128",
+        role: user.is_active ? "Thành viên" : "Chưa kích hoạt",
+      }
+    : {
+        name: "Người dùng",
+        avatar:
+          "https://ui-avatars.com/api/?name=Thường&background=0D8ABC&color=fff&size=128",
+        role: "",
+      };
+
   if (loading) {
     return (
       <ScreenWrapper>
@@ -156,7 +162,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
         contentContainerStyle={styles.scrollContent}
       >
         <HeaderProfile
-          user={user}
+          user={headerUser}
           onNotificationPress={handleNotificationPress}
         />
 
