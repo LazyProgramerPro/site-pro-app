@@ -58,6 +58,9 @@ class TokenService {
         );
       }
       return response;
+    } catch (err) {
+      this.isRefreshing = false; // Đảm bảo reset flag khi lỗi
+      throw err;
     } finally {
       this.isRefreshing = false;
     }
@@ -88,8 +91,8 @@ class TokenService {
    */
   setupTokenRefresh(): void {
     this.clearTokenRefresh();
-    const { expiresAt } = store.getState().auth;
-    if (!expiresAt) return;
+    const { expiresAt, refreshToken } = store.getState().auth;
+    if (!expiresAt || !refreshToken) return; // Không còn refreshToken thì không setup
 
     // Nếu token đã hết hạn thì logout ngay
     if (Date.now() > expiresAt) {
@@ -105,25 +108,29 @@ class TokenService {
 
     // Thiết lập timeout để refresh token khi gần hết hạn
     this.tokenRefreshInterval = setTimeout(() => {
-      // Kiểm tra lại xem token có còn cần refresh không
+      const { refreshToken: currentRefreshToken } = store.getState().auth;
+      if (!currentRefreshToken) return; // Đã logout, không refresh nữa
+
+      // Nếu đang refresh, không gọi tiếp, chỉ thử lại sau 1 phút
+      if (this.isRefreshing) {
+        setTimeout(() => this.setupTokenRefresh(), 60 * 1000);
+        return;
+      }
+
       if (this.isTokenExpiringSoon()) {
         this.refreshAccessToken()
           .then(() => {
-            // Sau khi refresh thành công, thiết lập lại chu kỳ refresh mới
             this.setupTokenRefresh();
           })
           .catch((error) => {
             console.error("Lỗi khi tự động refresh token:", error);
-            // Nếu refresh thất bại, có thể logout hoặc thử lại sau
             if (error.response?.status === 401) {
               store.dispatch(logout());
             } else {
-              // Thử lại sau 1 phút nếu lỗi không phải do token không hợp lệ
               setTimeout(() => this.setupTokenRefresh(), 60 * 1000);
             }
           });
       } else {
-        // Nếu token đã được refresh bởi một request khác, thiết lập lại chu kỳ mới
         this.setupTokenRefresh();
       }
     }, timeUntilRefresh);
