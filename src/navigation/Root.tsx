@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppLoading from "expo-app-loading";
 import React, { useEffect, useState } from "react";
+import { useAuthTokenRefresh } from "../hooks/useAuthTokenRefresh";
 import { loadTokenFromStorage } from "../redux/slices/authSlice";
 import { useAppDispatch } from "../redux/store"; // Import AppDispatch type
 import { tokenService } from "../services/token-service";
@@ -9,6 +10,8 @@ import Navigation from "./Navigation";
 export default function Root() {
   const [isTryingLogin, setIsTryingLogin] = useState(true);
   const dispatch = useAppDispatch();
+
+  useAuthTokenRefresh(); // Đảm bảo hook chạy trong Redux Provider context
 
   useEffect(() => {
     async function fetchToken() {

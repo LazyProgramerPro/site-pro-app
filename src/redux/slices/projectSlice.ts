@@ -306,8 +306,9 @@ export const updateProject = createAsyncThunk<Project, UpdateProjectParams>(
 
       return item;
     } catch (error) {
-      if (error.name === "AxiosError" && error.response.status === 422) {
-        return thunkAPI.rejectWithValue(error.response.data);
+      const err = error as any;
+      if (err.name === "AxiosError" && err.response?.status === 422) {
+        return thunkAPI.rejectWithValue(err.response.data);
       }
       throw error;
     }

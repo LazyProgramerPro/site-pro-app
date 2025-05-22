@@ -21,39 +21,46 @@ interface RefreshTokenResponse {
  */
 class TokenService {
   private tokenRefreshInterval: NodeJS.Timeout | null = null;
+  private isRefreshing: boolean = false; // Chống race condition
 
   /**
    * Refresh access token sử dụng refresh_token hiện tại
    * @returns Promise<RefreshTokenResponse>
    */
   async refreshAccessToken(): Promise<RefreshTokenResponse> {
-    const state = store.getState();
-    const { refreshToken, user } = state.auth;
+    if (this.isRefreshing)
+      return Promise.reject(new Error("Đang refresh token"));
+    this.isRefreshing = true;
+    try {
+      const state = store.getState();
+      const { refreshToken, user } = state.auth;
 
-    if (!refreshToken) throw new Error("Không có refresh token");
+      if (!refreshToken) throw new Error("Không có refresh token");
 
-    // Gọi API refresh token
-    const response = await http.post<RefreshTokenResponse>(
-      "/auth/user/refresh-token",
-      { token: refreshToken }
-    );
-
-    // Kiểm tra và lưu token mới vào Redux store
-    if (response?.auth?.access_token) {
-      const { access_token, refresh_token, expires_in } = response.auth;
-      const expiresAt = Date.now() + expires_in * 1000;
-
-      store.dispatch(
-        saveAuth({
-          token: access_token,
-          refreshToken: refresh_token,
-          expiresAt,
-          user,
-        })
+      // Gọi API refresh token
+      const response = await http.post<RefreshTokenResponse>(
+        "/auth/user/refresh-token",
+        { token: refreshToken }
       );
-    }
 
-    return response;
+      // Kiểm tra và lưu token mới vào Redux store
+      if (response?.auth?.access_token) {
+        const { access_token, refresh_token, expires_in } = response.auth;
+        const expiresAt = Date.now() + expires_in * 1000;
+
+        store.dispatch(
+          saveAuth({
+            token: access_token,
+            refreshToken: refresh_token,
+            expiresAt,
+            user,
+          })
+        );
+      }
+      return response;
+    } finally {
+      this.isRefreshing = false;
+    }
   }
 
   /**
@@ -80,11 +87,15 @@ class TokenService {
    * Hàm này nên được gọi khi user đăng nhập hoặc khi ứng dụng khởi động với token đã có sẵn
    */
   setupTokenRefresh(): void {
-    // Hủy interval cũ nếu có
     this.clearTokenRefresh();
-
     const { expiresAt } = store.getState().auth;
     if (!expiresAt) return;
+
+    // Nếu token đã hết hạn thì logout ngay
+    if (Date.now() > expiresAt) {
+      store.dispatch(logout());
+      return;
+    }
 
     // Tính toán thời gian còn lại trước khi token hết hạn (trừ buffer 5 phút)
     const timeUntilRefresh = Math.max(
@@ -127,6 +138,7 @@ class TokenService {
       clearTimeout(this.tokenRefreshInterval);
       this.tokenRefreshInterval = null;
     }
+    this.isRefreshing = false; // Reset flag khi clear
   }
 }
 

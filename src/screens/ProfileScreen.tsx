@@ -18,6 +18,7 @@ import ScreenWrapper from "../components/ui/ScreenWrapper";
 import { GlobalStyles } from "../constants/styles";
 import { logout } from "../redux/slices/authSlice";
 import { useAppDispatch } from "../redux/store";
+import { tokenService } from "../services/token-service";
 
 export default function ProfileScreen({ navigation }: { navigation: any }) {
   const theme = useTheme();
@@ -41,6 +42,7 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
 
   const handleLogout = () => {
     setLogoutDialogVisible(false);
+    tokenService.clearTokenRefresh(); // Clear auto refresh khi logout
     dispatch(logout());
   };
 
