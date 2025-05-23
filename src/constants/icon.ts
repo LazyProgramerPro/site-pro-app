@@ -46,4 +46,8 @@ export const ICONS_NAME = {
   HELP_CIRCLE: "help-circle-outline", // For Unknown/Default
   FOLDER_ACCOUNT: "folder-account-outline",
   TRASH_CAN: "trash-can", // For delete action in BottomSheet
+  IMAGE: "image-outline", // Thêm icon cho ảnh
+  CHART_BAR: "chart-bar", // Thêm icon cho tiến độ
+  REFRESH: "refresh", // Added for retry button
+  GAUGE: "gauge", // Added for status display (or similar)
 } as const;

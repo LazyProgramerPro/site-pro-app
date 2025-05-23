@@ -11,12 +11,15 @@ import {
   ProgressBar,
   Text,
   useTheme,
+  Avatar,
 } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ScreenHeader from "../../components/ui/ScreenHeader";
 import ScreenWrapper from "../../components/ui/ScreenWrapper";
-import { Project } from "../../redux/slices/projectSlice"; // Vẫn giữ Project interface
-import http from "../../utils/http"; // Import http client
+import { Project } from "../../redux/slices/projectSlice";
+import http from "../../utils/http";
+import { ICONS_NAME } from "../../constants/icon";
+import { PROJECT_TEXTS } from "../../constants/project";
 
 // Định nghĩa kiểu cho route params
 type ProjectDetailsScreenRouteProp = RouteProp<
@@ -28,65 +31,122 @@ export default function ProjectDetailsScreen() {
   const navigation = useNavigation();
   const theme = useTheme();
   const route = useRoute<ProjectDetailsScreenRouteProp>();
-  const { projectId } = route.params; // Lấy projectId từ route
+  const { projectId } = route.params;
 
-  // Sử dụng state cục bộ thay vì Redux
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null); // State để lưu lỗi
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (projectId) {
       const fetchProjectDetails = async () => {
         setLoading(true);
-        setError(null); // Reset lỗi trước mỗi lần fetch
+        setError(null);
         try {
-          // Giả sử API trả về trực tiếp đối tượng Project
-          // Nếu API trả về cấu trúc { rc, data } thì cần điều chỉnh: response.data
           const { rc, item } = await http.get<{
             rc: { code: number; message: string };
             item: Project;
           }>(`/auth/duan/info/${projectId}`);
 
-          console.log(
-            "Dữ liệu dự án:",
-            item,
-            rc,
-            `/auth/duan/info/${projectId}`
-          ); // Debug log
-
           if (rc.code !== 0) {
-            throw new Error("Lỗi khi lấy dữ liệu dự án");
+            throw new Error(
+              item?.name // API có thể trả về item với name dù lỗi
+                ? `Lỗi khi lấy dữ liệu dự án "${
+                    item.name
+                  }" (ID: ${projectId}). ${rc.message || ""}`.trim()
+                : `Lỗi khi lấy dữ liệu dự án (ID: ${projectId}). ${
+                    rc.message || "Không có thông báo lỗi cụ thể."
+                  }`.trim()
+            );
           }
 
           // Bổ sung/enrich dữ liệu cho item dự án nếu thiếu trường
           const enrichedItem: Project = {
             ...item,
-            progress: typeof item.progress === "number" ? item.progress : 0.7,
-            status: item.status || "Pending",
+            // Đảm bảo progress là số và nằm trong khoảng 0-100
+            progress:
+              typeof item.progress === "number"
+                ? Math.max(0, Math.min(100, item.progress))
+                : 0, // Mặc định là 0 nếu không có hoặc sai định dạng
+            status: item.status || PROJECT_TEXTS.STATUS_LABEL.UNKNOWN,
             image:
               item.image ||
-              `https://picsum.photos/400/600?random=${item.id || "default"}`,
+              // `https://picsum.photos/seed/${item.id || "default"}/600/400`, // Dùng seed để ảnh ổn định hơn
+              undefined, // Để trống nếu không có ảnh, sẽ dùng Avatar
             approvalDate: item.approvalDate || undefined,
             approvedBy: item.approvedBy || undefined,
+            // Đảm bảo các trường tên không bị null/undefined
+            nha_thau_thi_cong_name:
+              item.nha_thau_thi_cong_name || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
+            tu_van_giam_sat_name:
+              item.tu_van_giam_sat_name || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
+            tu_van_thiet_ke_name:
+              item.tu_van_thiet_ke_name || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
+            creator_id: item.creator_id || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
           };
 
           setProject(enrichedItem);
         } catch (err: any) {
-          console.error("Lỗi khi lấy chi tiết dự án trực tiếp:", err);
+          console.error("Lỗi khi lấy chi tiết dự án:", err);
           setError(err.message || "Không thể tải dữ liệu dự án.");
-          setProject(null); // Đảm bảo project là null khi có lỗi
+          setProject(null);
         }
         setLoading(false);
       };
 
       fetchProjectDetails();
     }
-  }, [projectId]); // Chỉ phụ thuộc vào projectId
+  }, [projectId]);
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return "Chưa cập nhật";
-    return new Date(dateString).toLocaleDateString("vi-VN");
+    if (!dateString) return PROJECT_TEXTS.COMMON.NOT_AVAILABLE;
+    try {
+      return new Date(dateString).toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    } catch (e) {
+      return PROJECT_TEXTS.COMMON.NOT_AVAILABLE;
+    }
+  };
+
+  // Hàm getStatusStyle tương tự như trong ProjectItem.tsx
+  const getStatusStyle = (status: string | undefined) => {
+    switch (status) {
+      case PROJECT_TEXTS.STATUS_LABEL.APPROVED:
+      case PROJECT_TEXTS.STATUS_LABEL.COMPLETED:
+        return {
+          icon: ICONS_NAME.CHECK_CIRCLE_OUTLINE,
+          backgroundColor: theme.colors.tertiaryContainer,
+          textColor: theme.colors.onTertiaryContainer,
+        };
+      case PROJECT_TEXTS.STATUS_LABEL.IN_PROGRESS:
+        return {
+          icon: ICONS_NAME.PROGRESS_WRENCH,
+          backgroundColor: theme.colors.secondaryContainer,
+          textColor: theme.colors.onSecondaryContainer,
+        };
+      case PROJECT_TEXTS.STATUS_LABEL.PENDING:
+        return {
+          icon: ICONS_NAME.TIMER_SAND,
+          backgroundColor: theme.colors.surfaceVariant,
+          textColor: theme.colors.onSurfaceVariant,
+        };
+      case PROJECT_TEXTS.STATUS_LABEL.REJECTED:
+      case PROJECT_TEXTS.STATUS_LABEL.CANCELLED:
+        return {
+          icon: ICONS_NAME.CLOSE_CIRCLE,
+          backgroundColor: theme.colors.errorContainer,
+          textColor: theme.colors.onErrorContainer,
+        };
+      default:
+        return {
+          icon: ICONS_NAME.HELP_CIRCLE,
+          backgroundColor: theme.colors.surfaceDisabled,
+          textColor: theme.colors.onSurfaceDisabled,
+        };
+    }
   };
 
   if (loading) {
@@ -104,32 +164,68 @@ export default function ProjectDetailsScreen() {
   if (error) {
     return (
       <ScreenWrapper>
-        <ScreenHeader title="Lỗi" onBackPress={() => navigation.goBack()} />
+        <ScreenHeader
+          title={PROJECT_TEXTS.COMMON.ERROR_TITLE}
+          onBackPress={() => navigation.goBack()}
+        />
         <View style={styles.centered}>
           <Icon
-            name="alert-circle-outline"
+            name={ICONS_NAME.ALERT_CIRCLE_OUTLINE}
             size={80}
             color={theme.colors.error}
           />
-          <Text variant="headlineSmall" style={styles.errorTitle}>
-            Đã xảy ra lỗi
+          <Text
+            variant="headlineSmall"
+            style={[styles.errorTitle, { color: theme.colors.error }]}
+          >
+            {PROJECT_TEXTS.COMMON.ERROR_OCCURRED}
           </Text>
-          <Text variant="bodyLarge" style={styles.errorSubtitle}>
+          <Text
+            variant="bodyLarge"
+            style={[
+              styles.errorSubtitle,
+              { color: theme.colors.onSurfaceVariant },
+            ]}
+          >
             {error}
           </Text>
           <Button
             mode="contained"
             onPress={() => {
               if (projectId) {
-                // Thử tải lại dữ liệu
                 const fetchProjectDetails = async () => {
                   setLoading(true);
                   setError(null);
                   try {
-                    const responseData = await http.get<Project>(
-                      `/auth/duan/info/${projectId}`
-                    );
-                    setProject(responseData);
+                    const { rc, item } = await http.get<{
+                      rc: { code: number; message: string };
+                      item: Project;
+                    }>(`/auth/duan/info/${projectId}`);
+                    if (rc.code !== 0)
+                      throw new Error(rc.message || "Failed to fetch");
+                    const enrichedItem: Project = {
+                      ...item,
+                      progress:
+                        typeof item.progress === "number"
+                          ? Math.max(0, Math.min(100, item.progress))
+                          : 0,
+                      status: item.status || PROJECT_TEXTS.STATUS_LABEL.UNKNOWN,
+                      image: item.image || undefined,
+                      approvalDate: item.approvalDate || undefined,
+                      approvedBy: item.approvedBy || undefined,
+                      nha_thau_thi_cong_name:
+                        item.nha_thau_thi_cong_name ||
+                        PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
+                      tu_van_giam_sat_name:
+                        item.tu_van_giam_sat_name ||
+                        PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
+                      tu_van_thiet_ke_name:
+                        item.tu_van_thiet_ke_name ||
+                        PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
+                      creator_id:
+                        item.creator_id || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
+                    };
+                    setProject(enrichedItem);
                   } catch (err: any) {
                     console.error("Lỗi khi thử lại:", err);
                     setError(err.message || "Không thể tải dữ liệu dự án.");
@@ -141,17 +237,17 @@ export default function ProjectDetailsScreen() {
               }
             }}
             style={{ marginTop: 24, marginRight: 8 }}
-            icon="refresh"
+            icon={ICONS_NAME.REFRESH}
           >
-            Thử lại
+            {PROJECT_TEXTS.ACTIONS.RETRY}
           </Button>
           <Button
             mode="outlined"
             onPress={() => navigation.goBack()}
             style={{ marginTop: 24 }}
-            icon="arrow-left"
+            icon={ICONS_NAME.ARROW_LEFT}
           >
-            Quay lại
+            {PROJECT_TEXTS.ACTIONS.BACK}
           </Button>
         </View>
       </ScreenWrapper>
@@ -163,223 +259,383 @@ export default function ProjectDetailsScreen() {
     return (
       <ScreenWrapper>
         <ScreenHeader
-          title="Không tìm thấy dự án"
+          title={PROJECT_TEXTS.COMMON.PROJECT_NOT_FOUND}
           onBackPress={() => navigation.goBack()}
         />
         <View style={styles.centered}>
           <Icon
-            name="alert-circle-outline"
+            name={ICONS_NAME.ALERT_CIRCLE_OUTLINE}
             size={80}
             color={theme.colors.error}
           />
-          <Text variant="headlineSmall" style={styles.errorTitle}>
-            Không tìm thấy thông tin dự án
+          <Text
+            variant="headlineSmall"
+            style={[styles.errorTitle, { color: theme.colors.error }]}
+          >
+            {PROJECT_TEXTS.COMMON.PROJECT_NOT_FOUND_DETAIL}
           </Text>
-          <Text variant="bodyLarge" style={styles.errorSubtitle}>
-            Dự án bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.
+          <Text
+            variant="bodyLarge"
+            style={[
+              styles.errorSubtitle,
+              { color: theme.colors.onSurfaceVariant },
+            ]}
+          >
+            {PROJECT_TEXTS.COMMON.PROJECT_NOT_FOUND_SUBTITLE}
           </Text>
           <Button
             mode="contained"
             onPress={() => navigation.goBack()}
             style={{ marginTop: 24 }}
-            icon="arrow-left"
+            icon={ICONS_NAME.ARROW_LEFT}
           >
-            Quay lại danh sách
+            {PROJECT_TEXTS.ACTIONS.BACK_TO_LIST}
           </Button>
         </View>
       </ScreenWrapper>
     );
   }
 
+  const statusStyle = getStatusStyle(project.status);
+
   return (
     <ScreenWrapper>
       <ScreenHeader
-        title="Chi tiết dự án"
+        title={PROJECT_TEXTS.SCREEN_TITLE.PROJECT_DETAILS}
         onBackPress={() => navigation.goBack()}
       />
-      <ScrollView contentContainerStyle={styles.container}>
-        {project.image && (
-          <Card.Cover source={{ uri: project.image }} style={styles.cover} />
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
+        {project.image ? (
+          <Card.Cover
+            source={{ uri: project.image }}
+            style={styles.coverImage}
+          />
+        ) : (
+          <View
+            style={[
+              styles.avatarContainer,
+              { backgroundColor: theme.colors.surfaceVariant },
+            ]}
+          >
+            <Avatar.Icon
+              size={120}
+              icon={ICONS_NAME.IMAGE}
+              style={{ backgroundColor: theme.colors.surfaceVariant }}
+              color={theme.colors.onSurfaceVariant}
+            />
+          </View>
         )}
 
-        <Card style={styles.card}>
+        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
           <Card.Content>
-            <Text variant="headlineMedium" style={styles.projectName}>
+            <Text
+              variant="headlineMedium"
+              style={[styles.projectName, { color: theme.colors.onSurface }]}
+            >
               {project.name}
             </Text>
-            <View style={styles.metaContainer}>
-              <Chip
-                icon="information-outline"
-                style={styles.chip}
-                textStyle={styles.chipText}
-                mode="outlined"
+            <View style={styles.row}>
+              <Icon
+                name={ICONS_NAME.CODE_BRACES}
+                size={20}
+                color={theme.colors.onSurfaceVariant}
+                style={styles.metaIcon}
+              />
+              <Text
+                variant="bodyMedium"
+                style={[
+                  styles.projectCode,
+                  { color: theme.colors.onSurfaceVariant },
+                ]}
               >
-                {project.code}
-              </Chip>
-              {/* XÓA Chip trạng thái ở đây */}
+                {PROJECT_TEXTS.INFO.CODE}: {project.code}
+              </Text>
             </View>
 
             {project.description && (
-              <Text variant="bodyMedium" style={styles.description}>
-                {project.description}
-              </Text>
+              <>
+                <Divider
+                  style={[
+                    styles.divider,
+                    { backgroundColor: theme.colors.outline },
+                  ]}
+                />
+                <View style={styles.row}>
+                  <Icon
+                    name={ICONS_NAME.INFORMATION_OUTLINE}
+                    size={20}
+                    color={theme.colors.onSurfaceVariant}
+                    style={styles.metaIcon}
+                  />
+                  <Text
+                    variant="titleSmall"
+                    style={[
+                      styles.sectionTitle,
+                      { color: theme.colors.onSurfaceVariant },
+                    ]}
+                  >
+                    {PROJECT_TEXTS.INFO.DESCRIPTION}
+                  </Text>
+                </View>
+                <Text
+                  variant="bodyMedium"
+                  style={[
+                    styles.description,
+                    { color: theme.colors.onSurface },
+                  ]}
+                >
+                  {project.description}
+                </Text>
+              </>
             )}
           </Card.Content>
         </Card>
 
-        {/* THÊM MỚI: Card hiển thị Trạng thái dự án */}
-        {project.status && (
-          <Card style={styles.card}>
-            <Card.Title
-              title="Trạng thái dự án"
-              titleVariant="titleLarge"
-              titleStyle={{ fontWeight: "bold" }}
-            />
-            <Divider />
-            <Card.Content style={styles.statusCardContent}>
+        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+          <Card.Content>
+            <View style={styles.rowSpaceBetween}>
+              <View style={styles.row}>
+                <Icon
+                  name={ICONS_NAME.GAUGE}
+                  size={20}
+                  color={theme.colors.onSurfaceVariant}
+                  style={styles.metaIcon}
+                />
+                <Text
+                  variant="titleSmall"
+                  style={[
+                    styles.sectionTitle,
+                    { color: theme.colors.onSurfaceVariant },
+                  ]}
+                >
+                  {PROJECT_TEXTS.INFO.STATUS}
+                </Text>
+              </View>
               <Chip
-                icon={
-                  project.status === "Đang tiến hành"
-                    ? "progress-wrench"
-                    : project.status === "Hoàn thành"
-                    ? "check-circle-outline"
-                    : "information-outline"
-                }
+                icon={() => (
+                  <Icon
+                    name={statusStyle.icon}
+                    size={18}
+                    color={statusStyle.textColor}
+                  />
+                )}
                 style={[
-                  styles.statusChip, // Kiểu dáng mới cho Chip trạng thái
-                  {
-                    backgroundColor:
-                      project.status === "Hoàn thành"
-                        ? theme.colors.primaryContainer
-                        : project.status === "Đang tiến hành"
-                        ? theme.colors.tertiaryContainer
-                        : theme.colors.surfaceVariant,
-                  },
+                  styles.statusChipDetails,
+                  { backgroundColor: statusStyle.backgroundColor },
                 ]}
                 textStyle={[
-                  styles.statusChipText, // Kiểu chữ mới cho Chip trạng thái
-                  {
-                    color:
-                      project.status === "Hoàn thành"
-                        ? theme.colors.onPrimaryContainer
-                        : project.status === "Đang tiến hành"
-                        ? theme.colors.onTertiaryContainer
-                        : theme.colors.onSurfaceVariant,
-                  },
+                  styles.statusChipTextDetails,
+                  { color: statusStyle.textColor },
                 ]}
+                mode="flat"
               >
-                {project.status}
+                {project.status || PROJECT_TEXTS.STATUS_LABEL.UNKNOWN}
               </Chip>
-            </Card.Content>
-          </Card>
-        )}
+            </View>
 
-        {/* Card hiển thị Tiến độ dự án */}
-        {typeof project.progress === "number" && (
-          <Card style={styles.card}>
-            <Card.Title
-              title="Tiến độ dự án"
-              titleVariant="titleLarge"
-              titleStyle={{ fontWeight: "bold" }}
-            />
-            <Divider />
-            <Card.Content>
-              <View style={styles.progressContainer}>
-                <Text
-                  variant="labelLarge"
-                  style={{ marginBottom: 4, marginTop: 8 }} // Thêm marginTop để có khoảng cách với Divider
-                >
-                  Tiến độ tổng thể: {Math.round(project.progress * 100)}%
-                </Text>
-                <ProgressBar
-                  progress={project.progress}
-                  color={theme.colors.primary}
-                  style={styles.progressBar}
+            {typeof project.progress === "number" && (
+              <>
+                <Divider
+                  style={[
+                    styles.divider,
+                    { backgroundColor: theme.colors.outline },
+                  ]}
                 />
-              </View>
-            </Card.Content>
-          </Card>
-        )}
+                <View style={styles.row}>
+                  <Icon
+                    name={ICONS_NAME.CHART_BAR}
+                    size={20}
+                    color={theme.colors.onSurfaceVariant}
+                    style={styles.metaIcon}
+                  />
+                  <Text
+                    variant="titleSmall"
+                    style={[
+                      styles.sectionTitle,
+                      { color: theme.colors.onSurfaceVariant },
+                    ]}
+                  >
+                    {PROJECT_TEXTS.INFO.PROGRESS}
+                  </Text>
+                </View>
+                <View style={styles.progressContainerDetails}>
+                  <ProgressBar
+                    progress={(project.progress || 0) / 100}
+                    color={theme.colors.primary}
+                    style={[
+                      styles.progressBarDetails,
+                      { backgroundColor: theme.colors.surfaceDisabled },
+                    ]}
+                  />
+                  <Text
+                    variant="bodyMedium"
+                    style={[
+                      styles.progressTextDetails,
+                      { color: theme.colors.primary },
+                    ]}
+                  >
+                    {project.progress}%
+                  </Text>
+                </View>
+              </>
+            )}
+          </Card.Content>
+        </Card>
 
-        <Card style={styles.card}>
+        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
           <Card.Title
-            title="Thông tin chung"
+            title={PROJECT_TEXTS.INFO.GENERAL_INFO}
             titleVariant="titleLarge"
-            titleStyle={{ fontWeight: "bold" }}
+            titleStyle={[styles.cardTitle, { color: theme.colors.primary }]}
+            left={(props) => (
+              <Icon
+                {...props}
+                name={ICONS_NAME.INFORMATION}
+                size={24}
+                color={theme.colors.primary}
+              />
+            )}
           />
-          <Divider />
+          <Divider style={{ backgroundColor: theme.colors.outline }} />
           <List.Item
-            title="Ngày bắt đầu"
+            title={PROJECT_TEXTS.INFO.START_DATE}
             description={formatDate(project.start_at)}
-            left={(props) => <List.Icon {...props} icon="calendar-start" />}
-            titleStyle={{ fontWeight: "bold" }}
+            left={(props) => (
+              <List.Icon {...props} icon={ICONS_NAME.CALENDAR_START} />
+            )}
+            titleStyle={[
+              styles.listItemTitle,
+              { color: theme.colors.onSurface },
+            ]} // Sử dụng theme.colors
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
           />
           <List.Item
-            title="Ngày kết thúc (dự kiến)"
+            title={PROJECT_TEXTS.INFO.FINISH_DATE}
             description={formatDate(project.finish_at)}
-            left={(props) => <List.Icon {...props} icon="calendar-end" />}
-            titleStyle={{ fontWeight: "bold" }}
+            left={(props) => (
+              <List.Icon {...props} icon={ICONS_NAME.CALENDAR_CHECK} />
+            )}
+            titleStyle={[
+              styles.listItemTitle,
+              { color: theme.colors.onSurface },
+            ]} // Sử dụng theme.colors
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
           />
           {project.approvalDate && (
             <List.Item
-              title="Ngày phê duyệt"
+              title={PROJECT_TEXTS.INFO.APPROVAL_DATE}
               description={formatDate(project.approvalDate)}
-              left={(props) => <List.Icon {...props} icon="calendar-check" />}
-              titleStyle={{ fontWeight: "bold" }}
+              left={(props) => (
+                <List.Icon
+                  {...props}
+                  icon={ICONS_NAME.CALENDAR_MULTIPLE_CHECK}
+                />
+              )}
+              titleStyle={[
+                styles.listItemTitle,
+                { color: theme.colors.onSurface },
+              ]} // Sử dụng theme.colors
+              descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
             />
           )}
-          {project.approvedBy && (
-            <List.Item
-              title="Người phê duyệt"
-              description={project.approvedBy}
-              left={(props) => <List.Icon {...props} icon="account-check" />}
-              titleStyle={{ fontWeight: "bold" }}
-            />
-          )}
+          {project.approvedBy &&
+            project.approvedBy !== PROJECT_TEXTS.COMMON.NOT_AVAILABLE && (
+              <List.Item
+                title={PROJECT_TEXTS.INFO.APPROVED_BY}
+                description={project.approvedBy}
+                left={(props) => (
+                  <List.Icon {...props} icon={ICONS_NAME.ACCOUNT_CHECK} />
+                )}
+                titleStyle={[
+                  styles.listItemTitle,
+                  { color: theme.colors.onSurface },
+                ]} // Sử dụng theme.colors
+                descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
+              />
+            )}
           <List.Item
-            title="Người tạo"
-            description={project.creator_id} // Có thể cần map ID sang tên người dùng
-            left={(props) => <List.Icon {...props} icon="account-edit" />}
-            titleStyle={{ fontWeight: "bold" }}
+            title={PROJECT_TEXTS.INFO.CREATED_AT}
+            description={formatDate(project.created_at)}
+            left={(props) => (
+              <List.Icon {...props} icon={ICONS_NAME.CALENDAR_PLUS} />
+            )}
+            titleStyle={[
+              styles.listItemTitle,
+              { color: theme.colors.onSurface },
+            ]} // Sử dụng theme.colors
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
+          />
+          <List.Item
+            title={PROJECT_TEXTS.INFO.CREATOR}
+            description={project.creator_id}
+            left={(props) => (
+              <List.Icon {...props} icon={ICONS_NAME.ACCOUNT_EDIT} />
+            )}
+            titleStyle={[
+              styles.listItemTitle,
+              { color: theme.colors.onSurface },
+            ]} // Sử dụng theme.colors
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
           />
         </Card>
 
-        <Card style={styles.card}>
+        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
           <Card.Title
-            title="Các bên liên quan"
+            title={PROJECT_TEXTS.INFO.STAKEHOLDERS}
             titleVariant="titleLarge"
-            titleStyle={{ fontWeight: "bold" }}
+            titleStyle={[styles.cardTitle, { color: theme.colors.primary }]}
+            left={(props) => (
+              <Icon
+                {...props}
+                name={ICONS_NAME.ACCOUNT_GROUP}
+                size={24}
+                color={theme.colors.primary}
+              />
+            )}
           />
-          <Divider />
+          <Divider style={{ backgroundColor: theme.colors.outline }} />
           <List.Item
-            title="Nhà thầu thi công"
-            description={project.nha_thau_thi_cong_name || "Chưa cập nhật"}
-            left={(props) => <List.Icon {...props} icon="office-building" />}
-            titleStyle={{ fontWeight: "bold" }}
+            title={PROJECT_TEXTS.INFO.CONTRACTOR}
+            description={project.nha_thau_thi_cong_name}
+            left={(props) => (
+              <List.Icon {...props} icon={ICONS_NAME.ACCOUNT_HARD_HAT} />
+            )}
+            titleStyle={[
+              styles.listItemTitle,
+              { color: theme.colors.onSurface },
+            ]} // Sử dụng theme.colors
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
           />
           <List.Item
-            title="Tư vấn giám sát"
-            description={project.tu_van_giam_sat_name || "Chưa cập nhật"}
-            left={(props) => <List.Icon {...props} icon="account-hard-hat" />}
-            titleStyle={{ fontWeight: "bold" }}
+            title={PROJECT_TEXTS.INFO.SUPERVISION_CONSULTANT}
+            description={project.tu_van_giam_sat_name}
+            left={(props) => (
+              <List.Icon {...props} icon={ICONS_NAME.ACCOUNT_EYE} />
+            )}
+            titleStyle={[
+              styles.listItemTitle,
+              { color: theme.colors.onSurface },
+            ]} // Sử dụng theme.colors
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
           />
           <List.Item
-            title="Tư vấn thiết kế"
-            description={project.tu_van_thiet_ke_name || "Chưa cập nhật"}
-            left={(props) => <List.Icon {...props} icon="pencil-ruler" />}
-            titleStyle={{ fontWeight: "bold" }}
+            title={PROJECT_TEXTS.INFO.DESIGN_CONSULTANT}
+            description={project.tu_van_thiet_ke_name}
+            left={(props) => (
+              <List.Icon {...props} icon={ICONS_NAME.PENCIL_RULER} />
+            )}
+            titleStyle={[
+              styles.listItemTitle,
+              { color: theme.colors.onSurface },
+            ]} // Sử dụng theme.colors
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
           />
         </Card>
-
-        {/* Nút quay lại có thể đặt ở đây hoặc chỉ dùng header */}
-        {/* <Button
-          mode="outlined"
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-          icon="arrow-left"
-        >
-          Quay lại danh sách
-        </Button> */}
       </ScrollView>
     </ScreenWrapper>
   );
@@ -387,8 +643,8 @@ export default function ProjectDetailsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: "#f5f5f5", // Màu nền nhẹ nhàng
+    padding: 16, // Sử dụng giá trị cụ thể thay vì GlobalStyles
+    // backgroundColor: theme.colors.background, // Sẽ được áp dụng inline
   },
   centered: {
     flex: 1,
@@ -401,69 +657,99 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: "center",
     fontWeight: "bold",
+    // color: theme.colors.error, // Sẽ được áp dụng inline
   },
   errorSubtitle: {
     textAlign: "center",
-    color: "#666",
+    // color: theme.colors.onSurfaceVariant, // Sẽ được áp dụng inline
     marginBottom: 24,
   },
-  cover: {
-    height: 200,
+  coverImage: {
+    height: 220,
     marginBottom: 16,
-    borderRadius: 12, // Bo góc cho ảnh
+    borderRadius: 12, // Sử dụng giá trị cụ thể
+  },
+  avatarContainer: {
+    height: 220,
+    marginBottom: 16,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    // backgroundColor: theme.colors.surfaceVariant, // Sẽ được áp dụng inline
   },
   card: {
     marginBottom: 16,
-    borderRadius: 12, // Bo góc cho card
-    elevation: 2, // Độ nổi nhẹ
+    borderRadius: 12,
+    elevation: 1,
+    // backgroundColor: theme.colors.surface, // Sẽ được áp dụng inline
+  },
+  cardTitle: {
+    fontWeight: "bold",
   },
   projectName: {
     fontWeight: "bold",
     marginBottom: 8,
+    // color: theme.colors.onSurface, // Sẽ được áp dụng inline
   },
-  metaContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    marginBottom: 12,
+  projectCode: {
+    // color: theme.colors.onSurfaceVariant, // Sẽ được áp dụng inline
+    marginLeft: 8,
   },
-  chip: {
+  metaIcon: {
     marginRight: 8,
-    marginBottom: 8,
   },
-  chipText: {
-    fontSize: 12, // Kích thước chữ nhỏ hơn cho chip
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4, // Giảm margin
+  },
+  rowSpaceBetween: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 4, // Giảm margin
+  },
+  sectionTitle: {
+    fontWeight: "600",
+    // color: theme.colors.onSurfaceVariant, // Sẽ được áp dụng inline
   },
   description: {
-    marginBottom: 16,
-    lineHeight: 22, // Giãn dòng cho dễ đọc
-    color: "#424242", // Màu chữ tối hơn một chút
-  },
-  // THÊM MỚI: Styles cho Card Trạng thái
-  statusCardContent: {
-    paddingVertical: 16,
-    alignItems: "center", // Căn giữa Chip trạng thái
-  },
-  statusChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
-    height: "auto", // Chiều cao tự động theo nội dung
-  },
-  statusChipText: {
-    fontSize: 16, // Kích thước chữ lớn hơn
-    fontWeight: "600", // Hơi đậm hơn
-  },
-  progressContainer: {
     marginTop: 8,
-    marginBottom: 8,
+    lineHeight: 22,
+    // color: theme.colors.onSurface, // Sẽ được áp dụng inline
   },
-  progressBar: {
+  divider: {
+    marginVertical: 16,
+    // backgroundColor: theme.colors.outline, // Sẽ được áp dụng inline
+  },
+  statusChipDetails: {
+    paddingHorizontal: 12, // Sử dụng giá trị cụ thể
+    paddingVertical: 6, // Sử dụng giá trị cụ thể
+    height: "auto",
+    borderRadius: 16, // Sử dụng giá trị cụ thể
+  },
+  statusChipTextDetails: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  progressContainerDetails: {
+    marginTop: 8,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  progressBarDetails: {
+    flex: 1,
     height: 8,
     borderRadius: 4,
+    // backgroundColor: theme.colors.surfaceDisabled, // Sẽ được áp dụng inline
   },
-  // backButton: { // Nếu bạn muốn có nút quay lại ở cuối
-  //   marginTop: 16,
-  //   marginBottom: 32,
-  // },
+  progressTextDetails: {
+    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  listItemTitle: {
+    fontWeight: "600",
+    // color: theme.colors.onSurface, // Sẽ được áp dụng inline
+  },
 });

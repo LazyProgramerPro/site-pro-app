@@ -10,6 +10,8 @@ import {
   Snackbar,
   Text,
   useTheme,
+  ProgressBar,
+  Avatar,
 } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -19,7 +21,7 @@ import { useSelector } from "react-redux";
 
 import { ICONS_NAME } from "../../constants/icon";
 import { PROJECT_TEXTS } from "../../constants/project";
-import { STATUS_COLORS, GlobalStyles } from "../../constants/styles";
+import { GlobalStyles } from "../../constants/styles";
 import { DashboardStackParamList } from "../../navigation/stacks/DashboardStack";
 import {
   Project,
@@ -53,15 +55,6 @@ export default function ProjectItem({ item }: ProjectItemProps) {
 
   const confirmDelete = () => {
     // TODO: Implement actual delete logic
-    // dispatch(deleteProject(item.id))
-    //   .unwrap()
-    //   .then(() => {
-    //     setSnackbarVisible(true);
-    //     handleCloseMenu();
-    //   })
-    //   .catch((error) => {
-    //     console.error("Failed to delete project:", error);
-    //   });
     setSnackbarVisible(true);
     handleCloseMenu();
     setDeleteDialogVisible(false);
@@ -78,7 +71,11 @@ export default function ProjectItem({ item }: ProjectItemProps) {
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return PROJECT_TEXTS.COMMON.NOT_AVAILABLE;
     try {
-      return new Date(dateString).toLocaleDateString("vi-VN");
+      return new Date(dateString).toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
     } catch (e) {
       return PROJECT_TEXTS.COMMON.NOT_AVAILABLE;
     }
@@ -87,34 +84,36 @@ export default function ProjectItem({ item }: ProjectItemProps) {
   const getStatusStyle = (status: string | undefined) => {
     switch (status) {
       case PROJECT_TEXTS.STATUS_LABEL.APPROVED:
+      case PROJECT_TEXTS.STATUS_LABEL.COMPLETED:
         return {
-          icon: ICONS_NAME.CHECK_CIRCLE,
-          backgroundColor: STATUS_COLORS.STATUS.COMPLETED.BACKGROUND,
-          textColor: STATUS_COLORS.STATUS.COMPLETED.TEXT,
+          icon: ICONS_NAME.CHECK_CIRCLE_OUTLINE,
+          backgroundColor: theme.colors.tertiaryContainer,
+          textColor: theme.colors.onTertiaryContainer,
         };
       case PROJECT_TEXTS.STATUS_LABEL.IN_PROGRESS:
         return {
           icon: ICONS_NAME.PROGRESS_WRENCH,
-          backgroundColor: STATUS_COLORS.STATUS.IN_PROGRESS.BACKGROUND,
-          textColor: STATUS_COLORS.STATUS.IN_PROGRESS.TEXT,
+          backgroundColor: theme.colors.secondaryContainer,
+          textColor: theme.colors.onSecondaryContainer,
         };
       case PROJECT_TEXTS.STATUS_LABEL.PENDING:
         return {
           icon: ICONS_NAME.TIMER_SAND,
-          backgroundColor: STATUS_COLORS.STATUS.PENDING.BACKGROUND,
-          textColor: STATUS_COLORS.STATUS.PENDING.TEXT,
+          backgroundColor: theme.colors.surfaceVariant,
+          textColor: theme.colors.onSurfaceVariant,
         };
       case PROJECT_TEXTS.STATUS_LABEL.REJECTED:
+      case PROJECT_TEXTS.STATUS_LABEL.CANCELLED:
         return {
           icon: ICONS_NAME.CLOSE_CIRCLE,
-          backgroundColor: STATUS_COLORS.STATUS.REJECTED.BACKGROUND,
-          textColor: STATUS_COLORS.STATUS.REJECTED.TEXT,
+          backgroundColor: theme.colors.errorContainer,
+          textColor: theme.colors.onErrorContainer,
         };
       default:
         return {
           icon: ICONS_NAME.HELP_CIRCLE,
-          backgroundColor: GlobalStyles.colors.gray200,
-          textColor: GlobalStyles.colors.gray700,
+          backgroundColor: theme.colors.surfaceDisabled, // Reverted to theme.colors
+          textColor: theme.colors.onSurfaceDisabled, // Reverted to theme.colors
         };
     }
   };
@@ -122,31 +121,50 @@ export default function ProjectItem({ item }: ProjectItemProps) {
   const statusStyle = getStatusStyle(item.status);
 
   const renderInfoRow = (
-    iconName: string,
+    iconNameKey: keyof typeof ICONS_NAME | null, // Changed variable name for clarity
     label: string,
-    value: string | undefined,
+    value: string | undefined | number,
     isUser = false,
-    numberOfLines = 1
+    numberOfLines = 1,
+    customValueStyle?: object
   ) => {
-    if (!value) return null;
+    if (
+      value === undefined ||
+      value === null ||
+      value === "" ||
+      (typeof value === "number" && isNaN(value))
+    )
+      return null;
     return (
       <View style={styles.infoRow}>
-        <Icon
-          name={iconName}
-          size={16}
-          color={theme.colors.onSurfaceVariant}
-          style={styles.infoIcon}
-        />
-        <Text variant="bodyMedium" style={styles.infoLabel}>
+        {iconNameKey && (
+          <Icon
+            name={ICONS_NAME[iconNameKey]} // Access icon name using the key
+            size={18}
+            color={theme.colors.onSurfaceVariant}
+            style={styles.infoIcon}
+          />
+        )}
+        <Text
+          variant="bodyMedium"
+          style={[styles.infoLabel, !iconNameKey && styles.infoLabelNoIcon]}
+        >
           {label}:{" "}
         </Text>
         <Text
           variant="bodyMedium"
-          style={[styles.infoValue, isUser && styles.userText]}
+          style={[
+            styles.infoValue,
+            isUser && styles.userText,
+            customValueStyle,
+          ]}
           numberOfLines={numberOfLines}
           ellipsizeMode="tail"
         >
           {value}
+          {label === PROJECT_TEXTS.INFO.PROGRESS &&
+            item.progress !== undefined &&
+            "%"}
         </Text>
       </View>
     );
@@ -161,31 +179,31 @@ export default function ProjectItem({ item }: ProjectItemProps) {
         ]}
         onPress={() => handleViewPressProject(item)}
       >
-        <Card.Content style={styles.cardContent}>
-          <View style={styles.headerSection}>
-            <View style={styles.projectNameContainer}>
-              <Icon
-                name={ICONS_NAME.FOLDER_ACCOUNT}
-                size={24}
-                color={
-                  item.id === editingProject?.id
-                    ? theme.colors.primary
-                    : theme.colors.onSurfaceVariant
-                }
-              />
-              <Text
-                variant="titleLarge"
-                style={[
-                  styles.projectName,
-                  item.id === editingProject?.id && styles.selectedText,
-                ]}
-                numberOfLines={2}
-                ellipsizeMode="tail"
-              >
-                {item.name}
-              </Text>
-            </View>
+        {item.image ? (
+          <Card.Cover source={{ uri: item.image }} style={styles.cardCover} />
+        ) : (
+          <View style={styles.avatarContainer}>
+            <Avatar.Icon
+              size={80}
+              icon={ICONS_NAME.IMAGE}
+              style={{ backgroundColor: theme.colors.surfaceVariant }}
+              color={theme.colors.onSurfaceVariant}
+            />
+          </View>
+        )}
+
+        <Card.Title
+          title={item.name}
+          titleStyle={[
+            styles.cardTitle,
+            item.id === editingProject?.id && styles.selectedText,
+          ]}
+          titleNumberOfLines={2}
+          subtitle={item.code}
+          subtitleStyle={styles.cardSubtitle}
+          right={(props) => (
             <IconButton
+              {...props}
               icon={ICONS_NAME.DOTS_VERTICAL}
               onPress={() => handleOpenMenu(item.id)}
               iconColor={
@@ -194,98 +212,107 @@ export default function ProjectItem({ item }: ProjectItemProps) {
                   : theme.colors.onSurfaceVariant
               }
             />
+          )}
+        />
+        <Card.Content style={styles.cardContent}>
+          <View style={styles.statusAndProgressContainer}>
+            <Chip
+              icon={() => (
+                <Icon
+                  name={statusStyle.icon}
+                  size={16}
+                  color={statusStyle.textColor}
+                />
+              )}
+              style={[
+                styles.statusChip,
+                { backgroundColor: statusStyle.backgroundColor },
+              ]}
+              textStyle={[styles.statusText, { color: statusStyle.textColor }]}
+              mode="flat"
+            >
+              {item.status || PROJECT_TEXTS.STATUS_LABEL.UNKNOWN}
+            </Chip>
+            {item.progress !== undefined && (
+              <View style={styles.progressChipContainer}>
+                <Icon
+                  name={ICONS_NAME.CHART_BAR}
+                  size={16}
+                  color={theme.colors.primary}
+                  style={{ marginRight: GlobalStyles.spacing.xs }}
+                />
+                <Text
+                  style={[styles.progressText, { color: theme.colors.primary }]}
+                >{`${item.progress}%`}</Text>
+              </View>
+            )}
           </View>
 
-          <View style={styles.contentSection}>
-            {renderInfoRow(
-              ICONS_NAME.CODE_BRACES,
-              PROJECT_TEXTS.INFO.CODE,
-              item.code
-            )}
+          {item.progress !== undefined && (
+            <ProgressBar
+              progress={(item.progress || 0) / 100}
+              color={theme.colors.primary}
+              style={styles.progressBar}
+              visible={item.progress !== undefined}
+            />
+          )}
 
-            <View style={styles.infoRow}>
-              <Icon
-                name={statusStyle.icon}
-                size={16}
-                color={statusStyle.textColor}
-                style={styles.infoIcon}
-              />
-              <Text variant="bodyMedium" style={styles.infoLabel}>
-                {PROJECT_TEXTS.INFO.STATUS}:{" "}
-              </Text>
-              <Chip
-                style={[
-                  styles.statusChip,
-                  { backgroundColor: statusStyle.backgroundColor },
-                ]}
-                textStyle={[
-                  styles.statusText,
-                  { color: statusStyle.textColor },
-                ]}
-              >
-                {item.status || PROJECT_TEXTS.STATUS_LABEL.UNKNOWN}
-              </Chip>
-            </View>
-
-            {renderInfoRow(
-              ICONS_NAME.INFORMATION_OUTLINE,
-              PROJECT_TEXTS.INFO.DESCRIPTION,
-              item.description,
-              false,
-              2
-            )}
-            {renderInfoRow(
-              ICONS_NAME.CALENDAR_START,
-              PROJECT_TEXTS.INFO.START_DATE,
-              formatDate(item.start_at)
-            )}
-            {renderInfoRow(
-              ICONS_NAME.CALENDAR_CHECK,
-              PROJECT_TEXTS.INFO.FINISH_DATE,
-              formatDate(item.finish_at)
-            )}
-            {/* Removed combined approval/created date and by fields for brevity on card view
-            {renderInfoRow(
-              item.approvalDate
-                ? ICONS_NAME.CALENDAR_MULTIPLE_CHECK
-                : ICONS_NAME.CALENDAR_PLUS,
-              item.approvalDate
-                ? PROJECT_TEXTS.INFO.APPROVAL_DATE
-                : PROJECT_TEXTS.INFO.CREATED_AT,
-              formatDate(item.approvalDate || item.created_at)
-            )}
-            {renderInfoRow(
-              item.approvedBy
-                ? ICONS_NAME.ACCOUNT_CHECK
-                : ICONS_NAME.ACCOUNT_EDIT,
-              item.approvedBy
-                ? PROJECT_TEXTS.INFO.APPROVED_BY
-                : PROJECT_TEXTS.INFO.CREATED_BY,
-              item.approvedBy || item.creator_id,
+          {renderInfoRow(
+            "INFORMATION_OUTLINE", // Pass as string key
+            PROJECT_TEXTS.INFO.DESCRIPTION,
+            item.description,
+            false,
+            2
+          )}
+          {renderInfoRow(
+            "CALENDAR_START", // Pass as string key
+            PROJECT_TEXTS.INFO.START_DATE,
+            formatDate(item.start_at)
+          )}
+          {renderInfoRow(
+            "CALENDAR_CHECK", // Pass as string key
+            PROJECT_TEXTS.INFO.FINISH_DATE,
+            formatDate(item.finish_at)
+          )}
+          {renderInfoRow(
+            "CALENDAR_PLUS", // Pass as string key
+            PROJECT_TEXTS.INFO.CREATED_AT,
+            formatDate(item.created_at)
+          )}
+          {item.approvedBy &&
+            renderInfoRow(
+              "ACCOUNT_CHECK", // Pass as string key
+              PROJECT_TEXTS.INFO.APPROVED_BY,
+              item.approvedBy,
               true
             )}
-            */}
-            {/* Removed detailed contact/role information for brevity on card view
-            {renderInfoRow(
-              ICONS_NAME.ACCOUNT_HARD_HAT,
-              PROJECT_TEXTS.INFO.CONSTRUCTION_CONTRACTOR,
-              item.nha_thau_thi_cong_name,
-              true
+          {item.approvalDate &&
+            renderInfoRow(
+              "CALENDAR_MULTIPLE_CHECK", // Pass as string key
+              PROJECT_TEXTS.INFO.APPROVAL_DATE,
+              formatDate(item.approvalDate)
             )}
-            {renderInfoRow(
-              ICONS_NAME.ACCOUNT_EYE,
-              PROJECT_TEXTS.INFO.SUPERVISION_CONSULTANT,
-              item.tu_van_giam_sat_name,
-              true
-            )}
-            {renderInfoRow(
-              ICONS_NAME.PENCIL_RULER,
-              PROJECT_TEXTS.INFO.DESIGN_CONSULTANT,
-              item.tu_van_thiet_ke_name,
-              true
-            )}
-            */}
-          </View>
+          {renderInfoRow(
+            "ACCOUNT_HARD_HAT", // Pass as string key
+            PROJECT_TEXTS.INFO.CONTRACTOR,
+            item.nha_thau_thi_cong_name,
+            false,
+            1
+          )}
+          {renderInfoRow(
+            "ACCOUNT_EYE", // Pass as string key
+            PROJECT_TEXTS.INFO.SUPERVISION_CONSULTANT,
+            item.tu_van_giam_sat_name,
+            false,
+            1
+          )}
+          {renderInfoRow(
+            "PENCIL_RULER", // Pass as string key
+            PROJECT_TEXTS.INFO.DESIGN_CONSULTANT,
+            item.tu_van_thiet_ke_name,
+            false,
+            1
+          )}
         </Card.Content>
       </Card>
 
@@ -299,7 +326,7 @@ export default function ProjectItem({ item }: ProjectItemProps) {
           onPress: () => handleViewPressProject(item),
         }}
         deleteAction={{
-          icon: ICONS_NAME.TRASH_CAN,
+          icon: ICONS_NAME.TRASH_CAN_OUTLINE,
           label: PROJECT_TEXTS.ACTIONS.DELETE,
           onPress: handleDeletePressProject,
         }}
@@ -363,77 +390,109 @@ export default function ProjectItem({ item }: ProjectItemProps) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: GlobalStyles.spacing.md, // Use md for consistency with padding
+    borderRadius: 12,
     backgroundColor: GlobalStyles.colors.surface,
     borderWidth: 1,
     borderColor: GlobalStyles.colors.outlineVariant,
-    marginBottom: GlobalStyles.spacing.md, // Add space between cards
+    marginBottom: 16,
+    elevation: 2,
   },
   selectedCard: {
     borderColor: GlobalStyles.colors.primary,
-    borderWidth: 1.5,
+    borderWidth: 2,
+    elevation: 4,
   },
-  cardContent: {
-    padding: GlobalStyles.spacing.md,
+  cardCover: {
+    height: 180,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
   },
-  headerSection: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  avatarContainer: {
+    height: 180,
+    justifyContent: "center",
     alignItems: "center",
-    marginBottom: GlobalStyles.spacing.md,
+    backgroundColor: GlobalStyles.colors.outlineVariant,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
   },
-  projectNameContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-    marginRight: GlobalStyles.spacing.sm,
-  },
-  projectName: {
-    marginLeft: GlobalStyles.spacing.sm,
+  cardTitle: {
     fontWeight: "bold",
     color: GlobalStyles.colors.onSurface,
+    fontSize: 18,
+  },
+  cardSubtitle: {
+    color: GlobalStyles.colors.onSurfaceVariant,
+    fontSize: 12,
+    marginTop: -4,
   },
   selectedText: {
     color: GlobalStyles.colors.primary,
   },
-  contentSection: {
-    // No specific styles needed here for now
+  cardContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    paddingTop: 8,
+  },
+  statusAndProgressContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  statusChip: {
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 0,
+    borderRadius: 16,
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: "500",
+    lineHeight: 16,
+  },
+  progressChipContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 16,
+    backgroundColor: GlobalStyles.colors.primaryContainer,
+  },
+  progressText: {
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  progressBar: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: GlobalStyles.colors.outlineVariant,
+    marginBottom: 12,
   },
   infoRow: {
     flexDirection: "row",
-    alignItems: "center", // Changed from flex-start to center for vertical alignment
-    marginBottom: GlobalStyles.spacing.sm,
+    alignItems: "flex-start",
+    marginBottom: 10,
   },
   infoIcon: {
-    marginRight: GlobalStyles.spacing.sm,
-    // marginTop: GlobalStyles.spacing.xxs, // Removed marginTop as alignItems: center will handle vertical alignment
+    marginRight: 12,
+    marginTop: 2,
   },
   infoLabel: {
     fontWeight: "600",
     color: GlobalStyles.colors.onSurfaceVariant,
-    marginRight: GlobalStyles.spacing.xs, // Add margin to separate label and value
+    marginRight: 4,
+  },
+  infoLabelNoIcon: {
+    marginLeft: 0,
   },
   infoValue: {
     flex: 1,
     color: GlobalStyles.colors.onSurface,
     textAlign: "left",
+    lineHeight: 18,
   },
   userText: {
-    flexShrink: 1,
-  },
-  statusChip: {
-    height: 28,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: GlobalStyles.spacing.sm,
-    // marginLeft: GlobalStyles.spacing.xs, // Removed to allow Chip to take natural space or be centered if container allows
-    borderRadius: GlobalStyles.spacing.xs,
-    alignSelf: "flex-start", // Ensures chip doesn't stretch if infoRow has flex:1 on value
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: "bold",
-    lineHeight: 16, // Ensure text is vertically centered
-    textAlign: "center", // Center text horizontally
+    fontWeight: "500",
   },
 });
