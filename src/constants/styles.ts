@@ -55,6 +55,23 @@ export const GlobalStyles = {
 
     error100: "#FFCDD2",
     error500: "#F44336",
+
+    // Added for consistency with react-native-paper theme
+    surface: neutral.white,
+    primary: blue.primary600,
+    primaryContainer: blue.primary50,
+    onSurface: neutral.gray900,
+    onSurfaceVariant: neutral.gray700,
+    inverseSurface: neutral.gray800, // Example for snackbar
+    outlineVariant: neutral.gray300, // Added outlineVariant
+  },
+  spacing: {
+    xxs: 4, // Extra extra small
+    xs: 6, // Extra small
+    sm: 8,
+    md: 16,
+    lg: 24,
+    xl: 32,
   },
 };
 
@@ -71,6 +88,14 @@ export const STATUS_COLORS = {
     NOT_STARTED: {
       BACKGROUND: GlobalStyles.colors.red50, // "#FFEBEE"
       TEXT: GlobalStyles.colors.red500, // "#F44336"
+    },
+    PENDING: {
+      BACKGROUND: "#fffde7", // Light Yellow
+      TEXT: "#fbc02d", // Yellow
+    },
+    REJECTED: {
+      BACKGROUND: GlobalStyles.colors.gray200, // Light Gray
+      TEXT: GlobalStyles.colors.gray700, // Dark Gray
     },
   },
   ICON: {

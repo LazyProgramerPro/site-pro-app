@@ -111,7 +111,7 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
     navigation.navigate(screenName);
   };
 
-  const handleProjectPress = (projectId: number) => {
+  const handleProjectPress = (projectId: number | string) => {
     navigation.navigate("ProjectDetails", { projectId });
   };
 

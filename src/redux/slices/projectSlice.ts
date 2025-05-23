@@ -47,6 +47,8 @@ export interface Project {
   progress?: number;
   image?: string;
   status?: string;
+  approvalDate?: string; // Added
+  approvedBy?: string; // Added
 }
 
 export interface Construction {
@@ -186,6 +188,38 @@ export const getProjects = createAsyncThunk<{
     throw error;
   }
 });
+
+// Thunk để lấy chi tiết một dự án bằng ID
+export const getProjectById = createAsyncThunk<Project, string>(
+  "project/getProjectById",
+  async (projectId, thunkAPI) => {
+    try {
+      // API response được giả định là item không có rc, data wrapper
+      const response = await http.get<Project>(`/auth/duan/info/${projectId}`, {
+        signal: thunkAPI.signal,
+      });
+      // Nếu API trả về có cấu trúc rc, data thì cần điều chỉnh lại
+      // const { rc, data } = response;
+      // if (rc?.code !== 0) {
+      //   return thunkAPI.rejectWithValue(rc?.desc || "Lỗi không xác định!");
+      // }
+      // return data; // Giả sử data là một Project object
+
+      return response; // Giả sử API trả về trực tiếp Project object
+    } catch (error: any) {
+      if (error.name === "AxiosError" && error.response?.status === 422) {
+        return thunkAPI.rejectWithValue(error.response.data);
+      }
+      // Xử lý các lỗi khác, ví dụ 404
+      if (error.response?.status === 404) {
+        return thunkAPI.rejectWithValue("Không tìm thấy dự án");
+      }
+      return thunkAPI.rejectWithValue(
+        error.message || "Lỗi không xác định khi lấy chi tiết dự án"
+      );
+    }
+  }
+);
 
 export const getConstructions = createAsyncThunk<
   Construction[],
@@ -358,6 +392,26 @@ const projectSlice = createSlice({
           state.totalCount = action.payload.totalCount;
         }
       )
+      .addCase(getProjectById.pending, (state) => {
+        state.loading = true;
+        state.editingProject = null; // Xóa dự án cũ đang xem (nếu có)
+      })
+      .addCase(
+        getProjectById.fulfilled,
+        (state, action: PayloadAction<Project>) => {
+          state.loading = false;
+          state.editingProject = action.payload;
+        }
+      )
+      .addCase(getProjectById.rejected, (state, action) => {
+        state.loading = false;
+        // Có thể lưu lỗi vào state nếu cần hiển thị chi tiết lỗi
+        console.error(
+          "Lỗi khi lấy chi tiết dự án:",
+          action.payload || action.error.message
+        );
+        state.editingProject = null;
+      })
       .addCase(
         getConstructions.fulfilled,
         (state, action: PayloadAction<Construction[]>) => {

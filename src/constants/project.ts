@@ -21,6 +21,7 @@ export const PROJECT_TEXTS = {
     APPROVED: "Đã duyệt",
     PENDING: "Chờ duyệt",
     IN_PROGRESS: "Đang thực hiện",
+    UNKNOWN: "Không xác định", // Trạng thái không xác định
   },
   STATUS_VALUE: {
     ALL: null,
@@ -39,9 +40,32 @@ export const PROJECT_TEXTS = {
     SAVE_ACCEPTANCE_REQUEST: "Lưu thông tin yêu cầu phê duyệt",
     SELECTED: "Chọn",
   },
+  COMMON: {
+    NOT_AVAILABLE: "N/A",
+    OPTIONS: "Tùy chọn",
+    OK: "OK",
+  },
   INFO: {
     UPDATED_BY: "Cập nhật:",
     CREATED_BY: "Tạo bởi:",
+    CODE: "Mã dự án",
+    STATUS: "Trạng thái",
+    DESCRIPTION: "Mô tả",
+    START_DATE: "Ngày bắt đầu",
+    FINISH_DATE: "Ngày kết thúc",
+    APPROVAL_DATE: "Ngày duyệt",
+    CREATED_AT: "Ngày tạo",
+    APPROVED_BY: "Người duyệt",
+    CONSTRUCTION_CONTRACTOR: "Nhà thầu thi công",
+    SUPERVISION_CONSULTANT: "Tư vấn giám sát",
+    DESIGN_CONSULTANT: "Tư vấn thiết kế",
+  },
+  DIALOG: {
+    DELETE_TITLE: "Xác nhận xoá",
+    DELETE_MESSAGE: "Bạn có chắc chắn muốn xoá dự án này không?",
+  },
+  MESSAGES: {
+    DELETE_SUCCESS: "Đã xoá dự án thành công",
   },
   ADD_BUTTON: "Thêm yêu cầu nghiệm thu",
 } as const;

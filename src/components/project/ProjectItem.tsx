@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 
 import { ICONS_NAME } from "../../constants/icon";
 import { PROJECT_TEXTS } from "../../constants/project";
-import { STATUS_COLORS } from "../../constants/styles";
+import { STATUS_COLORS, GlobalStyles } from "../../constants/styles";
 import { DashboardStackParamList } from "../../navigation/stacks/DashboardStack";
 import {
   Project,
@@ -43,17 +43,16 @@ export default function ProjectItem({ item }: ProjectItemProps) {
   const navigation =
     useNavigation<NativeStackNavigationProp<DashboardStackParamList>>();
 
-  const handleViewPressProject = (item: Project) => {
-    console.log("View item:", item);
-    navigation.navigate("ProjectDetails", {});
+  const handleViewPressProject = (projectItem: Project) => {
+    navigation.navigate("ProjectDetails", { projectId: projectItem.id });
   };
 
-  const handleDeletePressProject = (item: Project) => {
+  const handleDeletePressProject = () => {
     setDeleteDialogVisible(true);
   };
 
   const confirmDelete = () => {
-    // TODO:
+    // TODO: Implement actual delete logic
     // dispatch(deleteProject(item.id))
     //   .unwrap()
     //   .then(() => {
@@ -61,25 +60,31 @@ export default function ProjectItem({ item }: ProjectItemProps) {
     //     handleCloseMenu();
     //   })
     //   .catch((error) => {
-    //     console.error("Failed to delete:", error);
+    //     console.error("Failed to delete project:", error);
     //   });
-
-    // Simulate successful deletion
     setSnackbarVisible(true);
     handleCloseMenu();
     setDeleteDialogVisible(false);
   };
 
-  const handleOpenMenu = (projectId: number) => {
+  const handleOpenMenu = (projectId: string) => {
     dispatch(startEditingProject(projectId));
   };
 
   const handleCloseMenu = () => {
-    console.log("Close menu"); // TODO: handle close menu logic when navigating away
     dispatch(cancelEditingProject());
   };
 
-  const getStatusStyle = (status: string) => {
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return PROJECT_TEXTS.COMMON.NOT_AVAILABLE;
+    try {
+      return new Date(dateString).toLocaleDateString("vi-VN");
+    } catch (e) {
+      return PROJECT_TEXTS.COMMON.NOT_AVAILABLE;
+    }
+  };
+
+  const getStatusStyle = (status: string | undefined) => {
     switch (status) {
       case PROJECT_TEXTS.STATUS_LABEL.APPROVED:
         return {
@@ -89,20 +94,63 @@ export default function ProjectItem({ item }: ProjectItemProps) {
         };
       case PROJECT_TEXTS.STATUS_LABEL.IN_PROGRESS:
         return {
-          icon: ICONS_NAME.CLOCK,
+          icon: ICONS_NAME.PROGRESS_WRENCH,
           backgroundColor: STATUS_COLORS.STATUS.IN_PROGRESS.BACKGROUND,
           textColor: STATUS_COLORS.STATUS.IN_PROGRESS.TEXT,
         };
+      case PROJECT_TEXTS.STATUS_LABEL.PENDING:
+        return {
+          icon: ICONS_NAME.TIMER_SAND,
+          backgroundColor: STATUS_COLORS.STATUS.PENDING.BACKGROUND,
+          textColor: STATUS_COLORS.STATUS.PENDING.TEXT,
+        };
+      case PROJECT_TEXTS.STATUS_LABEL.REJECTED:
+        return {
+          icon: ICONS_NAME.CLOSE_CIRCLE,
+          backgroundColor: STATUS_COLORS.STATUS.REJECTED.BACKGROUND,
+          textColor: STATUS_COLORS.STATUS.REJECTED.TEXT,
+        };
       default:
         return {
-          icon: ICONS_NAME.ALERT_CIRCLE,
-          backgroundColor: STATUS_COLORS.STATUS.NOT_STARTED.BACKGROUND,
-          textColor: STATUS_COLORS.STATUS.NOT_STARTED.TEXT,
+          icon: ICONS_NAME.HELP_CIRCLE,
+          backgroundColor: GlobalStyles.colors.gray200,
+          textColor: GlobalStyles.colors.gray700,
         };
     }
   };
 
   const statusStyle = getStatusStyle(item.status);
+
+  const renderInfoRow = (
+    iconName: string,
+    label: string,
+    value: string | undefined,
+    isUser = false,
+    numberOfLines = 1
+  ) => {
+    if (!value) return null;
+    return (
+      <View style={styles.infoRow}>
+        <Icon
+          name={iconName}
+          size={16}
+          color={theme.colors.onSurfaceVariant}
+          style={styles.infoIcon}
+        />
+        <Text variant="bodyMedium" style={styles.infoLabel}>
+          {label}:{" "}
+        </Text>
+        <Text
+          variant="bodyMedium"
+          style={[styles.infoValue, isUser && styles.userText]}
+          numberOfLines={numberOfLines}
+          ellipsizeMode="tail"
+        >
+          {value}
+        </Text>
+      </View>
+    );
+  };
 
   return (
     <>
@@ -111,24 +159,28 @@ export default function ProjectItem({ item }: ProjectItemProps) {
           styles.card,
           item.id === editingProject?.id && styles.selectedCard,
         ]}
+        onPress={() => handleViewPressProject(item)}
       >
-        <Card.Content>
-          <View style={styles.itemHeader}>
-            <View style={styles.itemHeaderLeft}>
+        <Card.Content style={styles.cardContent}>
+          <View style={styles.headerSection}>
+            <View style={styles.projectNameContainer}>
               <Icon
-                name={ICONS_NAME.NOTEBOOK}
-                size={20}
+                name={ICONS_NAME.FOLDER_ACCOUNT}
+                size={24}
                 color={
                   item.id === editingProject?.id
-                    ? STATUS_COLORS.ICON.SELECTED
-                    : STATUS_COLORS.ICON.DEFAULT
+                    ? theme.colors.primary
+                    : theme.colors.onSurfaceVariant
                 }
               />
               <Text
-                variant="titleMedium"
-                style={
-                  item.id === editingProject?.id ? styles.selectedText : {}
-                }
+                variant="titleLarge"
+                style={[
+                  styles.projectName,
+                  item.id === editingProject?.id && styles.selectedText,
+                ]}
+                numberOfLines={2}
+                ellipsizeMode="tail"
               >
                 {item.name}
               </Text>
@@ -136,56 +188,103 @@ export default function ProjectItem({ item }: ProjectItemProps) {
             <IconButton
               icon={ICONS_NAME.DOTS_VERTICAL}
               onPress={() => handleOpenMenu(item.id)}
+              iconColor={
+                item.id === editingProject?.id
+                  ? theme.colors.primary
+                  : theme.colors.onSurfaceVariant
+              }
             />
           </View>
 
           <View style={styles.contentSection}>
-            <Chip
-              icon={statusStyle.icon}
-              style={[
-                styles.statusChip,
-                { backgroundColor: statusStyle.backgroundColor },
-              ]}
-              textStyle={[styles.statusText, { color: statusStyle.textColor }]}
-            >
-              {item.status}
-            </Chip>
+            {renderInfoRow(
+              ICONS_NAME.CODE_BRACES,
+              PROJECT_TEXTS.INFO.CODE,
+              item.code
+            )}
 
             <View style={styles.infoRow}>
               <Icon
-                name={ICONS_NAME.CALENDAR}
+                name={statusStyle.icon}
                 size={16}
-                color={STATUS_COLORS.ICON.DEFAULT}
+                color={statusStyle.textColor}
                 style={styles.infoIcon}
               />
-              <Text variant="bodySmall">{item.approvalDate}</Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Icon
-                name={ICONS_NAME.ACCOUNT_EDIT}
-                size={16}
-                color={STATUS_COLORS.ICON.DEFAULT}
-                style={styles.infoIcon}
-              />
-              <Text variant="bodySmall">
-                {PROJECT_TEXTS.INFO.UPDATED_BY}{" "}
-                <Text style={styles.userText}>{item.approvedBy}</Text>
+              <Text variant="bodyMedium" style={styles.infoLabel}>
+                {PROJECT_TEXTS.INFO.STATUS}:{" "}
               </Text>
+              <Chip
+                style={[
+                  styles.statusChip,
+                  { backgroundColor: statusStyle.backgroundColor },
+                ]}
+                textStyle={[
+                  styles.statusText,
+                  { color: statusStyle.textColor },
+                ]}
+              >
+                {item.status || PROJECT_TEXTS.STATUS_LABEL.UNKNOWN}
+              </Chip>
             </View>
 
-            <View style={styles.infoRow}>
-              <Icon
-                name={ICONS_NAME.ACCOUNT}
-                size={16}
-                color={STATUS_COLORS.ICON.DEFAULT}
-                style={styles.infoIcon}
-              />
-              <Text variant="bodySmall">
-                {PROJECT_TEXTS.INFO.CREATED_BY}{" "}
-                <Text style={styles.userText}>{item.code}</Text>
-              </Text>
-            </View>
+            {renderInfoRow(
+              ICONS_NAME.INFORMATION_OUTLINE,
+              PROJECT_TEXTS.INFO.DESCRIPTION,
+              item.description,
+              false,
+              2
+            )}
+            {renderInfoRow(
+              ICONS_NAME.CALENDAR_START,
+              PROJECT_TEXTS.INFO.START_DATE,
+              formatDate(item.start_at)
+            )}
+            {renderInfoRow(
+              ICONS_NAME.CALENDAR_CHECK,
+              PROJECT_TEXTS.INFO.FINISH_DATE,
+              formatDate(item.finish_at)
+            )}
+            {/* Removed combined approval/created date and by fields for brevity on card view
+            {renderInfoRow(
+              item.approvalDate
+                ? ICONS_NAME.CALENDAR_MULTIPLE_CHECK
+                : ICONS_NAME.CALENDAR_PLUS,
+              item.approvalDate
+                ? PROJECT_TEXTS.INFO.APPROVAL_DATE
+                : PROJECT_TEXTS.INFO.CREATED_AT,
+              formatDate(item.approvalDate || item.created_at)
+            )}
+            {renderInfoRow(
+              item.approvedBy
+                ? ICONS_NAME.ACCOUNT_CHECK
+                : ICONS_NAME.ACCOUNT_EDIT,
+              item.approvedBy
+                ? PROJECT_TEXTS.INFO.APPROVED_BY
+                : PROJECT_TEXTS.INFO.CREATED_BY,
+              item.approvedBy || item.creator_id,
+              true
+            )}
+            */}
+            {/* Removed detailed contact/role information for brevity on card view
+            {renderInfoRow(
+              ICONS_NAME.ACCOUNT_HARD_HAT,
+              PROJECT_TEXTS.INFO.CONSTRUCTION_CONTRACTOR,
+              item.nha_thau_thi_cong_name,
+              true
+            )}
+            {renderInfoRow(
+              ICONS_NAME.ACCOUNT_EYE,
+              PROJECT_TEXTS.INFO.SUPERVISION_CONSULTANT,
+              item.tu_van_giam_sat_name,
+              true
+            )}
+            {renderInfoRow(
+              ICONS_NAME.PENCIL_RULER,
+              PROJECT_TEXTS.INFO.DESIGN_CONSULTANT,
+              item.tu_van_thiet_ke_name,
+              true
+            )}
+            */}
           </View>
         </Card.Content>
       </Card>
@@ -193,50 +292,70 @@ export default function ProjectItem({ item }: ProjectItemProps) {
       <BottomSheetPopup
         visible={item.id === editingProject?.id}
         onDismiss={handleCloseMenu}
-        title="Tùy chọn"
+        title={PROJECT_TEXTS.COMMON.OPTIONS}
         viewAction={{
           icon: ICONS_NAME.EYE,
           label: PROJECT_TEXTS.ACTIONS.VIEW,
           onPress: () => handleViewPressProject(item),
         }}
         deleteAction={{
-          icon: ICONS_NAME.DELETE,
+          icon: ICONS_NAME.TRASH_CAN,
           label: PROJECT_TEXTS.ACTIONS.DELETE,
-          onPress: () => handleDeletePressProject(item),
+          onPress: handleDeletePressProject,
         }}
       />
 
-      {/* Confirm Delete Dialog */}
       <Portal>
         <Dialog
           visible={deleteDialogVisible}
           onDismiss={() => setDeleteDialogVisible(false)}
+          style={{ backgroundColor: theme.colors.background }}
         >
-          <Dialog.Title>Xác nhận xóa</Dialog.Title>
+          <Dialog.Title style={{ color: theme.colors.onSurface }}>
+            {PROJECT_TEXTS.DIALOG.DELETE_TITLE}
+          </Dialog.Title>
           <Dialog.Content>
-            <Text>Bạn có chắc chắn muốn xóa dự án "{item.name}" không?</Text>
+            <Text
+              variant="bodyMedium"
+              style={{ color: theme.colors.onSurfaceVariant }}
+            >
+              {PROJECT_TEXTS.DIALOG.DELETE_MESSAGE}
+            </Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={() => setDeleteDialogVisible(false)}>Hủy</Button>
-            <Button onPress={confirmDelete} textColor={theme.colors.error}>
-              Xóa
+            <Button
+              onPress={() => setDeleteDialogVisible(false)}
+              textColor={theme.colors.primary}
+            >
+              {PROJECT_TEXTS.ACTIONS.CANCEL}
+            </Button>
+            <Button
+              onPress={confirmDelete}
+              textColor={theme.colors.error}
+              style={{ marginLeft: GlobalStyles.spacing.sm }}
+            >
+              {PROJECT_TEXTS.ACTIONS.DELETE}
             </Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
 
-      {/* Success Snackbar */}
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
-        duration={3000}
+        duration={Snackbar.DURATION_SHORT}
+        style={{ backgroundColor: theme.colors.inverseSurface }}
         action={{
-          label: "Đóng",
-          onPress: () => setSnackbarVisible(false),
+          label: PROJECT_TEXTS.COMMON.OK,
+          textColor: theme.colors.inversePrimary,
+          onPress: () => {
+            setSnackbarVisible(false);
+          },
         }}
-        style={styles.snackbar}
       >
-        Đã xóa dự án thành công
+        <Text style={{ color: theme.colors.inverseOnSurface }}>
+          {PROJECT_TEXTS.MESSAGES.DELETE_SUCCESS}
+        </Text>
       </Snackbar>
     </>
   );
@@ -244,51 +363,77 @@ export default function ProjectItem({ item }: ProjectItemProps) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 12,
-    elevation: 2,
+    borderRadius: GlobalStyles.spacing.md, // Use md for consistency with padding
+    backgroundColor: GlobalStyles.colors.surface,
+    borderWidth: 1,
+    borderColor: GlobalStyles.colors.outlineVariant,
+    marginBottom: GlobalStyles.spacing.md, // Add space between cards
   },
   selectedCard: {
-    borderWidth: 2,
-    borderColor: STATUS_COLORS.ICON.SELECTED,
+    borderColor: GlobalStyles.colors.primary,
+    borderWidth: 1.5,
   },
-  itemHeader: {
+  cardContent: {
+    padding: GlobalStyles.spacing.md,
+  },
+  headerSection: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 0,
+    marginBottom: GlobalStyles.spacing.md,
   },
-  itemHeaderLeft: {
+  projectNameContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
     flex: 1,
+    marginRight: GlobalStyles.spacing.sm,
+  },
+  projectName: {
+    marginLeft: GlobalStyles.spacing.sm,
+    fontWeight: "bold",
+    color: GlobalStyles.colors.onSurface,
   },
   selectedText: {
-    fontWeight: "700",
-    color: STATUS_COLORS.ICON.SELECTED,
+    color: GlobalStyles.colors.primary,
   },
   contentSection: {
-    paddingLeft: 4,
+    // No specific styles needed here for now
   },
   infoRow: {
-    marginTop: 6,
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "center", // Changed from flex-start to center for vertical alignment
+    marginBottom: GlobalStyles.spacing.sm,
   },
   infoIcon: {
-    marginRight: 6,
+    marginRight: GlobalStyles.spacing.sm,
+    // marginTop: GlobalStyles.spacing.xxs, // Removed marginTop as alignItems: center will handle vertical alignment
+  },
+  infoLabel: {
+    fontWeight: "600",
+    color: GlobalStyles.colors.onSurfaceVariant,
+    marginRight: GlobalStyles.spacing.xs, // Add margin to separate label and value
+  },
+  infoValue: {
+    flex: 1,
+    color: GlobalStyles.colors.onSurface,
+    textAlign: "left",
   },
   userText: {
-    fontWeight: "500",
+    flexShrink: 1,
   },
   statusChip: {
-    alignSelf: "flex-start",
-    marginVertical: 8,
+    height: 28,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: GlobalStyles.spacing.sm,
+    // marginLeft: GlobalStyles.spacing.xs, // Removed to allow Chip to take natural space or be centered if container allows
+    borderRadius: GlobalStyles.spacing.xs,
+    alignSelf: "flex-start", // Ensures chip doesn't stretch if infoRow has flex:1 on value
   },
   statusText: {
     fontSize: 12,
-  },
-  snackbar: {
-    marginBottom: 20,
+    fontWeight: "bold",
+    lineHeight: 16, // Ensure text is vertically centered
+    textAlign: "center", // Center text horizontally
   },
 });

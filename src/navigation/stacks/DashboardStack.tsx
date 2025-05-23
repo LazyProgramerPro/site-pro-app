@@ -162,6 +162,7 @@ export const DashboardStack = () => {
 export type DashboardStackParamList = {
   Dashboard: undefined;
   Project: undefined;
+  ProjectDetails: { projectId: string }; // Added ProjectDetails
   AcceptanceRequest: undefined;
   AddAcceptanceRequest: AddAcceptanceRequestRouteParams;
   DiaryManagement: undefined;
