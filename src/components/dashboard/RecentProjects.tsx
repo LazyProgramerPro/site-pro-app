@@ -1,20 +1,19 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import {
+  Avatar,
   Button,
   Card,
-  Chip,
+  MD3Theme,
+  ProgressBar,
   Text,
   useTheme,
-  MD3Theme,
-  Avatar,
-  ProgressBar,
 } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Ensured this is the one being used for status icon
-import { GlobalStyles } from "../../constants/styles";
-import { Project } from "../../redux/slices/projectSlice";
 import { ICONS_NAME } from "../../constants/icon"; // Added ICONS_NAME
 import { PROJECT_TEXTS } from "../../constants/project"; // Added PROJECT_TEXTS
+import { Project } from "../../redux/slices/projectSlice";
+import StatusChip, { ProjectStatus } from "../ui/StatusChip"; // Import StatusChip and ProjectStatus
 
 // Define a spacing object if not available in theme directly
 // This can be moved to your theme.ts or a constants file
@@ -40,42 +39,40 @@ const RecentProjects = ({
   const styles = makeStyles(theme);
 
   // Re-use getStatusStyle from ProjectItem or define a similar one here
-  const getStatusStyle = (status: string | undefined) => {
-    switch (status) {
-      case PROJECT_TEXTS.STATUS_LABEL.APPROVED:
-      case PROJECT_TEXTS.STATUS_LABEL.COMPLETED:
-        return {
-          icon: ICONS_NAME.CHECK_CIRCLE_OUTLINE,
-          backgroundColor: theme.colors.tertiaryContainer,
-          textColor: theme.colors.onTertiaryContainer,
-        };
-      case PROJECT_TEXTS.STATUS_LABEL.IN_PROGRESS:
-        return {
-          icon: ICONS_NAME.PROGRESS_WRENCH,
-          backgroundColor: theme.colors.secondaryContainer,
-          textColor: theme.colors.onSecondaryContainer,
-        };
-      case PROJECT_TEXTS.STATUS_LABEL.PENDING:
-        return {
-          icon: ICONS_NAME.TIMER_SAND,
-          backgroundColor: theme.colors.surfaceVariant,
-          textColor: theme.colors.onSurfaceVariant,
-        };
-      case PROJECT_TEXTS.STATUS_LABEL.REJECTED:
-      case PROJECT_TEXTS.STATUS_LABEL.CANCELLED:
-        return {
-          icon: ICONS_NAME.CLOSE_CIRCLE,
-          backgroundColor: theme.colors.errorContainer,
-          textColor: theme.colors.onErrorContainer,
-        };
-      default:
-        return {
-          icon: ICONS_NAME.HELP_CIRCLE,
-          backgroundColor: theme.colors.surfaceDisabled,
-          textColor: theme.colors.onSurfaceDisabled,
-        };
-    }
-  };
+  // const getStatusStyle = (status: string | undefined) => { // Remove this
+  //   switch (status) {
+  //     case "in_progress":
+  //       return {
+  //         backgroundColor: theme.colors.blue200,
+  //         borderColor: theme.colors.blue700,
+  //         color: theme.colors.blue700,
+  //       };
+  //     case "completed":
+  //       return {
+  //         backgroundColor: theme.colors.green200,
+  //         borderColor: theme.colors.green700,
+  //         color: theme.colors.green700,
+  //       };
+  //     case "on_hold":
+  //       return {
+  //         backgroundColor: theme.colors.yellow200,
+  //         borderColor: theme.colors.yellow700,
+  //         color: theme.colors.yellow700,
+  //       };
+  //     case "cancelled":
+  //       return {
+  //         backgroundColor: theme.colors.red200,
+  //         borderColor: theme.colors.red700,
+  //         color: theme.colors.red700,
+  //       };
+  //     default:
+  //       return {
+  //         backgroundColor: theme.colors.grey200,
+  //         borderColor: theme.colors.grey700,
+  //         color: theme.colors.grey700,
+  //       };
+  //   }
+  // };
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return "N/A";
@@ -87,7 +84,7 @@ const RecentProjects = ({
   };
 
   const renderProjectItem = (project: Project) => {
-    const statusStyle = getStatusStyle(project.status);
+    // const statusStyle = getStatusStyle(project.status); // Remove this
     return (
       <Card style={styles.projectCard} mode="elevated">
         {project.image ? (
@@ -118,23 +115,10 @@ const RecentProjects = ({
           </Text>
 
           {/* Status Chip */}
-          <Chip
-            icon={() => (
-              <Icon // This should now correctly refer to MaterialCommunityIcons
-                name={statusStyle.icon}
-                size={16}
-                color={statusStyle.textColor}
-              />
-            )}
-            style={[
-              styles.statusChip,
-              { backgroundColor: statusStyle.backgroundColor },
-            ]}
-            textStyle={[styles.statusText, { color: statusStyle.textColor }]}
-            mode="flat"
-          >
-            {project.status || PROJECT_TEXTS.STATUS_LABEL.UNKNOWN}
-          </Chip>
+          {/* Replace Chip with StatusChip */}
+          {project.status && (
+            <StatusChip status={project.status as ProjectStatus} />
+          )}
 
           {/* Progress Section */}
           {project.progress !== undefined && (
@@ -241,6 +225,12 @@ const RecentProjects = ({
         ))
       ) : (
         <View style={styles.emptyContainer}>
+          <Icon
+            name={ICONS_NAME.FOLDER_ACCOUNT || "folder-account-outline"} // Fallback icon name
+            size={48}
+            color={theme.colors.onSurfaceVariant}
+            style={styles.emptyIcon}
+          />
           <Text style={styles.emptyText}>Chưa có dự án nào gần đây.</Text>
         </View>
       )}
@@ -387,12 +377,20 @@ const makeStyles = (theme: MD3Theme) =>
     emptyContainer: {
       alignItems: "center",
       justifyContent: "center",
-      padding: appSpacing.lg,
+      paddingVertical: appSpacing.lg * 2, // Increased vertical padding
       marginHorizontal: appSpacing.md,
+      minHeight: 200, // Ensure a minimum height for the empty state
+    },
+    emptyIcon: {
+      // Added style for the icon
+      marginBottom: appSpacing.md,
+      opacity: 0.7, // Slightly transparent icon
     },
     emptyText: {
       color: theme.colors.onSurfaceVariant,
-      fontStyle: "italic",
+      fontSize: theme.fonts.bodyLarge.fontSize, // Use theme font size
+      textAlign: "center", // Center text if it wraps
+      lineHeight: (theme.fonts.bodyLarge.fontSize || 16) * 1.5, // Improved line height
     },
   });
 

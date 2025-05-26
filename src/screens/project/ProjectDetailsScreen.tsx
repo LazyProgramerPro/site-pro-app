@@ -3,23 +3,24 @@ import React, { useEffect, useState } from "react"; // Thêm useState
 import { ScrollView, StyleSheet, View } from "react-native";
 import {
   ActivityIndicator,
+  Avatar,
   Button,
   Card,
-  Chip,
+  // Chip, // Remove Chip
   Divider,
   List,
   ProgressBar,
   Text,
   useTheme,
-  Avatar,
 } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ScreenHeader from "../../components/ui/ScreenHeader";
 import ScreenWrapper from "../../components/ui/ScreenWrapper";
-import { Project } from "../../redux/slices/projectSlice";
-import http from "../../utils/http";
+import StatusChip, { ProjectStatus } from "../../components/ui/StatusChip"; // Import StatusChip and ProjectStatus
 import { ICONS_NAME } from "../../constants/icon";
 import { PROJECT_TEXTS } from "../../constants/project";
+import { Project } from "../../redux/slices/projectSlice";
+import http from "../../utils/http";
 
 // Định nghĩa kiểu cho route params
 type ProjectDetailsScreenRouteProp = RouteProp<
@@ -62,27 +63,46 @@ export default function ProjectDetailsScreen() {
 
           // Bổ sung/enrich dữ liệu cho item dự án nếu thiếu trường
           const enrichedItem: Project = {
-            ...item,
-            // Đảm bảo progress là số và nằm trong khoảng 0-100
-            progress:
-              typeof item.progress === "number"
-                ? Math.max(0, Math.min(100, item.progress))
-                : 0, // Mặc định là 0 nếu không có hoặc sai định dạng
-            status: item.status || PROJECT_TEXTS.STATUS_LABEL.UNKNOWN,
-            image:
-              item.image ||
-              // `https://picsum.photos/seed/${item.id || "default"}/600/400`, // Dùng seed để ảnh ổn định hơn
-              undefined, // Để trống nếu không có ảnh, sẽ dùng Avatar
-            approvalDate: item.approvalDate || undefined,
-            approvedBy: item.approvedBy || undefined,
-            // Đảm bảo các trường tên không bị null/undefined
+            // Các trường bắt buộc phải có giá trị mặc định nếu API không trả về
+            id: item.id || `unknown-id-${Date.now()}`,
+            code: item.code || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
+            name: item.name || PROJECT_TEXTS.COMMON.PROJECT_NAME_UNKNOWN,
+            description:
+              item.description || PROJECT_TEXTS.COMMON.NO_DESCRIPTION,
+            creator_id: item.creator_id || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
+            start_at: item.start_at || "", // Hoặc một ngày mặc định hợp lệ nếu cần
+            finish_at: item.finish_at || "", // Hoặc một ngày mặc định hợp lệ nếu cần
+            created_at: item.created_at || new Date().toISOString(), // Ngày hiện tại nếu thiếu
+            updated_at: item.updated_at || new Date().toISOString(), // Ngày hiện tại nếu thiếu
             nha_thau_thi_cong_name:
               item.nha_thau_thi_cong_name || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
+            nha_thau_thi_cong_id:
+              item.nha_thau_thi_cong_id || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
             tu_van_giam_sat_name:
               item.tu_van_giam_sat_name || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
+            tu_van_giam_sat_id:
+              item.tu_van_giam_sat_id || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
             tu_van_thiet_ke_name:
               item.tu_van_thiet_ke_name || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
-            creator_id: item.creator_id || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
+            tu_van_thiet_ke_id:
+              item.tu_van_thiet_ke_id || PROJECT_TEXTS.COMMON.NOT_AVAILABLE,
+
+            // Các trường tùy chọn (có thể undefined)
+            progress:
+              typeof item.progress === "number" && !isNaN(item.progress)
+                ? Math.max(0, Math.min(100, item.progress))
+                : 70, // Mặc định là 70 nếu không có hoặc sai định dạng
+            image: item.image || undefined,
+            status: ([
+              "Pending",
+              "Approved",
+              "Rejected",
+              "In Progress",
+            ].includes(item.status || "")
+              ? item.status
+              : "Rejected") as ProjectStatus, // Mặc định là "Rejected" nếu không hợp lệ
+            approvalDate: item.approvalDate || undefined,
+            approvedBy: item.approvedBy || undefined,
           };
 
           setProject(enrichedItem);
@@ -108,44 +128,6 @@ export default function ProjectDetailsScreen() {
       });
     } catch (e) {
       return PROJECT_TEXTS.COMMON.NOT_AVAILABLE;
-    }
-  };
-
-  // Hàm getStatusStyle tương tự như trong ProjectItem.tsx
-  const getStatusStyle = (status: string | undefined) => {
-    switch (status) {
-      case PROJECT_TEXTS.STATUS_LABEL.APPROVED:
-      case PROJECT_TEXTS.STATUS_LABEL.COMPLETED:
-        return {
-          icon: ICONS_NAME.CHECK_CIRCLE_OUTLINE,
-          backgroundColor: theme.colors.tertiaryContainer,
-          textColor: theme.colors.onTertiaryContainer,
-        };
-      case PROJECT_TEXTS.STATUS_LABEL.IN_PROGRESS:
-        return {
-          icon: ICONS_NAME.PROGRESS_WRENCH,
-          backgroundColor: theme.colors.secondaryContainer,
-          textColor: theme.colors.onSecondaryContainer,
-        };
-      case PROJECT_TEXTS.STATUS_LABEL.PENDING:
-        return {
-          icon: ICONS_NAME.TIMER_SAND,
-          backgroundColor: theme.colors.surfaceVariant,
-          textColor: theme.colors.onSurfaceVariant,
-        };
-      case PROJECT_TEXTS.STATUS_LABEL.REJECTED:
-      case PROJECT_TEXTS.STATUS_LABEL.CANCELLED:
-        return {
-          icon: ICONS_NAME.CLOSE_CIRCLE,
-          backgroundColor: theme.colors.errorContainer,
-          textColor: theme.colors.onErrorContainer,
-        };
-      default:
-        return {
-          icon: ICONS_NAME.HELP_CIRCLE,
-          backgroundColor: theme.colors.surfaceDisabled,
-          textColor: theme.colors.onSurfaceDisabled,
-        };
     }
   };
 
@@ -209,7 +191,14 @@ export default function ProjectDetailsScreen() {
                         typeof item.progress === "number"
                           ? Math.max(0, Math.min(100, item.progress))
                           : 0,
-                      status: item.status || PROJECT_TEXTS.STATUS_LABEL.UNKNOWN,
+                      status: [
+                        "Pending",
+                        "Approved",
+                        "Rejected",
+                        "In Progress",
+                      ].includes(item.status || "")
+                        ? item.status
+                        : undefined, // Gán undefined nếu status không hợp lệ
                       image: item.image || undefined,
                       approvalDate: item.approvalDate || undefined,
                       approvedBy: item.approvedBy || undefined,
@@ -295,8 +284,6 @@ export default function ProjectDetailsScreen() {
       </ScreenWrapper>
     );
   }
-
-  const statusStyle = getStatusStyle(project.status);
 
   return (
     <ScreenWrapper>
@@ -416,26 +403,14 @@ export default function ProjectDetailsScreen() {
                   {PROJECT_TEXTS.INFO.STATUS}
                 </Text>
               </View>
-              <Chip
-                icon={() => (
-                  <Icon
-                    name={statusStyle.icon}
-                    size={18}
-                    color={statusStyle.textColor}
-                  />
-                )}
-                style={[
-                  styles.statusChipDetails,
-                  { backgroundColor: statusStyle.backgroundColor },
-                ]}
-                textStyle={[
-                  styles.statusChipTextDetails,
-                  { color: statusStyle.textColor },
-                ]}
-                mode="flat"
-              >
-                {project.status || PROJECT_TEXTS.STATUS_LABEL.UNKNOWN}
-              </Chip>
+              {/* Replace Chip with StatusChip */}
+              {project.status && (
+                <StatusChip
+                  status={project.status as ProjectStatus}
+                  // style={styles.statusChipDetails} // Xóa style này
+                  // textStyle={styles.statusChipTextDetails} // Xóa style này
+                />
+              )}
             </View>
 
             {typeof project.progress === "number" && (
@@ -722,16 +697,16 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     // backgroundColor: theme.colors.outline, // Sẽ được áp dụng inline
   },
-  statusChipDetails: {
-    paddingHorizontal: 12, // Sử dụng giá trị cụ thể
-    paddingVertical: 6, // Sử dụng giá trị cụ thể
-    height: "auto",
-    borderRadius: 16, // Sử dụng giá trị cụ thể
-  },
-  statusChipTextDetails: {
-    fontSize: 14,
-    fontWeight: "500",
-  },
+  // statusChipDetails: { // Xóa style này
+  //   paddingHorizontal: 12,
+  //   paddingVertical: 6,
+  //   height: "auto",
+  //   borderRadius: 16,
+  // },
+  // statusChipTextDetails: { // Xóa style này
+  //   fontSize: 14,
+  //   fontWeight: "500",
+  // },
   progressContainerDetails: {
     marginTop: 8,
     flexDirection: "row",

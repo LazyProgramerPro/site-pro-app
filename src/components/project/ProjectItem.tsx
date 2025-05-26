@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
+  Avatar,
   Button,
   Card,
-  Chip,
   Dialog,
   IconButton,
   Portal,
+  ProgressBar,
   Snackbar,
   Text,
   useTheme,
-  ProgressBar,
-  Avatar,
 } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -30,6 +29,7 @@ import {
 } from "../../redux/slices/projectSlice";
 import { RootState, useAppDispatch } from "../../redux/store";
 import BottomSheetPopup from "../ui/BottomSheetPopup";
+import StatusChip, { ProjectStatus } from "../ui/StatusChip"; // Import StatusChip and ProjectStatus
 
 interface ProjectItemProps {
   item: Project;
@@ -80,45 +80,6 @@ export default function ProjectItem({ item }: ProjectItemProps) {
       return PROJECT_TEXTS.COMMON.NOT_AVAILABLE;
     }
   };
-
-  const getStatusStyle = (status: string | undefined) => {
-    switch (status) {
-      case PROJECT_TEXTS.STATUS_LABEL.APPROVED:
-      case PROJECT_TEXTS.STATUS_LABEL.COMPLETED:
-        return {
-          icon: ICONS_NAME.CHECK_CIRCLE_OUTLINE,
-          backgroundColor: theme.colors.tertiaryContainer,
-          textColor: theme.colors.onTertiaryContainer,
-        };
-      case PROJECT_TEXTS.STATUS_LABEL.IN_PROGRESS:
-        return {
-          icon: ICONS_NAME.PROGRESS_WRENCH,
-          backgroundColor: theme.colors.secondaryContainer,
-          textColor: theme.colors.onSecondaryContainer,
-        };
-      case PROJECT_TEXTS.STATUS_LABEL.PENDING:
-        return {
-          icon: ICONS_NAME.TIMER_SAND,
-          backgroundColor: theme.colors.surfaceVariant,
-          textColor: theme.colors.onSurfaceVariant,
-        };
-      case PROJECT_TEXTS.STATUS_LABEL.REJECTED:
-      case PROJECT_TEXTS.STATUS_LABEL.CANCELLED:
-        return {
-          icon: ICONS_NAME.CLOSE_CIRCLE,
-          backgroundColor: theme.colors.errorContainer,
-          textColor: theme.colors.onErrorContainer,
-        };
-      default:
-        return {
-          icon: ICONS_NAME.HELP_CIRCLE,
-          backgroundColor: theme.colors.surfaceDisabled, // Reverted to theme.colors
-          textColor: theme.colors.onSurfaceDisabled, // Reverted to theme.colors
-        };
-    }
-  };
-
-  const statusStyle = getStatusStyle(item.status);
 
   const renderInfoRow = (
     iconNameKey: keyof typeof ICONS_NAME | null, // Changed variable name for clarity
@@ -216,23 +177,10 @@ export default function ProjectItem({ item }: ProjectItemProps) {
         />
         <Card.Content style={styles.cardContent}>
           <View style={styles.statusAndProgressContainer}>
-            <Chip
-              icon={() => (
-                <Icon
-                  name={statusStyle.icon}
-                  size={16}
-                  color={statusStyle.textColor}
-                />
-              )}
-              style={[
-                styles.statusChip,
-                { backgroundColor: statusStyle.backgroundColor },
-              ]}
-              textStyle={[styles.statusText, { color: statusStyle.textColor }]}
-              mode="flat"
-            >
-              {item.status || PROJECT_TEXTS.STATUS_LABEL.UNKNOWN}
-            </Chip>
+            {/* Replace Chip with StatusChip */}
+            {item.status && (
+              <StatusChip status={item.status as ProjectStatus} />
+            )}
             {item.progress !== undefined && (
               <View style={styles.progressChipContainer}>
                 <Icon
@@ -438,18 +386,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 8,
-  },
-  statusChip: {
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 0,
-    borderRadius: 16,
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: "500",
-    lineHeight: 16,
   },
   progressChipContainer: {
     flexDirection: "row",

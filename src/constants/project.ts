@@ -58,6 +58,8 @@ export const PROJECT_TEXTS = {
     PROJECT_NOT_FOUND_DETAIL: "Không tìm thấy thông tin dự án", // Added
     PROJECT_NOT_FOUND_SUBTITLE:
       "Dự án bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.", // Added
+    PROJECT_NAME_UNKNOWN: "Dự án không tên", // Added for missing project name
+    NO_DESCRIPTION: "Không có mô tả", // Added for missing description
   },
   INFO: {
     GENERAL_INFO: "Thông tin chung",

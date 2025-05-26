@@ -46,7 +46,7 @@ export interface Project {
   // Các trường thêm để tương thích với UI hiện tại
   progress?: number;
   image?: string;
-  status?: string;
+  status?: "Pending" | "Approved" | "Rejected" | "In Progress";
   approvalDate?: string; // Added
   approvedBy?: string; // Added
 }

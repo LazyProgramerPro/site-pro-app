@@ -60,8 +60,8 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
   const stats = useMemo(
     () => ({
       totalProject: totalProject,
-      active: projectList.filter((p) => p.status === "Đang triển khai").length,
-      pending: projectList.filter((p) => p.status === "Chờ duyệt").length,
+      active: projectList.filter((p) => p.status === "Pending").length,
+      pending: projectList.filter((p) => p.status === "Pending").length,
     }),
     [totalProject, projectList]
   );
