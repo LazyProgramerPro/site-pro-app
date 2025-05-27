@@ -126,12 +126,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   logoContainer: {
-    marginBottom: 16,
+    marginBottom: 12,
   },
   logo: {
-    width: 60,
-    height: 60,
-    marginBottom: 8,
+    width: 40,
+    height: 40,
+    marginBottom: 4,
   },
   logoPlaceholder: {
     width: 60,

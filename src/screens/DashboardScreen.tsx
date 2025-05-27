@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Text } from "react-native-paper";
+import { Text } from "react-native-paper";
 import ScreenWrapper from "../components/ui/ScreenWrapper";
 import { GlobalStyles } from "../constants/styles";
 
@@ -9,6 +9,7 @@ import HeaderProfile from "../components/dashboard/HeaderProfile";
 import QuickAccessMenu from "../components/dashboard/QuickAccessMenu";
 import RecentProjects from "../components/dashboard/RecentProjects";
 import StatsOverview from "../components/dashboard/StatsOverview";
+import LoadingOverlay from "../components/ui/LoadingOverlay";
 import NotificationModal from "../components/ui/NotificationModal";
 import { getProjects } from "../redux/slices/projectSlice";
 import { RootState, useAppDispatch, useAppSelector } from "../redux/store";
@@ -140,15 +141,11 @@ export default function DashboardScreen({ navigation }: { navigation: any }) {
 
   if (loading) {
     return (
-      <ScreenWrapper>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator
-            size="large"
-            color={GlobalStyles.colors.primary500}
-          />
-          <Text style={styles.loadingText}>Đang tải thông tin...</Text>
-        </View>
-      </ScreenWrapper>
+      <LoadingOverlay
+        message="Đang tải dữ liệu..."
+        spinnerColor="#1976D2"
+        showLogo={true}
+      />
     );
   }
 

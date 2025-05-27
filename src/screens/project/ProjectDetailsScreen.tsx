@@ -2,7 +2,6 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react"; // Thêm useState
 import { ScrollView, StyleSheet, View } from "react-native";
 import {
-  ActivityIndicator,
   Avatar,
   Button,
   Card,
@@ -14,6 +13,7 @@ import {
   useTheme,
 } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import LoadingOverlay from "../../components/ui/LoadingOverlay";
 import ScreenHeader from "../../components/ui/ScreenHeader";
 import ScreenWrapper from "../../components/ui/ScreenWrapper";
 import StatusChip, { ProjectStatus } from "../../components/ui/StatusChip"; // Import StatusChip and ProjectStatus
@@ -133,12 +133,11 @@ export default function ProjectDetailsScreen() {
 
   if (loading) {
     return (
-      <ScreenWrapper>
-        <View style={styles.centered}>
-          <ActivityIndicator animating={true} size="large" />
-          <Text style={{ marginTop: 16 }}>Đang tải dữ liệu dự án...</Text>
-        </View>
-      </ScreenWrapper>
+      <LoadingOverlay
+        message="Đang tải dữ liệu..."
+        spinnerColor="#1976D2"
+        showLogo={true}
+      />
     );
   }
 

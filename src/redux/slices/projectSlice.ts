@@ -148,6 +148,9 @@ export const getProjects = createAsyncThunk<{
       ...filters,
     });
 
+    // giả lập độ trễ
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
     console.log("Response from getProjects:", response);
 
     const { rc, data, totalCount } = response;

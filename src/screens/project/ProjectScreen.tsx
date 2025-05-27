@@ -34,8 +34,8 @@ export default function ProjectScreen() {
         {loading && (
           <LoadingOverlay
             message="Đang tải dữ liệu..."
-            spinnerColor={GlobalStyles.colors.primary500}
-            spinnerSize="large"
+            spinnerColor="#1976D2"
+            showLogo={true}
           />
         )}
 
