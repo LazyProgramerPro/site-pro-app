@@ -18,7 +18,8 @@ interface AuthState {
   user: AuthUser | null;
   token: string | null;
   refreshToken: string | null;
-  expiresAt: number | null; // Thời điểm hết hạn của token (timestamp)
+  expiresAt: number | null; // Thời điểm hết hạn của access_token (timestamp)
+  refreshExpiresAt: number | null; // Thời điểm hết hạn của refresh_token (timestamp)
   isAuthenticated: boolean;
   loading: boolean;
 }
@@ -27,6 +28,7 @@ interface AuthPayload {
   token: string;
   refreshToken: string;
   expiresAt: number;
+  refreshExpiresAt: number;
   user: AuthUser | null;
 }
 
@@ -35,6 +37,7 @@ const initialState: AuthState = {
   token: null,
   refreshToken: null,
   expiresAt: null,
+  refreshExpiresAt: null,
   isAuthenticated: false,
   loading: true,
 };
@@ -47,13 +50,18 @@ export const loadTokenFromStorage = createAsyncThunk(
     const token = await AsyncStorage.getItem("token");
     const refreshToken = await AsyncStorage.getItem("refreshToken");
     const expiresAtStr = await AsyncStorage.getItem("expiresAt");
+    const refreshExpiresAtStr = await AsyncStorage.getItem("refreshExpiresAt");
     const expiresAt = expiresAtStr ? parseInt(expiresAtStr) : null;
+    const refreshExpiresAt = refreshExpiresAtStr
+      ? parseInt(refreshExpiresAtStr)
+      : null;
 
     return {
       user: user ? JSON.parse(user) : null,
       token: token || null,
       refreshToken: refreshToken || null,
       expiresAt: expiresAt,
+      refreshExpiresAt: refreshExpiresAt,
     };
   }
 );
@@ -63,19 +71,23 @@ export const authenticate = createAsyncThunk(
   "auth/authenticate",
   async (user: AuthUser) => {
     // Tính thời gian hết hạn dựa vào expires_in từ response
-    const expiresAt = Date.now() + user.expires_in * 1000;
+    const now = Date.now();
+    const expiresAt = now + user.expires_in * 1000;
+    const refreshExpiresAt = now + user.refresh_expires_in * 1000;
 
     // Lưu đầy đủ thông tin vào AsyncStorage
     await AsyncStorage.setItem("user", JSON.stringify(user));
     await AsyncStorage.setItem("token", user.access_token || user.token);
     await AsyncStorage.setItem("refreshToken", user.refresh_token);
     await AsyncStorage.setItem("expiresAt", expiresAt.toString());
+    await AsyncStorage.setItem("refreshExpiresAt", refreshExpiresAt.toString());
 
     return {
       user,
       token: user.access_token || user.token,
       refreshToken: user.refresh_token,
       expiresAt,
+      refreshExpiresAt,
     };
   }
 );
@@ -87,6 +99,10 @@ export const saveAuth = createAsyncThunk(
     await AsyncStorage.setItem("token", authPayload.token);
     await AsyncStorage.setItem("refreshToken", authPayload.refreshToken);
     await AsyncStorage.setItem("expiresAt", authPayload.expiresAt.toString());
+    await AsyncStorage.setItem(
+      "refreshExpiresAt",
+      authPayload.refreshExpiresAt.toString()
+    );
     if (authPayload.user) {
       await AsyncStorage.setItem("user", JSON.stringify(authPayload.user));
     }
@@ -100,6 +116,7 @@ export const logout = createAsyncThunk("auth/logout", async () => {
   await AsyncStorage.removeItem("token");
   await AsyncStorage.removeItem("refreshToken");
   await AsyncStorage.removeItem("expiresAt");
+  await AsyncStorage.removeItem("refreshExpiresAt");
 });
 
 const authSlice = createSlice({
@@ -113,6 +130,7 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         state.refreshToken = action.payload.refreshToken;
         state.expiresAt = action.payload.expiresAt;
+        state.refreshExpiresAt = action.payload.refreshExpiresAt;
         state.isAuthenticated = !!action.payload.token;
         state.loading = false;
       })
@@ -121,12 +139,14 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         state.refreshToken = action.payload.refreshToken;
         state.expiresAt = action.payload.expiresAt;
+        state.refreshExpiresAt = action.payload.refreshExpiresAt;
         state.isAuthenticated = true;
       })
       .addCase(saveAuth.fulfilled, (state, action) => {
         state.token = action.payload.token;
         state.refreshToken = action.payload.refreshToken;
         state.expiresAt = action.payload.expiresAt;
+        state.refreshExpiresAt = action.payload.refreshExpiresAt;
         if (action.payload.user) {
           state.user = action.payload.user;
         }
@@ -137,6 +157,7 @@ const authSlice = createSlice({
         state.token = null;
         state.refreshToken = null;
         state.expiresAt = null;
+        state.refreshExpiresAt = null;
         state.isAuthenticated = false;
       })
       .addMatcher(

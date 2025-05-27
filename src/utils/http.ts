@@ -26,11 +26,12 @@ const axiosParams: AxiosRequestConfig = {
 // Tạo instance
 const axiosInstance: AxiosInstance = axios.create(axiosParams);
 
-// 📌 Interceptor Request: chỉ thêm token vào header, KHÔNG refresh token
+// 📌 Request Interceptor: Thêm Authorization header
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = tokenService.getAccessToken();
-    if (token && !config.url?.includes("/auth/user/refresh-token")) {
+    // if (token && !config.url?.includes("/auth/user/refresh-token")) {
+    if (token) {
       config.headers = config.headers || {};
       config.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -39,10 +40,44 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 📌 Interceptor Response: chỉ trả về response.data, KHÔNG xử lý refresh token, KHÔNG logout tự động
+// 📌 Response Interceptor: Xử lý 401 và auto refresh token
 axiosInstance.interceptors.response.use(
   (response) => response.data,
-  (error) => {
+  async (error: AxiosError) => {
+    const originalRequest = error.config as AxiosRequestConfig & {
+      _retry?: boolean;
+    };
+
+    // Nếu lỗi 401 và chưa retry
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      // // Không retry nếu đang call API refresh token
+      // if (originalRequest.url?.includes("/auth/user/refresh-token")) {
+      //   return Promise.reject(error);
+      // }
+
+      try {
+        // Thử refresh token
+
+        console.log("🔄 Refreshing access token...");
+        const refreshSuccess = await tokenService.refreshAccessToken();
+
+        if (refreshSuccess) {
+          // Cập nhật token mới vào header và retry request
+          const newToken = tokenService.getAccessToken();
+          if (newToken && originalRequest.headers) {
+            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+          }
+
+          // Retry request ban đầu
+          return axiosInstance(originalRequest);
+        }
+      } catch (refreshError) {
+        console.error("Refresh token failed:", refreshError);
+      }
+    }
+
     return Promise.reject(error);
   }
 );
