@@ -89,21 +89,12 @@ function LoginScreen() {
       setIsAuthenticating(false);
     }
   }
-
-  if (isAuthenticating) {
-    return (
-      <LoadingOverlay
-        message="Đang đăng nhập..."
-        spinnerColor="#1976D2"
-        showLogo={true}
-      />
-    );
-  }
   return (
     <ScreenWrapper>
       <LoginForm
         loginHandler={loginHandler}
         initialValues={lastLoginData || undefined}
+        isLoading={isAuthenticating}
       />
       <CustomSnackbar
         visible={snackbarConfig.visible}

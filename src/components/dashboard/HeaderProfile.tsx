@@ -1,8 +1,15 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Avatar, Text } from "react-native-paper";
+import {
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from "react-native";
+import { Avatar, Badge, Text, useTheme } from "react-native-paper";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GlobalStyles } from "../../constants/styles";
 
 type HeaderProfileProps = {
@@ -15,32 +22,66 @@ type HeaderProfileProps = {
 };
 
 const HeaderProfile = ({ user, onNotificationPress }: HeaderProfileProps) => {
+  const theme = useTheme();
+  const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+
+  const isSmallScreen = width < 380;
+  const avatarSize = isSmallScreen ? 50 : 60;
+
   return (
     <LinearGradient
       colors={[GlobalStyles.colors.primary700, GlobalStyles.colors.primary500]}
-      style={styles.headerGradient}
+      style={[
+        styles.headerGradient,
+        { paddingTop: Math.max(insets.top + 8, 16) },
+      ]}
       start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 0 }}
+      end={{ x: 1, y: 1 }}
     >
-      <View style={styles.headerContent}>
+      <View
+        style={[
+          styles.headerContent,
+          { paddingHorizontal: isSmallScreen ? 12 : 16 },
+        ]}
+      >
         <View style={styles.userInfoContainer}>
-          <Avatar.Image source={{ uri: user.avatar }} size={60} />
-          <View style={styles.userInfo}>
-            <Text variant="titleMedium" style={styles.userName}>
-              {user.name}
+          <View style={styles.avatarContainer}>
+            <Avatar.Image source={{ uri: user.avatar }} size={avatarSize} />
+            <View style={styles.onlineIndicator} />
+          </View>
+          <View
+            style={[styles.userInfo, { marginLeft: isSmallScreen ? 12 : 16 }]}
+          >
+            <Text
+              variant={isSmallScreen ? "titleSmall" : "titleMedium"}
+              style={styles.userName}
+              numberOfLines={1}
+            >
+              Xin chào, {user.name}
             </Text>
-            <Text variant="bodySmall" style={styles.userRole}>
+            <Text variant="bodySmall" style={styles.userRole} numberOfLines={1}>
               {user.role}
             </Text>
           </View>
         </View>
+
         <TouchableOpacity
           style={styles.notificationButton}
           onPress={onNotificationPress}
+          activeOpacity={0.7}
+          accessibilityLabel="Thông báo"
+          accessibilityHint="Nhấn để xem thông báo"
         >
-          <MaterialCommunityIcons name="bell-outline" size={28} color="white" />
-          <View style={styles.notificationBadge}>
-            <Text style={styles.notificationBadgeText}>3</Text>
+          <View style={styles.notificationIconContainer}>
+            <MaterialCommunityIcons
+              name="bell-outline"
+              size={isSmallScreen ? 24 : 28}
+              color="white"
+            />
+            <Badge style={styles.notificationBadge} size={18}>
+              3
+            </Badge>
           </View>
         </TouchableOpacity>
       </View>
@@ -50,50 +91,95 @@ const HeaderProfile = ({ user, onNotificationPress }: HeaderProfileProps) => {
 
 const styles = StyleSheet.create({
   headerGradient: {
-    paddingTop: 16,
     paddingBottom: 26,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
   },
   headerContent: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 16,
   },
   userInfoContainer: {
     flexDirection: "row",
     alignItems: "center",
+    flex: 1,
+  },
+  avatarContainer: {
+    position: "relative",
+  },
+  onlineIndicator: {
+    position: "absolute",
+    bottom: 2,
+    right: 2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: "#4CAF50",
+    borderWidth: 2,
+    borderColor: "white",
   },
   userInfo: {
-    marginLeft: 16,
+    flex: 1,
   },
   userName: {
     color: "white",
-    fontWeight: "bold",
+    fontWeight: "700",
+    ...Platform.select({
+      ios: {
+        fontFamily: "System",
+      },
+      android: {
+        fontFamily: "Roboto-Bold",
+      },
+    }),
   },
   userRole: {
-    color: GlobalStyles.colors.gray200,
+    color: "rgba(255, 255, 255, 0.8)",
     marginTop: 2,
+    fontWeight: "500",
   },
   notificationButton: {
+    padding: 12,
+    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  notificationIconContainer: {
     position: "relative",
-    padding: 8,
   },
   notificationBadge: {
     position: "absolute",
-    top: 4,
-    right: 4,
-    backgroundColor: GlobalStyles.colors.error500,
-    borderRadius: 10,
-    minWidth: 20,
-    height: 20,
-    justifyContent: "center",
-    alignItems: "center",
+    top: -8,
+    right: -8,
+    backgroundColor: GlobalStyles.colors.red500,
+    minWidth: 18,
+    height: 18,
   },
   notificationBadgeText: {
     color: "white",
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "bold",
   },
 });

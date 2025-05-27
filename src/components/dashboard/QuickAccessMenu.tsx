@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Text } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 
 type MenuItem = {
   label: string;
@@ -25,23 +25,29 @@ const QuickAccessMenu = ({
   menuItems,
   onMenuItemPress,
 }: QuickAccessMenuProps) => {
+  const theme = useTheme();
+
   const renderMenuItem = ({ item }: { item: MenuItem }) => (
     <TouchableOpacity
       style={styles.gridItem}
       onPress={() => onMenuItemPress(item.name)}
       activeOpacity={0.8}
     >
-      <View style={styles.menuSurface}>
+      <View
+        style={[styles.menuSurface, { backgroundColor: theme.colors.surface }]}
+      >
         <View
           style={[styles.iconCircle, { backgroundColor: `${item.color}20` }]}
         >
           <MaterialCommunityIcons
-            name={item.icon}
+            name={item.icon as any}
             size={32}
             color={item.color}
           />
         </View>
-        <Text style={styles.menuLabel}>{item.label}</Text>
+        <Text style={[styles.menuLabel, { color: item.color }]}>
+          {item.label}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -99,7 +105,8 @@ const styles = StyleSheet.create({
   menuLabel: {
     fontSize: 13,
     textAlign: "center",
-    fontWeight: "500",
+    fontWeight: "600",
+    lineHeight: 16,
   },
 });
 
