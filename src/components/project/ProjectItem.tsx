@@ -25,6 +25,7 @@ import { DashboardStackParamList } from "../../navigation/stacks/DashboardStack"
 import {
   Project,
   cancelEditingProject,
+  deleteProject,
   startEditingProject,
 } from "../../redux/slices/projectSlice";
 import { RootState, useAppDispatch } from "../../redux/store";
@@ -39,7 +40,9 @@ export default function ProjectItem({ item }: ProjectItemProps) {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { editingProject } = useSelector((state: RootState) => state.project);
 
   const navigation =
@@ -52,13 +55,25 @@ export default function ProjectItem({ item }: ProjectItemProps) {
   const handleDeletePressProject = () => {
     setDeleteDialogVisible(true);
   };
+  const confirmDelete = async () => {
+    try {
+      setIsDeleting(true);
+      // Gọi action xóa dự án
+      await dispatch(deleteProject(item.id)).unwrap();
 
-  const confirmDelete = () => {
-    // TODO: Implement actual delete logic
-
-    setSnackbarVisible(true);
-    handleCloseMenu();
-    setDeleteDialogVisible(false);
+      setSnackbarMessage(PROJECT_TEXTS.MESSAGES.DELETE_SUCCESS);
+      setSnackbarVisible(true);
+      handleCloseMenu();
+      setDeleteDialogVisible(false);
+    } catch (error) {
+      console.error("Lỗi khi xóa dự án:", error);
+      setSnackbarMessage("Có lỗi xảy ra khi xóa dự án. Vui lòng thử lại.");
+      setSnackbarVisible(true);
+      handleCloseMenu();
+      setDeleteDialogVisible(false);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleOpenMenu = (projectId: string) => {
@@ -264,7 +279,6 @@ export default function ProjectItem({ item }: ProjectItemProps) {
           )}
         </Card.Content>
       </Card>
-
       <BottomSheetPopup
         visible={item.id === editingProject?.id}
         onDismiss={handleCloseMenu}
@@ -280,7 +294,6 @@ export default function ProjectItem({ item }: ProjectItemProps) {
           onPress: handleDeletePressProject,
         }}
       />
-
       <Portal>
         <Dialog
           visible={deleteDialogVisible}
@@ -297,11 +310,12 @@ export default function ProjectItem({ item }: ProjectItemProps) {
             >
               {PROJECT_TEXTS.DIALOG.DELETE_MESSAGE}
             </Text>
-          </Dialog.Content>
+          </Dialog.Content>{" "}
           <Dialog.Actions>
             <Button
               onPress={() => setDeleteDialogVisible(false)}
               textColor={theme.colors.primary}
+              disabled={isDeleting}
             >
               {PROJECT_TEXTS.ACTIONS.CANCEL}
             </Button>
@@ -309,13 +323,14 @@ export default function ProjectItem({ item }: ProjectItemProps) {
               onPress={confirmDelete}
               textColor={theme.colors.error}
               style={{ marginLeft: GlobalStyles.spacing.sm }}
+              loading={isDeleting}
+              disabled={isDeleting}
             >
               {PROJECT_TEXTS.ACTIONS.DELETE}
             </Button>
           </Dialog.Actions>
         </Dialog>
-      </Portal>
-
+      </Portal>{" "}
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
@@ -330,7 +345,7 @@ export default function ProjectItem({ item }: ProjectItemProps) {
         }}
       >
         <Text style={{ color: theme.colors.inverseOnSurface }}>
-          {PROJECT_TEXTS.MESSAGES.DELETE_SUCCESS}
+          {snackbarMessage}
         </Text>
       </Snackbar>
     </>

@@ -350,14 +350,22 @@ export const updateProject = createAsyncThunk<Project, UpdateProjectParams>(
 export const deleteProject = createAsyncThunk<any, string>(
   "project/deleteProject",
   async (projectId, thunkAPI) => {
-    const response = await http.delete<ApiResponse<any>>(
-      `projects/${projectId}`,
-      {
-        signal: thunkAPI.signal,
-      }
-    );
-    // Vì kiểu trả về đã được khai báo là any trong generics
-    return response.data.data as any;
+    const response = await http.delete(`/auth/duan`, {
+      data: {
+        id: projectId,
+      },
+      signal: thunkAPI.signal,
+    });
+
+    console.log("Delete project response:", response);
+
+    if (response.rc?.code !== 0) {
+      return thunkAPI.rejectWithValue(
+        response.rc?.desc || "Lỗi không xác định!"
+      );
+    }
+
+    return response.data;
   }
 );
 
