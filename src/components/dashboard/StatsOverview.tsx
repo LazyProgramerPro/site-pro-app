@@ -1,6 +1,11 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect } from "react";
-import { Animated, Dimensions, StyleSheet } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  Dimensions,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { Divider, Surface, Text, useTheme } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ICONS_NAME } from "../../constants/icon";
@@ -33,13 +38,25 @@ const StatItem = ({
   icon,
   animationDelay = 0,
 }: StatItemProps) => {
-  const animatedValue = new Animated.Value(0);
-  const scaleValue = new Animated.Value(0.8);
-  const opacityValue = new Animated.Value(0);
-  const iconRotateValue = new Animated.Value(0);
-  const bounceValue = new Animated.Value(1);
+  const [displayValue, setDisplayValue] = useState(0);
+  const animatedValueRef = useRef(new Animated.Value(0));
+  const scaleValueRef = useRef(new Animated.Value(0.8));
+  const opacityValueRef = useRef(new Animated.Value(0));
+  const iconRotateValueRef = useRef(new Animated.Value(0));
+  const bounceValueRef = useRef(new Animated.Value(1));
 
   useEffect(() => {
+    const animatedValue = animatedValueRef.current;
+    const scaleValue = scaleValueRef.current;
+    const opacityValue = opacityValueRef.current;
+    const iconRotateValue = iconRotateValueRef.current;
+
+    // Reset animations
+    animatedValue.setValue(0);
+    scaleValue.setValue(0.8);
+    opacityValue.setValue(0);
+    iconRotateValue.setValue(0);
+
     Animated.sequence([
       Animated.delay(animationDelay),
       Animated.parallel([
@@ -70,9 +87,37 @@ const StatItem = ({
         }),
       ]),
     ]).start();
+
+    // Counter animation with state
+    const animateCounter = () => {
+      const startTime = Date.now();
+      const duration = 1200;
+
+      const updateCounter = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const currentValue = Math.floor(progress * value);
+
+        setDisplayValue(currentValue);
+
+        if (progress < 1) {
+          requestAnimationFrame(updateCounter);
+        }
+      };
+
+      const timeoutId = setTimeout(() => {
+        updateCounter();
+      }, animationDelay);
+
+      return () => clearTimeout(timeoutId);
+    };
+
+    const cleanup = animateCounter();
+    return cleanup;
   }, [value, animationDelay]);
 
   const handlePress = () => {
+    const bounceValue = bounceValueRef.current;
     Animated.sequence([
       Animated.timing(bounceValue, {
         toValue: 0.95,
@@ -87,7 +132,7 @@ const StatItem = ({
     ]).start();
   };
 
-  const iconRotation = iconRotateValue.interpolate({
+  const iconRotation = iconRotateValueRef.current.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "360deg"],
   });
@@ -97,34 +142,34 @@ const StatItem = ({
       style={[
         styles.statItem,
         {
-          transform: [{ scale: scaleValue }, { scale: bounceValue }],
-          opacity: opacityValue,
+          transform: [
+            { scale: scaleValueRef.current },
+            { scale: bounceValueRef.current },
+          ],
+          opacity: opacityValueRef.current,
         },
       ]}
     >
-      <Animated.View
-        style={[styles.statValueContainer, { backgroundColor }]}
-        onTouchStart={handlePress}
-      >
-        <Animated.View style={{ transform: [{ rotate: iconRotation }] }}>
-          <Icon
-            name={icon}
-            size={width > 400 ? 28 : 24}
-            color={color}
-            style={styles.statIcon}
-          />
+      <TouchableWithoutFeedback onPress={handlePress}>
+        <Animated.View style={[styles.statValueContainer, { backgroundColor }]}>
+          <Animated.View style={{ transform: [{ rotate: iconRotation }] }}>
+            <Icon
+              name={icon}
+              size={width > 400 ? 28 : 24}
+              color={color}
+              style={styles.statIcon}
+            />
+          </Animated.View>
+          <Text
+            style={[
+              styles.statValue,
+              { color, fontSize: width > 400 ? 22 : 20 },
+            ]}
+          >
+            {displayValue}
+          </Text>
         </Animated.View>
-        <Animated.Text
-          style={[styles.statValue, { color, fontSize: width > 400 ? 22 : 20 }]}
-        >
-          {animatedValue.interpolate({
-            inputRange: [0, value],
-            outputRange: ["0", value.toString()],
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
-          })}
-        </Animated.Text>
-      </Animated.View>
+      </TouchableWithoutFeedback>
       <Text
         style={[styles.statLabel, { color, fontSize: width > 400 ? 12 : 11 }]}
       >
@@ -137,6 +182,18 @@ const StatItem = ({
 const StatsOverview = ({ stats }: StatsOverviewProps) => {
   const theme = useTheme();
 
+  // Kiểm tra dữ liệu đầu vào
+  if (!stats || typeof stats !== "object") {
+    console.warn("StatsOverview: Invalid stats data provided");
+    return null;
+  }
+
+  const safeStats = {
+    totalProject: Number(stats.totalProject) || 0,
+    active: Number(stats.active) || 0,
+    pending: Number(stats.pending) || 0,
+  };
+
   return (
     <Surface style={styles.statsContainer} elevation={4}>
       <LinearGradient
@@ -144,7 +201,7 @@ const StatsOverview = ({ stats }: StatsOverviewProps) => {
         style={styles.gradientBackground}
       >
         <StatItem
-          value={stats.totalProject}
+          value={safeStats.totalProject}
           label="Tổng dự án"
           color={GlobalStyles.colors.primary700}
           backgroundColor={GlobalStyles.colors.primary50}
@@ -155,7 +212,7 @@ const StatsOverview = ({ stats }: StatsOverviewProps) => {
         <Divider style={styles.statDivider} />
 
         <StatItem
-          value={stats.active}
+          value={safeStats.active}
           label="Đang triển khai"
           color={STATUS_COLORS.STATUS.COMPLETED.TEXT}
           backgroundColor={STATUS_COLORS.STATUS.COMPLETED.BACKGROUND}
@@ -166,7 +223,7 @@ const StatsOverview = ({ stats }: StatsOverviewProps) => {
         <Divider style={styles.statDivider} />
 
         <StatItem
-          value={stats.pending}
+          value={safeStats.pending}
           label="Cần xử lý"
           color={GlobalStyles.colors.error500}
           backgroundColor={GlobalStyles.colors.red50}

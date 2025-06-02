@@ -44,14 +44,14 @@ export default function ProjectDetailsScreen() {
         setLoading(true);
         setError(null);
         try {
-          const { rc, item } = await http.get<{
+          const { rc, item } = await http.post<{
             rc: { code: number; message: string };
-            item: Project;
-          }>(`/auth/duan/info/${projectId}`);
+            item: any;
+          }>(`/auth/duan/info`, { id: projectId });
 
           if (rc.code !== 0) {
             throw new Error(
-              item?.name // API có thể trả về item với name dù lỗi
+              item?.name
                 ? `Lỗi khi lấy dữ liệu dự án "${
                     item.name
                   }" (ID: ${projectId}). ${rc.message || ""}`.trim()
@@ -182,6 +182,10 @@ export default function ProjectDetailsScreen() {
                       rc: { code: number; message: string };
                       item: Project;
                     }>(`/auth/duan/info/${projectId}`);
+
+                    console.log("Thử lại với ID dự án:", projectId);
+
+                    console.log("Thử lại với ID dự án:", item);
                     if (rc.code !== 0)
                       throw new Error(rc.message || "Failed to fetch");
                     const enrichedItem: Project = {

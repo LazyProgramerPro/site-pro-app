@@ -55,6 +55,7 @@ export default function ProjectItem({ item }: ProjectItemProps) {
 
   const confirmDelete = () => {
     // TODO: Implement actual delete logic
+
     setSnackbarVisible(true);
     handleCloseMenu();
     setDeleteDialogVisible(false);
